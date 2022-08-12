@@ -1,7 +1,6 @@
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 # AlgoPoaP
-### **AlgoPoaP** is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated int
-o a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
+### **AlgoPoaP** is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
 
 The original idea of PoaP on blockchain is developed for Etherium ecosystem and is Token based and lacks many features. **AlgoPoaP** elevates, extends and expands that original idea and implements it on Algorand. 
 
