@@ -91,6 +91,73 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     Archive --> [*]
 ```
 ----
+### PoaP ASC TEAL Graph:
+
+```mermaid
+  stateDiagram-v2
+    [*] --> ASC_ENTRY
+    ASC_ENTRY --> b_general_checks
+    b_general_checks --> b_on_completion
+    b_on_completion --> b_creation
+    b_creation --> Log_and_Return
+    b_on_completion --> b_optin
+    b_optin --> Log_and_Return
+    b_on_completion --> b_deletion
+    b_deletion --> Log_and_Return
+    b_on_completion --> b_update
+    b_update --> Log_and_Return
+    b_on_completion --> b_closeout
+    b_closeout --> Log_and_Return
+    b_on_completion --> b_noop
+    b_noop --> b_c2c_create
+    b_c2c_create --> Log_and_Return
+    b_noop --> b_c2c_delete
+    b_c2c_create --> Log_and_Return
+    b_noop --> b_c2cn_update
+    b_c2c_create --> Log_and_Return
+    b_noop --> b_c2c_closeout
+    b_c2c_create --> Log_and_Return
+    b_noop --> b_c2c_noop
+    b_c2c_noop --> Log_and_Return
+    Log_and_Return --> [*]
+    
+```
+----
+
+### PoaP Item ASC TEAL Graph:
+
+```mermaid
+  stateDiagram-v2
+    [*] --> ITEM_ASC_ENTRY
+    ITEM_ASC_ENTRY --> b_general_checks
+    b_general_checks --> b_on_completion
+    b_on_completion --> b_creation
+    b_creation --> Log_and_Return
+    b_on_completion --> b_optin
+    b_optin --> Log_and_Return
+    b_on_completion --> b_deletion
+    b_deletion --> Log_and_Return
+    b_on_completion --> b_update
+    b_update --> Log_and_Return
+    b_on_completion --> b_closeout
+    b_closeout --> Log_and_Return
+    b_on_completion --> b_noop
+    b_noop --> b_setup
+    b_setup --> b_nft_create
+    b_setup --> b_c2c_optin
+    b_noop --> b_release
+    b_release --> b_nft_send
+    b_release --> b_c2c_geo
+    b_release --> b_c2c_time
+    b_release --> b_c2c_sig
+    b_release --> b_c2c_qr
+    b_release --> Log_and_Return
+   
+    
+    Log_and_Return --> [*]
+    
+```
+----
 ### UseCase:
 
 ```mermaid
