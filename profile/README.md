@@ -2,7 +2,7 @@
 # AlgoPoaP
 ### **AlgoPoaP** is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
 
-The original idea of PoaP on blockchain is developed for Etherium ecosystem and is Token based and lacks many features. **AlgoPoaP** elevates, extends and expands that original idea and implements it on Algorand. 
+The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. **AlgoPoaP** elevates, extends and expands that original idea and implements it on Algorand. 
 
 **AlgoPoaP** dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via C2C calls introduced in Algorand AVM V1.1
 
@@ -20,13 +20,12 @@ The original idea of PoaP on blockchain is developed for Etherium ecosystem and 
 
 ** Both will be public soon, WIP! **
 
-**AlgoPoaP** features that are not available on ETH PoaP:
+**AlgoPoaP** features that are not available on ETH PoaP (it actually only supports time currently!):
 
-- Geo
-- Tokenless
-- Parametrized NFT
-- Signature
-- QRCode
+- Geo constraint option
+- Authorization Signature constraint option
+- QRCode constraint option
+- NFT based or NFT-less (Using transaction note only)
 
 
 
@@ -58,6 +57,101 @@ The original idea of PoaP on blockchain is developed for Etherium ecosystem and 
   
 ```
 
+----
+
+### Author's Journey:
+
+1- Author easily gets onboard by opting into AlgoPoaP's parent ASC.
+
+2- Then can create a new PoaP venue.
+
+3- Then activate the venue to let claims begin (This differs than start time option of PoaP).
+
+Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, PoaP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction for each PoaP attendee. Author's must be careful not to use the SIG feature for venues with too many attendees or it may take time to manually authorize them all through AlgoPoaP UI (No mass authorization scenario exists or thought about at the moment!).
+
+Options available for PoaP creation:
+
+- Time (default enabled): Start time check (compared to LatestTimestamp)
+- Geo: Location point check to be inside a geofence with desired radius (in meters with min of 5m and max of 1000m).
+- Signature: Author's signature is needed to make PoaP claimable for every attendee, individually. Each and every attendee can receive their single claimed PoaP (in NFT or TXN depending on PoaP config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Attendee scans this QRCode during physical presence and claims.
+
+Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
+
+
+
+```mermaid
+sequenceDiagram 
+actor Author
+participant AlgoPoaP
+participant AlgoPoaP_ASC
+participant AlgoPoaP_Item_ASC
+Author ->> AlgoPoaP: Connect wallet
+Author ->> AlgoPoaP: Sign Optin Call
+AlgoPoaP ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> AlgoPoaP: Return
+Note left of AlgoPoaP: Onboarding
+Author ->> AlgoPoaP: Sign `create_poap` Method TXN
+AlgoPoaP ->> AlgoPoaP_ASC:  `create_poap` Method Call
+AlgoPoaP_ASC -->> AlgoPoaP: Return
+Note left of AlgoPoaP_ASC: Create PoaP Venue
+Author ->> AlgoPoaP: Sign `activate_poap` Method TXN
+AlgoPoaP ->> AlgoPoaP_Item_ASC: `activate_poap` Method Call (creates NFT as well)
+AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+Note right of AlgoPoaP_ASC: Activate PoaP Venue
+Author ->> AlgoPoaP: Sign `sig_poap` Method TXN
+AlgoPoaP ->> AlgoPoaP_ASC: `sig_poap` Method Call 
+AlgoPoaP_ASC -->> AlgoPoaP: Return
+Note right of AlgoPoaP_ASC: Release SIG PoaP
+Note right of AlgoPoaP_ASC: Only when SIG option is enabled on PoaP
+
+
+
+```
+----
+### Attendee Journey:
+
+1- Attendee simply gets onboard by opting into parent ASC.
+
+2- Then get a searchable list of PoaP venues and applys to one by opting into it.
+
+3- Then after general venue activation (by author) and by satisfying what PoaP venue options require, claim the PoaP and get PoaP NFT if approved.
+
+Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT to Attendee's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to attendee's wallet.
+
+```mermaid
+sequenceDiagram 
+actor Attendee
+participant AlgoPoaP
+participant AlgoPoaP_ASC
+participant AlgoPoaP_Item_ASC
+Attendee ->> AlgoPoaP: Connect wallet
+Attendee ->> AlgoPoaP: Sign Optin Call
+AlgoPoaP ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> AlgoPoaP: Return
+Note left of AlgoPoaP: Onboarding
+
+Attendee ->> AlgoPoaP: Sign `apply_poap` Method TXN
+AlgoPoaP ->> AlgoPoaP_Item_ASC:  `apply_poap` Method Call
+AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+Note right of AlgoPoaP_ASC: Apply for PoaP Venue
+
+
+Attendee ->> AlgoPoaP: Sign `claim_poap` Method TXN
+AlgoPoaP ->> AlgoPoaP_Item_ASC: `claim_poap` Method Call ( plus optin TXN to PoaP NFT, if required)
+AlgoPoaP_Item_ASC -->> Attendee: Send NFT
+AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+
+Note right of AlgoPoaP_ASC: Claim PoaP
+Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
+AlgoPoaP_Item_ASC -->> Attendee: Send NFT
+Note right of AlgoPoaP_ASC: Claim PoaP in case of SIG option enabled
+
+
+
+```
+
+----
 ## AlgoPoaP Smart Contracts 
 
 AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM V1.1. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
