@@ -282,17 +282,16 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
     b_on_completion --> b_noop
     b_noop --> b_setup
-    method --> setup
-    setup --> b_setup
     b_setup --> b_nft_create
     b_setup --> Log_and_Return
+   
 
-    b_noop --> b_activate
+
     method --> activate
     activate --> b_activate
     b_activate --> Log_and_Return
 
-    b_noop --> b_claim
+
     method --> claim
     claim --> b_claim
 
@@ -303,7 +302,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_claim --> b_nft_send
     b_claim --> Log_and_Return
 
-    b_noop --> b_release_sig
+
     method --> release
     release --> b_release_sig
     b_release_sig --> b_nft_send
