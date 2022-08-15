@@ -180,7 +180,9 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     [*] --> AlgoPoaP_Service
     AlgoPoaP_Service --> Parent_AlgoPoaP_ASC
     Parent_AlgoPoaP_ASC --> AlgoPoaP_item_ASC
-    AlgoPoaP_item_ASC --> Archive
+    AlgoPoaP_item_ASC --> closeout
+    Parent_AlgoPoaP_ASC --> closeout
+    AlgoPoaP_item_ASC --> archive
     Archive --> [*]
 ```
 ----
