@@ -183,7 +183,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     AlgoPoaP_item_ASC --> close
     Parent_AlgoPoaP_ASC --> eol
     close --> archive
-    close --> eol
+    eol --> archive
     archive --> [*]
 ```
 ----
