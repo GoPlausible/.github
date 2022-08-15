@@ -48,7 +48,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
     subgraph ASC
         direction TB
         Parent_ASC
-        Item_ASC-->Controllers_ASCs 
+        Item_ASC
         
     end
   end
