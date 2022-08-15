@@ -109,7 +109,7 @@ Note right of AlgoPoaP_ASC: Only when SIG option is enabled on PoaP
 
 ```
 ----
-### Attendee Journey:
+### Attendee's Journey:
 
 1- Attendee simply gets onboard by opting into parent ASC.
 
