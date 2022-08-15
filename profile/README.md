@@ -184,6 +184,39 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     Archive --> [*]
 ```
 ----
+
+
+### UseCase:
+
+```mermaid
+  flowchart TB
+    id1([Author]) --uses--> parentASC
+    id1([Author]) --uses--> itemASC
+    id2([Attendee]) --uses--> itemASC 
+    id2([Attendee]) --uses--> parentASC 
+
+    subgraph -
+
+      subgraph parentASC
+      id6([optin])--uses-->id7([update states]) 
+      
+      id9([closeout])
+      end
+      subgraph itemASC
+      id8([create]) 
+      id9([optin]) 
+      id10([update states])
+      id13([Respond C2C])
+      id9([closeout]) 
+      end
+    end 
+   
+
+    itemASC --extends--> parentASC
+
+```
+----
+
 ### AlgoPoaP ASC TEAL Graph:
 
 ```mermaid
@@ -344,35 +377,6 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```
 ----
 
-### UseCase:
-
-```mermaid
-  flowchart TB
-    id1([Author]) --uses--> parentASC
-    id1([Author]) --uses--> itemASC
-    id2([Attendee]) --uses--> itemASC 
-    id2([Attendee]) --uses--> parentASC 
-
-    subgraph -
-
-      subgraph parentASC
-      id6([optin])--uses-->id7([update states]) 
-      
-      id9([closeout])
-      end
-      subgraph itemASC
-      id8([create]) 
-      id9([optin]) 
-      id10([update states])
-      id13([Respond C2C])
-      id9([closeout]) 
-      end
-    end 
-   
-
-    itemASC --extends--> parentASC
-
-```
 
 
 Since AlgoPoaP is totally decentralized, trustless and permissionless: Every AlgoPoaP item author has full authority of the created PoaPs (AlgoPoaP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
