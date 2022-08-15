@@ -187,7 +187,6 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     Archive --> [*]
 ```
 ----
-
 ### AlgoPoaP ASC TEAL Graph:
 
 ```mermaid
@@ -207,16 +206,22 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_closeout --> Log_and_Return
 
     b_on_completion --> b_noop
+    b_noop --> b_setup
     b_noop --> Log_and_Return
 
     method --> c2c_create
     c2c_create --> Log_and_Return
     method --> c2c_delete
     c2c_delete --> Log_and_Return
-    method --> c2cn_update
-    c2cn_update --> Log_and_Return
-
+    method --> c2c_update
+    c2c_update --> Log_and_Return
+    method --> c2c_closeout
+    c2c_closeout --> Log_and_Return
    
+    method --> metrics
+    metrics --> b_metrics_update
+    b_metrics_update --> Log_and_Return
+
     Log_and_Return --> [*]
     
 ```
@@ -227,25 +232,29 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```mermaid
   classDiagram
     AlgoPoaP_ASC <|-- PoaP
+    AlgoPoaP_ASC : +Uint64 poap_onboard_count
+    AlgoPoaP_ASC : +Uint64 poap_count
     AlgoPoaP_ASC : +Uint64 poap_txn_count
+    AlgoPoaP_ASC : +Uint64 poap_claim_count
     AlgoPoaP_ASC : +Uint64 poap_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_geo_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_qr_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_sig_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_item_count
+    AlgoPoaP_ASC : +Uint64 poap_nft_issuance_count
+    AlgoPoaP_ASC : +Uint64 poap_txn_issuance_count
+
+    AlgoPoaP_ASC : +Uint64 poap_geo_check_count
+    AlgoPoaP_ASC : +Uint64 poap_qr_check_count
+    AlgoPoaP_ASC : +Uint64 poap_sig_check_count
+
     AlgoPoaP_ASC : +Uint64 poap_author_count
-     AlgoPoaP_ASC : +Uint64 poap_attendee_count
+    AlgoPoaP_ASC : +Uint64 poap_attendee_count
     AlgoPoaP_ASC : +String poap_last_appid
     AlgoPoaP_ASC : +String poap_last_author
     AlgoPoaP_ASC : +String poap_last_attendee
    
     class PoaP {
-        +Uint64 poap_created_count
-        +String poap_last_item
-        +setup()
-        +activate()
-        +claim()
-        +release()
+        +create()
+        +update()
+        +delete()
+        +closeout()
         +metrics()
     }
     
@@ -299,16 +308,46 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     release --> b_release_sig
     b_release_sig --> b_nft_send
     b_release --> Log_and_Return
-   
-    b_noop --> b_metrics_update
-    method --> metrics
-    metrics --> b_metrics_update
-    b_metrics_update --> Log_and_Return
+  
     
     Log_and_Return --> [*]
     
 ```
 ----
+### AlgoPoaP ASC ITEM ABI :
+
+```mermaid
+  classDiagram
+    AlgoPoaP_ASC_ITEM <|-- PoaP_ITEM
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_onboard_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_apply_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_issuance_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
+
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_geo_check_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_qr_check_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_sig_check_count
+
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
+    AlgoPoaP_ASC_ITEM : +String poap_item_last_attendee
+    AlgoPoaP_ASC_ITEM : +String poap_item_last_apply
+    AlgoPoaP_ASC_ITEM : +String poap_item_last_issuance
+    AlgoPoaP_ASC_ITEM : +String poap_item_last_nft_issuance
+    AlgoPoaP_ASC_ITEM : +String poap_item_last_txn_issuance
+   
+    class PoaP_ITEM {
+        +setup()
+        +activate()
+        +claim()
+        +release()
+        +metrics()
+    }
+    
+```
+----
+
 ### UseCase:
 
 ```mermaid
