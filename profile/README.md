@@ -173,6 +173,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```
 
 ----
+
 ### Lifecycle:
 
 ```mermaid
@@ -185,13 +186,14 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     Archive --> [*]
 ```
 ----
-### PoaP ASC TEAL Graph:
+
+### AlgoPoaP ASC TEAL Graph:
 
 ```mermaid
   stateDiagram-v2
-    [*] --> ASC_ENTRY
-    ASC_ENTRY --> b_general_checks
-    b_general_checks --> b_on_completion
+    [*] --> b_main
+    b_main --> b_general_checks
+    b_main --> b_on_completion
     b_on_completion --> b_creation
     b_creation --> Log_and_Return
     b_on_completion --> b_optin
@@ -202,29 +204,61 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_update --> Log_and_Return
     b_on_completion --> b_closeout
     b_closeout --> Log_and_Return
+
     b_on_completion --> b_noop
-    b_noop --> b_c2c_create
-    b_c2c_create --> Log_and_Return
-    b_noop --> b_c2c_delete
-    b_c2c_create --> Log_and_Return
-    b_noop --> b_c2cn_update
-    b_c2c_create --> Log_and_Return
-    b_noop --> b_c2c_closeout
-    b_c2c_create --> Log_and_Return
-    b_noop --> b_c2c_noop
-    b_c2c_noop --> Log_and_Return
+    b_noop --> Log_and_Return
+
+    method --> c2c_create
+    c2c_create --> Log_and_Return
+    method --> c2c_delete
+    c2c_delete --> Log_and_Return
+    method --> c2cn_update
+    c2cn_update --> Log_and_Return
+
+   
     Log_and_Return --> [*]
     
 ```
 ----
 
-### PoaP Item ASC TEAL Graph:
+### AlgoPoaP ASC ABI :
+
+```mermaid
+  classDiagram
+    AlgoPoaP_ASC <|-- PoaP
+    AlgoPoaP_ASC : +Uint64 poap_txn_count
+    AlgoPoaP_ASC : +Uint64 poap_issuance_count
+    AlgoPoaP_ASC : +Uint64 poap_geo_issuance_count
+    AlgoPoaP_ASC : +Uint64 poap_qr_issuance_count
+    AlgoPoaP_ASC : +Uint64 poap_sig_issuance_count
+    AlgoPoaP_ASC : +Uint64 poap_item_count
+    AlgoPoaP_ASC : +Uint64 poap_author_count
+     AlgoPoaP_ASC : +Uint64 poap_attendee_count
+    AlgoPoaP_ASC : +String poap_last_appid
+    AlgoPoaP_ASC : +String poap_last_author
+    AlgoPoaP_ASC : +String poap_last_attendee
+   
+    class PoaP {
+        +Uint64 poap_created_count
+        +String poap_last_item
+        +setup()
+        +activate()
+        +claim()
+        +release()
+        +metrics()
+    }
+    
+```
+----
+
+### AlgoPoaP Item ASC TEAL Graph:
 
 ```mermaid
   stateDiagram-v2
-    [*] --> ITEM_ASC_ENTRY
-    ITEM_ASC_ENTRY --> b_general_checks
+    [*] --> b_main
+    b_main --> b_general_checks
     b_general_checks --> b_on_completion
+    
     b_on_completion --> b_creation
     b_creation --> Log_and_Return
     b_on_completion --> b_optin
@@ -235,18 +269,40 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_update --> Log_and_Return
     b_on_completion --> b_closeout
     b_closeout --> Log_and_Return
+
     b_on_completion --> b_noop
     b_noop --> b_setup
+    method --> setup
+    setup --> b_setup
     b_setup --> b_nft_create
-    b_setup --> b_c2c_optin
-    b_noop --> b_release
-    b_release --> b_nft_send
-    b_release --> b_c2c_geo
-    b_release --> b_c2c_time
-    b_release --> b_c2c_sig
-    b_release --> b_c2c_qr
+    b_setup --> Log_and_Return
+
+    b_noop --> b_activate
+    method --> activate
+    activate --> b_activate
+    b_activate --> Log_and_Return
+
+    b_noop --> b_claim
+    method --> claim
+    claim --> b_claim
+
+    b_claim --> b_geo
+    b_claim --> b_time
+    b_claim --> b_sig
+    b_claim --> b_qr
+    b_claim --> b_nft_send
+    b_claim --> Log_and_Return
+
+    b_noop --> b_release_sig
+    method --> release
+    release --> b_release_sig
+    b_release_sig --> b_nft_send
     b_release --> Log_and_Return
    
+    b_noop --> b_metrics_update
+    method --> metrics
+    metrics --> b_metrics_update
+    b_metrics_update --> Log_and_Return
     
     Log_and_Return --> [*]
     
