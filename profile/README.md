@@ -355,7 +355,6 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     id1([Author]) --uses--> itemASC
     id2([User]) --uses--> itemASC 
     id2([User]) --uses--> parentASC 
-    id2([User]) --uses--> controllerASC 
 
     subgraph -
 
@@ -371,12 +370,9 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
       id13([Respond C2C])
       id9([closeout]) 
       end
-      subgraph controllerASC
-      id13([Respond C2C])
-      end
     end 
    
-    controllerASC --extends--> itemASC
+
     itemASC --extends--> parentASC
 
 ```
