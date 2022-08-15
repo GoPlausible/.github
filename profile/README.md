@@ -166,7 +166,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
       AlgoPoaP_Service== creates ==>Parent_AlgoPoaP_ASC;
       Parent_AlgoPoaP_ASC== creates ==>AlgoPoaP_item_ASC;
       
-      AlgoPoaP_User== interacts ==>AlgoPoaP_item_ASC;
+      AlgoPoaP_Attendee== interacts ==>AlgoPoaP_item_ASC;
       AlgoPoaP_Author== interacts ==>Parent_AlgoPoaP_ASC;
       AlgoPoaP_Author== interacts ==>AlgoPoaP_item_ASC;
 ```
@@ -350,8 +350,8 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
   flowchart TB
     id1([Author]) --uses--> parentASC
     id1([Author]) --uses--> itemASC
-    id2([User]) --uses--> itemASC 
-    id2([User]) --uses--> parentASC 
+    id2([Attendee]) --uses--> itemASC 
+    id2([Attendee]) --uses--> parentASC 
 
     subgraph -
 
