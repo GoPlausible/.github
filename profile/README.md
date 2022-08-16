@@ -289,7 +289,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +create(pay,byte[],byte[])uint64
     AlgoPoaP_ASC : +update(application,byte[],byte[])bool
     AlgoPoaP_ASC : +delete(application)bool
-    AlgoPoaP_ASC : +get_metrics(application)string[16]
+    AlgoPoaP_ASC : +get_metrics()string[16]
     
 ```
 ----
