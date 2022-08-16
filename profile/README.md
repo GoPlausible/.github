@@ -262,7 +262,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 ### AlgoPoaP ASC ABI :
 
-Note: Data fields are global states of AlgoPoaP item smart contract.
+Note: Data fields are global states of AlgoPoaP parent smart contract.
 
 ```mermaid
   classDiagram
