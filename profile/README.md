@@ -283,9 +283,9 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
 
     AlgoPoaP_ASC : +Uint64 poap_author_count
     AlgoPoaP_ASC : +Uint64 poap_attendee_count
-    AlgoPoaP_ASC : +String poap_last_appid
-    AlgoPoaP_ASC : +String poap_last_author
-    AlgoPoaP_ASC : +String poap_last_attendee
+    AlgoPoaP_ASC : +Byte poap_last_appid
+    AlgoPoaP_ASC : +Byte poap_last_author
+    AlgoPoaP_ASC : +Byte poap_last_attendee
     AlgoPoaP_ASC : +create()
     AlgoPoaP_ASC : +update()
     AlgoPoaP_ASC : +delete()
@@ -366,11 +366,11 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_sig_check_count
 
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
-    AlgoPoaP_ASC_ITEM : +String poap_item_last_attendee
-    AlgoPoaP_ASC_ITEM : +String poap_item_last_apply
-    AlgoPoaP_ASC_ITEM : +String poap_item_last_issuance
-    AlgoPoaP_ASC_ITEM : +String poap_item_last_nft_issuance
-    AlgoPoaP_ASC_ITEM : +String poap_item_last_txn_issuance
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_attendee
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_apply
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
     AlgoPoaP_ASC_ITEM : +setup()
     AlgoPoaP_ASC_ITEM : +activate()
     AlgoPoaP_ASC_ITEM : +claim()
