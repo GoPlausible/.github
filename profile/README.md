@@ -248,12 +248,12 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     c2c_delete --> Log_and_Return
     method --> c2c_update
     c2c_update --> Log_and_Return
-    method --> c2c_closeout
-    c2c_closeout --> Log_and_Return
+
    
-    method --> metrics
-    metrics --> b_metrics_update
-    b_metrics_update --> Log_and_Return
+    method --> get_metrics
+    get_metrics --> sub_metrics_update
+    sub_metrics_update --> get_metrics
+    get_metrics --> Log_and_Return
 
     Log_and_Return --> [*]
     
@@ -286,11 +286,10 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +Byte poap_last_appid
     AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +Byte poap_last_attendee
-    AlgoPoaP_ASC : +create()
-    AlgoPoaP_ASC : +update()
-    AlgoPoaP_ASC : +delete()
-    AlgoPoaP_ASC : +closeout()
-    AlgoPoaP_ASC : +metrics()
+    AlgoPoaP_ASC : +create(pay,byte[],byte[])uint64
+    AlgoPoaP_ASC : +update(application,byte[],byte[])bool
+    AlgoPoaP_ASC : +delete(application)bool
+    AlgoPoaP_ASC : +get_metrics(application)string[16]
     
 ```
 ----
@@ -316,31 +315,34 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
 
     b_on_completion --> b_noop
     b_noop --> b_setup
-    b_setup --> b_nft_create
+    b_setup --> sub_nft_create
+    sub_nft_create --> b_setup
     b_setup --> Log_and_Return
    
 
 
     method --> activate
-    activate --> b_activate
-    b_activate --> Log_and_Return
+    activate --> Log_and_Return
 
 
     method --> claim
-    claim --> b_claim
-
-    b_claim --> b_geo
-    b_claim --> b_time
-    b_claim --> b_sig
-    b_claim --> b_qr
-    b_claim --> b_nft_send
-    b_claim --> Log_and_Return
+    claim --> sub_geo
+    sub_geo --> claim
+    claim --> sub_time
+    sub_time --> claim
+    claim --> sub_qr
+    sub_qr --> claim
+    claim --> sub_nft_send
+    claim --> Log_and_Return
 
 
     method --> release
-    release --> b_release_sig
-    b_release_sig --> b_nft_send
-    b_release --> Log_and_Return
+    release --> sub_nft_send
+    sub_nft_send --> release
+    release --> Log_and_Return
+  
+    method --> get_metrics
+    get_metrics --> Log_and_Return
   
     
     Log_and_Return --> [*]
@@ -371,11 +373,11 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +setup()
-    AlgoPoaP_ASC_ITEM : +activate()
-    AlgoPoaP_ASC_ITEM : +claim()
-    AlgoPoaP_ASC_ITEM : +release()
-    AlgoPoaP_ASC_ITEM : +metrics()
+    AlgoPoaP_ASC_ITEM : +setup(pay,account,string,string,string,string,string,bool,bool,bool,string,uint8)string[10]
+    AlgoPoaP_ASC_ITEM : +activate(appl,pay)string[10]
+    AlgoPoaP_ASC_ITEM : +claim(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,string)string
+    AlgoPoaP_ASC_ITEM : +release(appl)string
+    AlgoPoaP_ASC_ITEM : +get_metrics()string[16]
   
     
 ```
