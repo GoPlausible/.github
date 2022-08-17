@@ -327,6 +327,10 @@ Note 2: Release
     method --> activate
     activate --> Log_and_Return
 
+    method --> release
+    release --> sub_nft_send
+    sub_nft_send --> release
+    release --> Log_and_Return
 
     method --> claim
     claim --> sub_geo
@@ -336,13 +340,11 @@ Note 2: Release
     claim --> sub_qr
     sub_qr --> claim
     claim --> sub_nft_send
+    sub_nft_send --> claim
     claim --> Log_and_Return
 
 
-    method --> release
-    release --> sub_nft_send
-    sub_nft_send --> release
-    release --> Log_and_Return
+    
   
     method --> get_metrics
     get_metrics --> Log_and_Return
