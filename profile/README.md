@@ -28,6 +28,8 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 - QRCode constraint option
 - NFT based or NFT-less (Using transaction note only)
 
+Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
+
 
 
 **AlgoPoaP** frontend has 3 major functions:
