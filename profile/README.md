@@ -294,7 +294,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +get_metrics(string)byte[]
     
 ```
-Note 1: Author has all metrics in localstate of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in local state of AlgoPoaP smart contract (parent) 
+Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
 
 Note 2: Release 
 ----
@@ -330,8 +330,6 @@ Note 2: Release
     activate --> Log_and_Return
 
     abi_methods --> release
-    release --> sub_nft_send
-    sub_nft_send --> release
     release --> Log_and_Return
 
     abi_methods --> claim
