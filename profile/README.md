@@ -289,7 +289,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +create(pay,byte[],byte[])uint64
     AlgoPoaP_ASC : +update(application,byte[],byte[])bool
     AlgoPoaP_ASC : +delete(application)bool
-    AlgoPoaP_ASC : +get_metrics()string[16]
+    AlgoPoaP_ASC : +get_metrics(string)byte[]
     
 ```
 Note 1: Author has all metrics in localstate of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in local state of AlgoPoaP smart contract (parent) 
@@ -378,11 +378,11 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +setup(pay,account,string,string,string,string,string,bool,bool,bool,string,uint8)string[10]
-    AlgoPoaP_ASC_ITEM : +activate(appl,pay)string[10]
+    AlgoPoaP_ASC_ITEM : +setup(pay,account,string,string,string,string,string,bool,bool,bool,string,uint8)byte[]
+    AlgoPoaP_ASC_ITEM : +activate(appl,pay)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,string)string
-    AlgoPoaP_ASC_ITEM : +release(appl)string
-    AlgoPoaP_ASC_ITEM : +get_metrics()string[16]
+    AlgoPoaP_ASC_ITEM : +release(appl)byte[]
+    AlgoPoaP_ASC_ITEM : +get_metrics(string)byte[]
   
     
 ```
