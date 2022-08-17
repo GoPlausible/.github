@@ -68,7 +68,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 3- Then activate the venue to let claims begin (This differs than start time option of PoaP).
 
-Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, PoaP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction for each PoaP attendee. Author's must be careful not to use the SIG feature for venues with too many attendees or it may take time to manually authorize them all through AlgoPoaP UI (No mass authorization scenario exists or thought about at the moment!).
+Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, PoaP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPoaP attendees. 
 
 Options available for PoaP creation:
 
@@ -292,6 +292,9 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +get_metrics()string[16]
     
 ```
+Note 1: Author has all metrics in localstate of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in local state of AlgoPoaP smart contract (parent) 
+
+Note 2: Release 
 ----
 
 ### AlgoPoaP Item ASC TEAL Graph:
