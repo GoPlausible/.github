@@ -242,15 +242,15 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_noop --> b_setup
     b_setup --> Log_and_Return
 
-    method --> c2c_create
+    abi_methods --> c2c_create
     c2c_create --> Log_and_Return
-    method --> c2c_delete
+    abi_methods --> c2c_delete
     c2c_delete --> Log_and_Return
-    method --> c2c_update
+    abi_methods --> c2c_update
     c2c_update --> Log_and_Return
 
    
-    method --> get_metrics
+    abi_methods --> get_metrics
     get_metrics --> sub_metrics_update
     sub_metrics_update --> get_metrics
     get_metrics --> Log_and_Return
@@ -324,15 +324,15 @@ Note 2: Release
    
 
 
-    method --> activate
+    abi_methods --> activate
     activate --> Log_and_Return
 
-    method --> release
+    abi_methods --> release
     release --> sub_nft_send
     sub_nft_send --> release
     release --> Log_and_Return
 
-    method --> claim
+    abi_methods --> claim
     claim --> sub_geo
     sub_geo --> claim
     claim --> sub_time
@@ -346,7 +346,7 @@ Note 2: Release
 
     
   
-    method --> get_metrics
+    abi_methods --> get_metrics
     get_metrics --> Log_and_Return
   
     
