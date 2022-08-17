@@ -332,7 +332,6 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
 ```
 Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
 
-Note 2: Release 
 ----
 
 ### AlgoPoaP Item ASC TEAL Graph:
