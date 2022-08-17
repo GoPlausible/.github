@@ -23,9 +23,9 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 **AlgoPoaP** features that are not available on ETH PoaP (it actually only supports time currently!):
 
-- Geo constraint option
-- Authorization Signature constraint option
-- QRCode constraint option
+- Geo constraint option (location + buffer area radius)
+- Authorization Signature constraint option (Author must sign the release before PoaP issuance for claimed Attendees)
+- QRCode constraint option (Attendee must scan and call the AlgoPoaP Item ASC with it to be able to claim)
 - NFT based or NFT-less (Using transaction note only)
 
 Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
