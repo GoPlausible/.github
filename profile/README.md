@@ -31,12 +31,17 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
 
 
+**AlgoPoaP** is consisted of a frontend and smart contracts on Algorand chain:
+- Frontend
+- Smart Contracts
 
-**AlgoPoaP** frontend has 3 major functions:
+
+**AlgoPoaP** frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Author UI
 - Attend UI
 
+Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
 
 ```mermaid
   flowchart LR
