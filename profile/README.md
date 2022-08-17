@@ -142,13 +142,16 @@ Note right of AlgoPoaP_ASC: Apply for PoaP Venue
 
 Attendee ->> AlgoPoaP: Sign `claim_poap` Method TXN
 AlgoPoaP ->> AlgoPoaP_Item_ASC: `claim_poap` Method Call ( plus optin TXN to PoaP NFT, if required)
-AlgoPoaP_Item_ASC -->> Attendee: Send NFT
-AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
-
 Note right of AlgoPoaP_ASC: Claim PoaP
 Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
 AlgoPoaP_Item_ASC -->> Attendee: Send NFT
-Note right of AlgoPoaP_ASC: Claim PoaP in case of SIG option enabled
+Note right of AlgoPoaP_ASC: Requires existence of signed release by author in global state
+AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+
+
+
+
+
 
 
 
@@ -339,6 +342,8 @@ Note 2: Release
     sub_time --> claim
     claim --> sub_qr
     sub_qr --> claim
+    claim --> sub_sig
+    sub_sig --> claim
     claim --> sub_nft_send
     sub_nft_send --> claim
     claim --> Log_and_Return
