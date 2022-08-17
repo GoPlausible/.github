@@ -173,8 +173,8 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 ```mermaid
   graph TD;
-      AlgoPoaP_Service== creates ==>Parent_AlgoPoaP_ASC;
-      Parent_AlgoPoaP_ASC== creates ==>AlgoPoaP_item_ASC;
+      AlgoPoaP_Service== manages ==>Parent_AlgoPoaP_ASC;
+      Parent_AlgoPoaP_ASC== manages ==>AlgoPoaP_item_ASC;
       
       AlgoPoaP_Attendee== interacts ==>AlgoPoaP_item_ASC;
       AlgoPoaP_Author== interacts ==>Parent_AlgoPoaP_ASC;
@@ -203,38 +203,57 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 ```mermaid
   flowchart TB
-    id1([Author]) --uses--> parentASC
-    id1([Author]) --uses--> itemASC
-    id2([Attendee]) --uses--> itemASC 
-    id2([Attendee]) --uses--> parentASC 
 
-    subgraph -
+    id1([Author]) --uses--> parentMethodCalls
+    id1([Author]) --uses--> parentAppCalls
+    id1([Author]) --uses--> itemMethodCalls
+    
 
-      subgraph parentASC
-      id6([optin])--uses-->id7([update states]) 
+    id2([Attendee]) --uses--> parentAppCalls 
+    id2([Attendee]) --uses--> itemMethodCalls 
+  
+
+    subgraph AlgoPoaP
       
-      id9([closeout])
+      subgraph parentASC
+        subgraph parentAppCalls
+        id3([create]) 
+        id4([update]) 
+        id5([delete]) 
+        id6([setup]) 
+        id6([optin]) 
+        id7([closeout]) 
+        end
+        subgraph parentMethodCalls
+        id8([create]) 
+        id9([update]) 
+        id10([delete]) 
+        id11([get_metrics]) 
+        end
       end
       subgraph itemASC
-        subgraph itemASC manage noop calls
-        id81([create]) 
-        id811([update]) 
-        id811([delete]) 
-        id811([setup]) 
         
-        id101([update states])
-        id911([closeout]) 
+        
+        subgraph itemAppCalls
+        id12([optin])
+        id13([create]) 
+        id14([update]) 
+        id15([delete]) 
+        id16([setup]) 
+        id17([closeout]) 
         end
-      id8([create]) 
-      id9([optin]) 
-      id10([update states])
-      id13([Respond C2C])
-      id9([closeout]) 
+        subgraph itemMethodCalls
+        id18([activate]) 
+        id19([claim]) 
+        id20([release]) 
+        id21([get_metrics]) 
+        end
       end
+      
     end 
    
-
-    itemASC --extends--> parentASC
+    
+    
 
 ```
 ----
