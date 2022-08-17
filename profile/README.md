@@ -211,6 +211,15 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
       id9([closeout])
       end
       subgraph itemASC
+        subgraph itemASC manage noop calls
+        id81([create]) 
+        id811([update]) 
+        id811([delete]) 
+        id811([setup]) 
+        
+        id101([update states])
+        id911([closeout]) 
+        end
       id8([create]) 
       id9([optin]) 
       id10([update states])
@@ -383,7 +392,6 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +setup(pay,account,string,string,string,string,string,bool,bool,bool,string,uint8)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
