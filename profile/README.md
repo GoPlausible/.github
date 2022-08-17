@@ -240,7 +240,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
     b_on_completion --> b_noop
     b_noop --> b_setup
-    b_noop --> Log_and_Return
+    b_setup --> Log_and_Return
 
     method --> c2c_create
     c2c_create --> Log_and_Return
