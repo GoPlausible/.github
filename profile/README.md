@@ -25,7 +25,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 - Geo constraint option (location + buffer area radius)
 - Authorization Signature constraint option (Author must sign the release before PoaP issuance for claimed Attendees)
-- QRCode constraint option (Attendee must scan and call the AlgoPoaP Item ASC with it to be able to claim)
+- QRCode constraint option (Attendee must scan and then call the AlgoPoaP Item ASC with it in order to claim).
 - NFT based or NFT-less (Using transaction note only)
 
 Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
@@ -82,7 +82,7 @@ Options available for PoaP creation:
 - Time (default enabled): Start time check (compared to LatestTimestamp)
 - Geo: Location point check to be inside a geofence with desired radius (in meters with min of 5m and max of 1000m).
 - Signature: Author's signature is needed to make PoaP claimable for every attendee, individually. Each and every attendee can receive their single claimed PoaP (in NFT or TXN depending on PoaP config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
-- QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Attendee scans this QRCode during physical presence and claims.
+- QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Attendee scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
 
@@ -320,7 +320,8 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +create(pay,byte[],byte[])uint64
     AlgoPoaP_ASC : +update(application,byte[],byte[])bool
     AlgoPoaP_ASC : +delete(application)bool
-    AlgoPoaP_ASC : +get_metrics(string)byte[]
+    AlgoPoaP_ASC : +get_metrics()byte[]
+    AlgoPoaP_ASC : +get_metric(string)byte[]
     
 ```
 Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
@@ -409,9 +410,11 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
     AlgoPoaP_ASC_ITEM : +activate(appl,pay)byte[]
-    AlgoPoaP_ASC_ITEM : +claim(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,string)string
+    AlgoPoaP_ASC_ITEM : +claim(appl,pay,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
-    AlgoPoaP_ASC_ITEM : +get_metrics(string)byte[]
+    AlgoPoaP_ASC_ITEM : +get_metric(string)byte[]
+    AlgoPoaP_ASC_ITEM : +get_metrics()byte[]
+    
   
     
 ```
