@@ -256,7 +256,8 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```mermaid
   stateDiagram-v2
     [*] --> b_main
-    b_main --> b_general_checks
+    b_main --> sub_general_checks
+    sub_general_checks --> b_main
     b_main --> b_on_completion
     b_on_completion --> b_creation
     b_creation --> Log_and_Return
