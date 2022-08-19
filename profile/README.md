@@ -454,6 +454,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     b_noop --> sub_setup
     sub_setup --> sub_nft_create
     sub_nft_create --> sub_setup
+    sub_setup --> b_noop
     b_noop --> Log_and_Return
    
 
