@@ -431,7 +431,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     [*] --> b_main
     b_main --> sub_general_checks
     sub_general_checks --> b_main
-    b_general_checks --> b_on_completion
+    sub_general_checks --> b_on_completion
     
     b_on_completion --> b_creation
     b_creation --> Log_and_Return
