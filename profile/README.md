@@ -288,6 +288,11 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     sub_metrics_update --> get_metrics
     get_metrics --> Log_and_Return
 
+    abi_methods --> get_metric
+    get_metric --> sub_metric_update
+    sub_metric_update --> get_metric
+    get_metric --> Log_and_Return
+
     Log_and_Return --> [*]
     
 ```
