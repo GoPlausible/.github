@@ -491,7 +491,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ----
 ### AlgoPoaP ASC ITEM ABI :
 
-Note: Data fields are global states of AlgoPoaP item smart contract.
+Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
 ```mermaid
   classDiagram
@@ -513,8 +513,8 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +activate(appl,pay)byte[]
-    AlgoPoaP_ASC_ITEM : +claim(appl,pay,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
+    AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
+    AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
     AlgoPoaP_ASC_ITEM : +get_metric(string)byte[]
     AlgoPoaP_ASC_ITEM : +get_metrics()byte[]
@@ -547,7 +547,11 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "pay",
-                    "name": "pay"
+                    "name": "pay_min_fees"
+                },
+                {
+                    "type": "axfer",
+                    "name": "optin_algopoap_nft"
                 }
             ],
             "returns": {
@@ -564,8 +568,13 @@ Note: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "pay",
-                    "name": "pay"
+                    "name": "pay_min_fee"
                 },
+                {
+                    "type": "axfer",
+                    "name": "optin_algopoap_nft"
+                },
+                
                 {
                     "type": "account",
                     "name": "attendee_account"
