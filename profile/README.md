@@ -256,42 +256,44 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```mermaid
   stateDiagram-v2
     [*] --> b_main
-    b_main --> sub_general_checks
-    sub_general_checks --> b_main
-    b_main --> b_on_completion
-    b_on_completion --> b_creation
+    b_main --> b_general_checks
+    b_general_checks --> b_creation
     b_creation --> Log_and_Return
-    b_on_completion --> b_optin
+    b_general_checks --> b_optin
     b_optin --> Log_and_Return
-    b_on_completion --> b_deletion
+    b_general_checks --> b_deletion
     b_deletion --> Log_and_Return
-    b_on_completion --> b_update
+    b_general_checks --> b_update
     b_update --> Log_and_Return
-    b_on_completion --> b_closeout
+    b_general_checks --> b_closeout
     b_closeout --> Log_and_Return
 
-    b_on_completion --> b_noop
-    b_noop --> sub_setup
-    sub_setup --> b_noop
-    b_noop --> Log_and_Return
 
-    abi_methods --> c2c_create
+
+    b_general_checks --> c2c_create
     c2c_create --> Log_and_Return
-    abi_methods --> c2c_delete
+    b_general_checks --> c2c_delete
     c2c_delete --> Log_and_Return
-    abi_methods --> c2c_update
+    b_general_checks --> c2c_update
     c2c_update --> Log_and_Return
 
    
-    abi_methods --> get_metrics
+    b_general_checks --> get_metrics
     get_metrics --> sub_metrics_update
     sub_metrics_update --> get_metrics
     get_metrics --> Log_and_Return
 
-    abi_methods --> get_metric
+    b_general_checks --> get_metric
     get_metric --> sub_metric_update
     sub_metric_update --> get_metric
     get_metric --> Log_and_Return
+
+    b_general_checks --> b_noop
+    b_noop --> sub_setup
+    sub_setup --> b_noop
+    b_noop --> Log_and_Return
+
+    
 
     Log_and_Return --> [*]
     
