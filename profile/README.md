@@ -256,39 +256,39 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ```mermaid
   stateDiagram-v2
     [*] --> b_main
-    b_main --> b_gate
-    b_gate --> b_creation
+   
+    b_main --> b_creation
     b_creation --> Log_and_Return
-    b_gate --> b_optin
+    b_main --> b_optin
     b_optin --> Log_and_Return
-    b_gate --> b_deletion
+    b_main --> b_deletion
     b_deletion --> Log_and_Return
-    b_gate --> b_update
+    b_main --> b_update
     b_update --> Log_and_Return
-    b_gate --> b_closeout
+    b_main --> b_closeout
     b_closeout --> Log_and_Return
 
 
 
-    b_gate --> c2c_create
+    b_main --> c2c_create
     c2c_create --> Log_and_Return
-    b_gate --> c2c_delete
+    b_main --> c2c_delete
     c2c_delete --> Log_and_Return
-    b_gate --> c2c_update
+    b_main --> c2c_update
     c2c_update --> Log_and_Return
 
    
-    b_gate --> get_metrics
+    b_main --> get_metrics
     get_metrics --> sub_metrics_update
     sub_metrics_update --> get_metrics
     get_metrics --> Log_and_Return
 
-    b_gate --> get_metric
+    b_main --> get_metric
     get_metric --> sub_metric_update
     sub_metric_update --> get_metric
     get_metric --> Log_and_Return
 
-    b_gate --> b_noop
+    b_main --> b_noop
     b_noop --> sub_setup
     sub_setup --> b_noop
     b_noop --> Log_and_Return
