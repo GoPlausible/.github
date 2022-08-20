@@ -438,22 +438,19 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ```mermaid
   stateDiagram-v2
     [*] --> b_main
-    b_main --> sub_general_checks
-    sub_general_checks --> b_main
-    b_main --> b_on_completion
     
-    b_on_completion --> b_creation
+    b_main --> b_creation
     b_creation --> Log_and_Return
-    b_on_completion --> b_optin
+    b_main --> b_optin
     b_optin --> Log_and_Return
-    b_on_completion --> b_deletion
+    b_main --> b_deletion
     b_deletion --> Log_and_Return
-    b_on_completion --> b_update
+    b_main --> b_update
     b_update --> Log_and_Return
-    b_on_completion --> b_closeout
+    b_main --> b_closeout
     b_closeout --> Log_and_Return
 
-    b_on_completion --> b_noop
+    b_main --> b_noop
     b_noop --> sub_setup
     sub_setup --> sub_nft_create
     sub_nft_create --> sub_setup
@@ -462,13 +459,13 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
    
 
 
-    abi_methods --> activate
+    b_main --> activate
     activate --> Log_and_Return
 
-    abi_methods --> release
+    b_main --> release
     release --> Log_and_Return
 
-    abi_methods --> claim
+    b_main --> claim
     claim --> sub_geo
     sub_geo --> claim
     claim --> sub_time
@@ -481,10 +478,12 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     sub_nft_send --> claim
     claim --> Log_and_Return
 
-
+  
+    b_main --> get_metric
+    get_metric --> Log_and_Return
     
   
-    abi_methods --> get_metrics
+    b_main --> get_metrics
     get_metrics --> Log_and_Return
   
     
