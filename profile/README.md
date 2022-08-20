@@ -404,7 +404,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "returns": {
               "type": "bool"
             },
-            "desc": "Deletes an AlgoPoaP item smartcontract and returns bool (true on success)"
+            "desc": "Deletes an AlgoPoaP item smart contract and returns bool (true on success)"
           },
           {
             "name": "get_metric",
@@ -488,7 +488,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
   
     b_method_check --> get_metrics
     get_metrics --> Log_and_Return
-  
+    b_method_check --> b_error
     
     Log_and_Return --> [*]
     
