@@ -558,13 +558,8 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "pay_min_fee"
                 },
                 {
-                    "type": "axfer",
-                    "name": "optin_algopoap_nft"
-                },
-                
-                {
                     "type": "account",
-                    "name": "attendee_account"
+                    "name": "author_account"
                 },
                 {
                     "type": "uint16",
@@ -588,18 +583,54 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "uint64",
-                    "name": "timestamp"
+                    "name": "start timestamp"
+                },
+                {
+                    "type": "uint64",
+                    "name": "end timestamp"
                 },
                 {
                     "type": "string",
-                    "name": "qr_secret"
+                    "name": "event_name"
+                },
+                {
+                    "type": "string",
+                    "name": "event_logo"
+                },
+                {
+                    "type": "string",
+                    "name": "event_desc"
+                },
+                {
+                    "type": "string",
+                    "name": "company_name"
+                },
+                {
+                    "type": "string",
+                    "name": "company_logo"
+                },
+                {
+                    "type": "bool",
+                    "name": "has_NFT"
+                },
+                {
+                    "type": "bool",
+                    "name": "has_GEO"
+                },
+                {
+                    "type": "bool",
+                    "name": "has_SIG"
+                },
+                {
+                    "type": "bool",
+                    "name": "has_QR"
                 }
                 
             ],
             "returns": {
                 "type": "string"
             },
-            "desc": "Claims an AlgoPoaP for an attendee and returns NFT sending inner-transaction hash"
+            "desc": "Sets up an AlgoPoaP smart contract item"
         },
         {
             "name": "activate",
