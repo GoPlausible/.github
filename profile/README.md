@@ -334,6 +334,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
 Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
 
 ----
+
 ### AlgoPoaP ASC ABI Schema :
 ```js
 {
@@ -489,6 +490,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     
 ```
 ----
+
 ### AlgoPoaP ASC ITEM ABI :
 
 Note 1: Data fields are global states of AlgoPoaP item smart contract.
@@ -524,6 +526,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ```
 
 ----
+
 ### AlgoPoaP ASC ITEM ABI Schema :
 ```js
 {
