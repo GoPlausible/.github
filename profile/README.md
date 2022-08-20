@@ -452,8 +452,9 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 
  
     b_main --> b_noop
+    
     b_noop --> b_error
-   
+    b_main --> b_error
   
 
     b_method_check --> setup
