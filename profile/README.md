@@ -519,7 +519,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +setup(appl,pay,axfer,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,bool,bool,bool,bool)byte[]
+    AlgoPoaP_ASC_ITEM : +setup(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,bool,bool,bool,bool)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
@@ -546,6 +546,61 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
         }
     },
     "methods": [
+      {
+            "name": "setup",
+            "args": [
+                {
+                    "type": "appl",
+                    "name": "parent_call"
+                },
+                {
+                    "type": "pay",
+                    "name": "pay_min_fee"
+                },
+                {
+                    "type": "axfer",
+                    "name": "optin_algopoap_nft"
+                },
+                
+                {
+                    "type": "account",
+                    "name": "attendee_account"
+                },
+                {
+                    "type": "uint16",
+                    "name": "lat_1"
+                },
+                {
+                    "type": "uint48",
+                    "name": "lat_2"
+                },
+                {
+                    "type": "uint24",
+                    "name": "lng_1"
+                },
+                {
+                    "type": "uint48",
+                    "name": "lng_2"
+                },
+                {
+                    "type": "uint24",
+                    "name": "geo_buffer"
+                },
+                {
+                    "type": "uint64",
+                    "name": "timestamp"
+                },
+                {
+                    "type": "string",
+                    "name": "qr_secret"
+                }
+                
+            ],
+            "returns": {
+                "type": "string"
+            },
+            "desc": "Claims an AlgoPoaP for an attendee and returns NFT sending inner-transaction hash"
+        },
         {
             "name": "activate",
             "args": [
