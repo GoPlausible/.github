@@ -438,7 +438,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ```mermaid
   stateDiagram-v2
     [*] --> b_main
-    
+    b_main --> b_method_check
     b_main --> b_creation
     b_creation --> Log_and_Return
     b_main --> b_optin
@@ -454,7 +454,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     b_main --> b_noop
     b_noop --> b_error
    
-    b_main --> b_method_check
+  
 
     b_method_check --> setup
     setup --> sub_nft_create
