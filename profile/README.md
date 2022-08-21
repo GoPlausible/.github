@@ -485,14 +485,14 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             },
             "desc": "Gets an specific metric by signature string"
           },
-          {
+         {
             "name": "get_metrics",
             "args": [],
             "returns": {
-              "type": "byte[]"
+                "type": "string[]"
             },
-            "desc": "Gets an specific metric by signature string"
-          }
+            "desc": "Gets all metrics"
+        }
     ]
 }
 
@@ -810,7 +810,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "returns": {
                 "type": "string[]"
             },
-            "desc": "Gets an specific metric by signature string"
+            "desc": "Gets all metrics"
         }
     ]
 }
