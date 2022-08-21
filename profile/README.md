@@ -3,13 +3,13 @@
 
 ### AlgoPoaP is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
 
-- [Concept](#algopoap-concept)
+- [AlgoPoaP Concept](#algopoap-concept)
 
-- [Links](#algopoap-links)
+- [AlgoPoaP Links](#algopoap-links)
 
-- [Repos](#algopoap-code-repositories)
+- [AlgoPoaP Repos](#algopoap-code-repositories)
 
-- [Technical Design](#algopoap-technical-design)
+- [AlgoPoaP Technical Design](#algopoap-technical-design)
   - [Author's Journey](#authors-journey)
   - [Attendee's Journey](#attendees-journey)
   - [Smart Contracts](#algopoap-smart-contracts)
