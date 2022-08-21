@@ -195,7 +195,6 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 
 AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM V1.1. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
 
-
 ----
 ### Entities Relations:
 
@@ -291,6 +290,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ----
 
 ### AlgoPoaP ASC TEAL Graph:
+[top↑](#algopoap)
 
 ```mermaid
   stateDiagram-v2
@@ -346,6 +346,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 ----
 
 ### AlgoPoaP ASC ABI :
+[top↑](#algopoap)
 
 Note 1: Data fields are global states of AlgoPoaP parent smart contract.
 
@@ -384,7 +385,9 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ----
 
 ### AlgoPoaP ASC ABI Schema :
-```js
+[top↑](#algopoap)
+
+```javascript
 {
     "name":"algopoap-contract",
     "desc": "AlgoPoaP Parent smart contract",
@@ -493,6 +496,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ----
 
 ### AlgoPoaP Item ASC TEAL Graph:
+[top↑](#algopoap)
 
 ```mermaid
   stateDiagram-v2
@@ -555,6 +559,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
 ----
 
 ### AlgoPoaP ASC ITEM ABI :
+[top↑](#algopoap)
 
 Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
@@ -592,7 +597,9 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ----
 
 ### AlgoPoaP ASC ITEM ABI Schema :
-```js
+[top↑](#algopoap)
+
+```javascript
 {
     "name": "algopoap-item-contract",
     "desc": "AlgoPoaP Item smart contract",
