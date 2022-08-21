@@ -20,7 +20,7 @@
 
 The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
 
-AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via C2C calls introduced in Algorand AVM V1.1!
+AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
 
 ![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/184663576-6df8a93b-5537-4082-9d94-3c12f94a5ac1.png)
 ----
@@ -42,6 +42,8 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 - [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
 
 - [AlgoPoaP's Frontend Repository](https://github.com/AlgoPoaP/algopoap)
+
+- [AlgoPoaP's Website Repository](https://github.com/AlgoPoaP/algopoap-website)
 
 ** Both will be public soon, WIP! **
 
@@ -254,9 +256,9 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
         end
         subgraph parentMethodCalls
         id61([setup]) 
-        id8([c2c_create]) 
-        id9([c2c_update]) 
-        id10([c2c_delete]) 
+        id8([item_create]) 
+        id9([item_update]) 
+        id10([item_delete]) 
         id11([get_metric]) 
         id11([get_metrics]) 
         end
@@ -316,14 +318,14 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
     b_method_check --> setup
     setup --> b_log_return
     
-    b_method_check --> c2c_create
-    c2c_create --> b_log_return
+    b_method_check --> item_create
+    item_create --> b_log_return
 
-    b_method_check --> c2c_delete
-    c2c_delete --> b_log_return
+    b_method_check --> item_delete
+    item_delete --> b_log_return
 
-    b_method_check --> c2c_update
-    c2c_update --> b_log_return
+    b_method_check --> item_update
+    item_update --> b_log_return
 
    
     b_method_check --> get_metrics
@@ -374,9 +376,9 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +Byte poap_last_attendee
     AlgoPoaP_ASC : +setup(string)string
-    AlgoPoaP_ASC : +c2c_create(pay,byte[],byte[])uint64
-    AlgoPoaP_ASC : +c2c_update(application,byte[],byte[])bool
-    AlgoPoaP_ASC : +c2c_delete(application)bool
+    AlgoPoaP_ASC : +item_create(pay,byte[],byte[])uint64
+    AlgoPoaP_ASC : +item_update(application,byte[],byte[])bool
+    AlgoPoaP_ASC : +item_delete(application)bool
     AlgoPoaP_ASC : +get_metrics()byte[]
     AlgoPoaP_ASC : +get_metric(string)byte[]
     
@@ -415,7 +417,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "desc": "Sets up the AlgoPoaP main contract, sets and logs the version and returns"
           },
         {
-            "name": "c2c_create",
+            "name": "item_create",
             "args": [
               {
                 "type": "pay",
@@ -436,7 +438,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "desc": "Creates a new AlgoPoaP item smart contract and returns the app id"
           },
           {
-            "name": "c2c_update",
+            "name": "item_update",
             "args": [
               {
                 "type": "application",
@@ -457,7 +459,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "desc": "Updates an AlgoPoaP item smart contract and returns bool (true on success)"
           },
           {
-            "name": "c2c_delete",
+            "name": "item_delete",
             "args": [
               {
                 "type": "application",
@@ -819,7 +821,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
 Since AlgoPoaP is totally decentralized, trustless and permission-less: Every AlgoPoaP item author has full authority of the created PoaPs (AlgoPoaP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
-The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPoaP item contract which will be created by an C2C call via an inner transaction.
+The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPoaP item contract which will be created via an inner transaction.
 
 
 
