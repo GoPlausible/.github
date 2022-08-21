@@ -455,7 +455,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
               }
             ],
             "returns": {
-              "type": "bool"
+              "type": "uint64"
             },
             "desc": "Updates an AlgoPoaP item smart contract and returns bool (true on success)"
           },
@@ -468,9 +468,9 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
               }
             ],
             "returns": {
-              "type": "bool"
+              "type": "void"
             },
-            "desc": "Deletes an AlgoPoaP item smart contract and returns bool (true on success)"
+            "desc": "Deletes an AlgoPoaP item smart contract and returns void (approve only)"
           },
           {
             "name": "get_metric",
