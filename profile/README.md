@@ -635,31 +635,31 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "uint16",
-                    "name": "lat_1"
+                    "name": "poap_lat_1"
                 },
                 {
                     "type": "uint48",
-                    "name": "lat_2"
+                    "name": "poap_lat_2"
                 },
                 {
                     "type": "uint24",
-                    "name": "lng_1"
+                    "name": "poap_lng_1"
                 },
                 {
                     "type": "uint48",
-                    "name": "lng_2"
+                    "name": "poap_lng_2"
                 },
                 {
                     "type": "uint24",
-                    "name": "geo_buffer"
+                    "name": "poap_geo_buffer"
                 },
                 {
                     "type": "uint64",
-                    "name": "start timestamp"
+                    "name": "poap_start_timestamp"
                 },
                 {
                     "type": "uint64",
-                    "name": "end timestamp"
+                    "name": "poap_end_timestamp"
                 },
                 {
                     "type": "string",
