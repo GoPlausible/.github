@@ -591,7 +591,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
-    AlgoPoaP_ASC_ITEM : +get_metric(string)byte[]
+    AlgoPoaP_ASC_ITEM : +get_metric(string)string
     AlgoPoaP_ASC_ITEM : +get_metrics()byte[]
     
   
@@ -800,7 +800,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 }
             ],
             "returns": {
-                "type": "byte[]"
+                "type": "string"
             },
             "desc": "Gets an specific metric by signature string"
         },
@@ -808,7 +808,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "get_metrics",
             "args": [],
             "returns": {
-                "type": "byte[]"
+                "type": "string[]"
             },
             "desc": "Gets an specific metric by signature string"
         }
