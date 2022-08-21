@@ -45,7 +45,7 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 - [AlgoPoaP's Frontend Repository](https://github.com/AlgoPoaP/algopoap)
 
 
-** Please do not forget to star!!  ** :grin:
+**Please do not forget to star!!** :grin:
 
 # AlgoPoaP technical design:
 [top↑](#algopoap)
