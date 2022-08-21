@@ -460,15 +460,15 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     [*] --> b_main
     b_main --> b_method_check
     b_main --> b_creation
-    b_creation --> Log_and_Return
+    b_creation --> b_log_return
     b_main --> b_optin
-    b_optin --> Log_and_Return
+    b_optin --> b_log_return
     b_main --> b_deletion
-    b_deletion --> Log_and_Return
+    b_deletion --> b_log_return
     b_main --> b_update
-    b_update --> Log_and_Return
+    b_update --> b_log_return
     b_main --> b_closeout
-    b_closeout --> Log_and_Return
+    b_closeout --> b_log_return
 
  
     b_main --> b_noop
@@ -480,13 +480,13 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     b_method_check --> setup
     setup --> sub_nft_create
     sub_nft_create --> setup
-    setup --> Log_and_Return
+    setup --> b_log_return
 
     b_method_check --> activate
-    activate --> Log_and_Return
+    activate --> b_log_return
 
     b_method_check --> release
-    release --> Log_and_Return
+    release --> b_log_return
 
     b_method_check --> claim
     claim --> sub_geo
@@ -499,18 +499,18 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     sub_sig --> claim
     claim --> sub_nft_send
     sub_nft_send --> claim
-    claim --> Log_and_Return
+    claim --> b_log_return
 
   
     b_method_check --> get_metric
-    get_metric --> Log_and_Return
+    get_metric --> b_log_return
     
   
     b_method_check --> get_metrics
-    get_metrics --> Log_and_Return
+    get_metrics --> b_log_return
     b_method_check --> b_error
     
-    Log_and_Return --> [*]
+    b_log_return --> [*]
     
 ```
 ----
