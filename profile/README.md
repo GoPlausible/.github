@@ -370,7 +370,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "returns": {
               "type": "uint64"
             },
-            "desc": "Creates a new AlgoPoaP item smartcontract and returns the app id"
+            "desc": "Creates a new AlgoPoaP item smart contract and returns the app id"
           },
           {
             "name": "c2c_update",
@@ -391,7 +391,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "returns": {
               "type": "bool"
             },
-            "desc": "Updates an AlgoPoaP item smartcontract and returns bool (true on success)"
+            "desc": "Updates an AlgoPoaP item smart contract and returns bool (true on success)"
           },
           {
             "name": "c2c_delete",
