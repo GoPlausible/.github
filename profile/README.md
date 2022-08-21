@@ -352,7 +352,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
     },
     "methods":[
         {
-            "name": "create",
+            "name": "c2c_create",
             "args": [
               {
                 "type": "pay",
@@ -373,7 +373,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "desc": "Creates a new AlgoPoaP item smartcontract and returns the app id"
           },
           {
-            "name": "update",
+            "name": "c2c_update",
             "args": [
               {
                 "type": "application",
@@ -394,7 +394,7 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
             "desc": "Updates an AlgoPoaP item smartcontract and returns bool (true on success)"
           },
           {
-            "name": "delete",
+            "name": "c2c_delete",
             "args": [
               {
                 "type": "application",
