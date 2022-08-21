@@ -194,6 +194,8 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 ### UseCase:
 
+**Note: The NoOp calls without args will be rejected with error. This is being tried as a security practice**
+
 ```mermaid
   flowchart TB
 
@@ -213,14 +215,15 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
         id3([create]) 
         id4([update]) 
         id5([delete]) 
-        id6([setup]) 
         id6([optin]) 
         id7([closeout]) 
         end
         subgraph parentMethodCalls
-        id8([create]) 
-        id9([update]) 
-        id10([delete]) 
+        id61([setup]) 
+        id8([c2c_create]) 
+        id9([c2c_update]) 
+        id10([c2c_delete]) 
+        id11([get_metric]) 
         id11([get_metrics]) 
         end
       end
@@ -236,9 +239,11 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
         id17([closeout]) 
         end
         subgraph itemMethodCalls
+        id18([setup]) 
         id18([activate]) 
         id19([claim]) 
         id20([release]) 
+        id21([get_metric]) 
         id21([get_metrics]) 
         end
       end
