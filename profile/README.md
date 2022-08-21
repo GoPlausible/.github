@@ -235,7 +235,6 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
         id13([create]) 
         id14([update]) 
         id15([delete]) 
-        id16([setup]) 
         id17([closeout]) 
         end
         subgraph itemMethodCalls
