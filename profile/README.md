@@ -326,9 +326,10 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +Byte poap_last_appid
     AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +Byte poap_last_attendee
-    AlgoPoaP_ASC : +create(pay,byte[],byte[])uint64
-    AlgoPoaP_ASC : +update(application,byte[],byte[])bool
-    AlgoPoaP_ASC : +delete(application)bool
+    AlgoPoaP_ASC : +setup(string)string
+    AlgoPoaP_ASC : +c2c_create(pay,byte[],byte[])uint64
+    AlgoPoaP_ASC : +c2c_update(application,byte[],byte[])bool
+    AlgoPoaP_ASC : +c2c_delete(application)bool
     AlgoPoaP_ASC : +get_metrics()byte[]
     AlgoPoaP_ASC : +get_metric(string)byte[]
     
@@ -351,6 +352,19 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
         }
     },
     "methods":[
+      {
+            "name": "setup",
+            "args": [
+              {
+                "type": "string",
+                "name": "version"
+              }
+            ],
+            "returns": {
+              "type": "string"
+            },
+            "desc": "Sets up the AlgoPoaP main contract, sets and logs the version and returns"
+          },
         {
             "name": "c2c_create",
             "args": [
