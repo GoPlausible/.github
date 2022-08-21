@@ -525,8 +525,10 @@ Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and
   
 
     b_method_check --> setup
-    setup --> sub_nft_create
-    sub_nft_create --> setup
+    setup --> sub_create_nft
+    setup --> b_nft_create
+    sub_create_nft --> setup
+    b_nft_create --> b_log_return
     setup --> b_log_return
 
     b_method_check --> activate
@@ -587,7 +589,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
-    AlgoPoaP_ASC_ITEM : +setup(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,bool,bool,bool,bool)byte[]
+    AlgoPoaP_ASC_ITEM : +setup(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,string,string,string,bool,bool,bool,bool)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
