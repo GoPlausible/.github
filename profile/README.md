@@ -663,39 +663,51 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "event_name"
+                    "name": "poap_name"
                 },
                 {
                     "type": "string",
-                    "name": "event_logo"
+                    "name": "poap_logo"
                 },
                 {
                     "type": "string",
-                    "name": "event_desc"
+                    "name": "poap_desc"
                 },
                 {
                     "type": "string",
-                    "name": "company_name"
+                    "name": "poap_address"
                 },
                 {
                     "type": "string",
-                    "name": "company_logo"
+                    "name": "poap_url"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_email"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_company_name"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_company_logo"
                 },
                 {
                     "type": "bool",
-                    "name": "has_NFT"
+                    "name": "poaP_has_nft"
                 },
                 {
                     "type": "bool",
-                    "name": "has_GEO"
+                    "name": "poap_has_geo"
                 },
                 {
                     "type": "bool",
-                    "name": "has_SIG"
+                    "name": "poap_has_sig"
                 },
                 {
                     "type": "bool",
-                    "name": "has_QR"
+                    "name": "poap_has_qrcode"
                 }
                 
             ],
