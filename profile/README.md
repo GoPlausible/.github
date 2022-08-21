@@ -18,11 +18,11 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 - [AlgoPoaP Github Repos & Documentation](https://github.com/AlgoPoaP)
 
-- [AlgoPoaP Website](https://algopoap.com)
+- [AlgoPoaP Website (algopoap.com)](https://algopoap.com)
 
-- [AlgoPoaP dApp](https://algopoap.xyz)
+- [AlgoPoaP dApp (algopoap.xyz)](https://algopoap.xyz)
  
-- [Algorand NFDomain](algopoap.algo)
+- [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
 
 ## AlgoPoaP's code repositories:
 

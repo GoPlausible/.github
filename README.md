@@ -6,11 +6,11 @@ This is just AlgoPoaP's .github public repository. Use these instead:
 
 - [AlgoPoaP Github Repos & Documentation](https://github.com/AlgoPoaP)
 
-- [AlgoPoaP Website](https://algopoap.com)
+- [AlgoPoaP Website (algopoap.com)](https://algopoap.com)
 
-- [AlgoPoaP dApp](https://algopoap.xyz)
+- [AlgoPoaP dApp (algopoap.xyz)](https://algopoap.xyz)
  
-- [Algorand NFDomain](algopoap.algo)
+- [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
 
 
 
