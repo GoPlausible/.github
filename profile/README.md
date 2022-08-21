@@ -32,7 +32,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 ** Both will be public soon, WIP! **
 
-## AlgoPoaP features:
+## AlgoPoaP details:
 
 **AlgoPoaP** features that are not available on ETH PoaP (it actually only supports time currently!):
 
@@ -173,6 +173,7 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 ```
 
 ----
+
 ## AlgoPoaP Smart Contracts 
 
 AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM V1.1. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
