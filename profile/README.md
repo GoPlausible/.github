@@ -3,7 +3,16 @@
 
 ### **AlgoPoaP** is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
 
+[Concept](#algopoap-concept)
 
+[Links](#algopoap-links)
+
+[Repos](#algopoap-code-repositories)
+
+[Technical Design](#algopoap-technical-design)
+
+
+## AlgoPoaP concept:
 
 The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. **AlgoPoaP** elevates, extends and expands that original idea and implements it on Algorand. 
 
@@ -14,7 +23,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 ![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/184663576-6df8a93b-5537-4082-9d94-3c12f94a5ac1.png)
 ----
 
-## AlgoPoaP's links:
+## AlgoPoaP links
 
 - [AlgoPoaP Github Repos & Documentation](https://github.com/AlgoPoaP)
 
@@ -24,7 +33,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
  
 - [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
 
-## AlgoPoaP's code repositories:
+## AlgoPoaP code repositories:
 
 - [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
 
@@ -32,7 +41,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 ** Both will be public soon, WIP! **
 
-## AlgoPoaP details:
+# AlgoPoaP technical design:
 
 **AlgoPoaP** features that are not available on ETH PoaP (it actually only supports time currently!):
 
