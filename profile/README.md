@@ -16,6 +16,7 @@
 
 
 ## AlgoPoaP concept:
+[top↑](#algopoap)
 
 The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
 
@@ -25,6 +26,7 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 ----
 
 ## AlgoPoaP links
+[top↑](#algopoap)
 
 - [AlgoPoaP Github Repos & Documentation](https://github.com/AlgoPoaP)
 
@@ -35,6 +37,7 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 - [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
 
 ## AlgoPoaP code repositories:
+[top↑](#algopoap)
 
 - [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
 
@@ -43,6 +46,7 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 ** Both will be public soon, WIP! **
 
 # AlgoPoaP technical design:
+[top↑](#algopoap)
 
 AlgoPoaP features that are not available on ETH PoaP (it actually only supports time currently!):
 
@@ -95,6 +99,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 ----
 
 ### Author's Journey:
+[top↑](#algopoap)
 
 1- Author easily gets onboard by opting into AlgoPoaP's parent ASC.
 
@@ -145,6 +150,7 @@ Note right of AlgoPoaP_ASC: Only when SIG option is enabled on PoaP
 ```
 ----
 ### Attendee's Journey:
+[top↑](#algopoap)
 
 1- Attendee simply gets onboard by opting into parent ASC.
 
@@ -185,6 +191,7 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 ----
 
 ## AlgoPoaP Smart Contracts 
+[top↑](#algopoap)
 
 AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM V1.1. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
 
