@@ -1,22 +1,25 @@
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 # AlgoPoaP
 
-### **AlgoPoaP** is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
+### AlgoPoaP is the Proof of Attendance Protocol built on Algorand (AVM V1.1) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
 
-[Concept](#algopoap-concept)
+- [Concept](#algopoap-concept)
 
-[Links](#algopoap-links)
+- [Links](#algopoap-links)
 
-[Repos](#algopoap-code-repositories)
+- [Repos](#algopoap-code-repositories)
 
-[Technical Design](#algopoap-technical-design)
+- [Technical Design](#algopoap-technical-design)
+  - [Author's Journey](#authors-journey)
+  - [Attendee's Journey](#attendees-journey)
+  - [Smart Contracts](#algopoap-smart-contracts)
 
 
 ## AlgoPoaP concept:
 
-The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. **AlgoPoaP** elevates, extends and expands that original idea and implements it on Algorand. 
+The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
 
-**AlgoPoaP** dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via C2C calls introduced in Algorand AVM V1.1
+AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via C2C calls introduced in Algorand AVM V1.1
 
 
 ----
@@ -43,7 +46,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 # AlgoPoaP technical design:
 
-**AlgoPoaP** features that are not available on ETH PoaP (it actually only supports time currently!):
+AlgoPoaP features that are not available on ETH PoaP (it actually only supports time currently!):
 
 - Geo constraint option (location + buffer area radius).
   
@@ -57,12 +60,12 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
 
 
-**AlgoPoaP** is consisted of a frontend and smart contracts on Algorand chain:
+AlgoPoaP is consisted of a frontend and smart contracts on Algorand chain:
 - Frontend
 - Smart Contracts
 
 
-**AlgoPoaP** frontend has 3 major functions (all in a single view for simplicity):
+AlgoPoaP frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Author UI
 - Attend UI
