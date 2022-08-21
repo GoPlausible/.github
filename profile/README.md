@@ -381,7 +381,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +item_update(application,byte[],byte[])uint64
     AlgoPoaP_ASC : +item_delete(application)void
     AlgoPoaP_ASC : +get_metrics()byte[]
-    AlgoPoaP_ASC : +get_metric(string)byte[]
+    AlgoPoaP_ASC : +get_metric(string)string
     
 ```
 Note 1: Author has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
