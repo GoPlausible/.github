@@ -35,7 +35,7 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 
 - [AlgoPoaP dApp (algopoap.xyz)](https://algopoap.xyz)
  
-- [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
+- [Algorand NFDomain (algopoap.algo)](https://app.nf.domains/name/algopoap.algo)
 
 ## AlgoPoaP code repositories:
 [top↑](#algopoap)
