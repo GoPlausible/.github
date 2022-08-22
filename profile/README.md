@@ -24,8 +24,7 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
 
-![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/184663576-6df8a93b-5537-4082-9d94-3c12f94a5ac1.png)
-
+![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
 ----
 
 ## AlgoPoaP links
