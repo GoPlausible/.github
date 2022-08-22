@@ -769,12 +769,12 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "pay_min_fees"
                 },
                 {
-                    "type": "application",
-                    "name": "parent_application"
-                },
-                {
                     "type": "axfer",
                     "name": "optin_algopoap_nft"
+                },
+                {
+                    "type": "application",
+                    "name": "parent_application"
                 }
             ],
             "returns": {
@@ -785,14 +785,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
         {
             "name": "claim",
             "args": [
-                {
-                    "type": "appl",
-                    "name": "parent_call"
-                },
-                {
-                    "type": "pay",
-                    "name": "pay_min_fee"
-                },
+            
                 {
                     "type": "axfer",
                     "name": "optin_algopoap_nft"
@@ -801,6 +794,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 {
                     "type": "account",
                     "name": "attendee_account"
+                },
+                {
+                    "type": "application",
+                    "name": "parent_application"
                 },
                 {
                     "type": "uint16",
