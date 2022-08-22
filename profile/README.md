@@ -8,6 +8,8 @@
 - [AlgoPoaP Links](#algopoap-links)
 
 - [AlgoPoaP Repos](#algopoap-code-repositories)
+  
+- [AlgoPoaP Credits](#algopoap-credits)
 
 - [AlgoPoaP Technical Design](#algopoap-technical-design)
   - [Author's Journey](#authors-journey)
@@ -46,6 +48,27 @@ AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which
 
 
 **#AlgoDevs & #Algofam:Please do not forget to star both of above repos!!** :grin:
+
+## AlgoPoaP Credits
+[top↑](#algopoap)
+
+@emg110 and @sheghzo are grateful to Algorand Inc and Algorand Foundation for creating such amazing technologies , ecosystem and community in which we proudly BUIDL!
+
+Also would like to express great gratitude toward:
+
+- Adriana Belotti (The original idea and initiative of having PoaP on Algorand).
+- Johana Moran for endless support and guidance.
+- Jason Lee for being a mountain of support and motivation.
+
+And eternal gratitude toward:
+- Jason Weathersby who I learned everything I know on TEAL from.
+- Ryan R Fox: Who started my new life chapter with Algorand, helps me and mentors me.
+- Russ Fustino: Who kindly tutored me and helped me greatly.
+- Benjamin Guidarelli : A super Dev and great person who always helps me in time of need and endures all my questions!
+- Nullun: A super Dev and amazing person who always helps me .
+
+And special thanks to Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
+
 
 # AlgoPoaP technical design:
 [top↑](#algopoap)
