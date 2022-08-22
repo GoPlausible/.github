@@ -634,7 +634,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_has_qrcode
 
 
-    AlgoPoaP_ASC_ITEM : +setup(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,string,string,string,bool,bool,bool,bool)byte[]
+    AlgoPoaP_ASC_ITEM : +setup(appl,pay,account,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,string,string,string,bool,bool,bool,bool)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
     AlgoPoaP_ASC_ITEM : +release(appl)byte[]
@@ -667,16 +667,16 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "setup",
             "args": [
                 {
-                    "type": "appl",
-                    "name": "parent_call"
-                },
-                {
                     "type": "pay",
                     "name": "pay_min_fee"
                 },
                 {
                     "type": "account",
                     "name": "author_account"
+                },
+                {
+                    "type": "application",
+                    "name": "parent_application"
                 },
                 {
                     "type": "uint16",
