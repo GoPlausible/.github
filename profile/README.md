@@ -765,12 +765,12 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "activate",
             "args": [
                 {
-                    "type": "appl",
-                    "name": "parent_call"
-                },
-                {
                     "type": "pay",
                     "name": "pay_min_fees"
+                },
+                {
+                    "type": "application",
+                    "name": "parent_application"
                 },
                 {
                     "type": "axfer",
