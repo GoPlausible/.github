@@ -611,6 +611,29 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
+
+
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_1
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_2
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_1
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_2
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_geo_buffer
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_start_timestamp
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_end_timestamp
+    AlgoPoaP_ASC_ITEM : +Byte poap_name
+    AlgoPoaP_ASC_ITEM : +Byte poap_logo
+    AlgoPoaP_ASC_ITEM : +Byte poap_desc
+    AlgoPoaP_ASC_ITEM : +Byte poap_address
+    AlgoPoaP_ASC_ITEM : +Byte poap_url
+    AlgoPoaP_ASC_ITEM : +Byte poap_email
+    AlgoPoaP_ASC_ITEM : +Byte poap_company_name
+    AlgoPoaP_ASC_ITEM : +Byte poap_company_logo
+    AlgoPoaP_ASC_ITEM : +Byte poap_has_nft
+    AlgoPoaP_ASC_ITEM : +Byte poap_has_geo
+    AlgoPoaP_ASC_ITEM : +Byte poap_has_sig
+    AlgoPoaP_ASC_ITEM : +Byte poap_has_qrcode
+
+
     AlgoPoaP_ASC_ITEM : +setup(appl,pay,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,string,string,string,bool,bool,bool,bool)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
     AlgoPoaP_ASC_ITEM : +claim(appl,pay,axfer,account,uint16,uint48,uint24,uint48,uint24,uint64,string)string
