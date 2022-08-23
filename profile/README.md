@@ -633,6 +633,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_has_sig
     AlgoPoaP_ASC_ITEM : +Byte poap_has_qrcode
 
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_parent_id
+    AlgoPoaP_ASC_ITEM : +Byte poap_parent_address
+    AlgoPoaP_ASC_ITEM : +Byte poap_author_address
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_asa_id
 
     AlgoPoaP_ASC_ITEM : +setup(pay,account,application,uint16,uint48,uint24,uint48,uint24,uint64,uint64,string,string,string,string,string,string,string,string,bool,bool,bool,bool)byte[]
     AlgoPoaP_ASC_ITEM : +activate(appl,pay,axfer)byte[]
