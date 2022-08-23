@@ -607,7 +607,6 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_attendee
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_apply
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
