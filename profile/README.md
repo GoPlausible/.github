@@ -596,7 +596,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ```mermaid
   classDiagram
     class AlgoPoaP_ASC_ITEM
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_onboard_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
@@ -605,7 +605,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_qr_check_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_sig_check_count
 
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
+  
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_attendee
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
@@ -636,9 +636,8 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_parent_address
     AlgoPoaP_ASC_ITEM : +Byte poap_author_address
     AlgoPoaP_ASC_ITEM : +Uint64 poap_asa_id
-
-     AlgoPoaP_ASC_ITEM : +Uint64 poap_create_time
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
+    
+   AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_activate_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_release_time
 
@@ -646,7 +645,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
      AlgoPoaP_ASC_ITEM : +Byte poap_is_activated
     AlgoPoaP_ASC_ITEM : +Byte poap_is_setup
     AlgoPoaP_ASC_ITEM : +Byte poap_is_released
-    AlgoPoaP_ASC_ITEM : +Byte poap_is_closed
+
 
 
  
