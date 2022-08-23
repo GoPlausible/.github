@@ -1,7 +1,7 @@
 # AlgoPoaP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on Algorand (AVM V1.1) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
+### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM V1.1) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
 
 - [AlgoPoaP Concept](#algopoap-concept)
 
@@ -97,6 +97,8 @@ AlgoPoaP frontend has 3 major functions (all in a single view for simplicity):
 - Attend UI
 
 Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
+
+AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
 ```mermaid
   flowchart LR
