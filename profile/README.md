@@ -24,6 +24,8 @@ The original idea of PoaP on blockchain is developed for Ethereum ecosystem and 
 
 AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
 
+AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
+
 ![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
 ----
 
@@ -83,7 +85,7 @@ AlgoPoaP features that are not available on ETH PoaP (it actually only supports 
 - NFT based or NFT-less (Using transaction note only).
   
 
-Note: AlgoPoaP does not use a single token for issuing PoaPs , instead it uses a per AlgoPoaP item NFT generation (if selected by Author) approach. 
+Note: AlgoPoaP does not use a single token for issuing PoaPs and is token-less , instead it uses a per AlgoPoaP item NFT generation (if desired by Author) approach. 
 
 
 AlgoPoaP is consisted of a frontend and smart contracts on Algorand chain:
@@ -98,7 +100,6 @@ AlgoPoaP frontend has 3 major functions (all in a single view for simplicity):
 
 Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
 
-AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
 ```mermaid
   flowchart LR
