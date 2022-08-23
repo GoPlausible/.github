@@ -597,6 +597,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
   classDiagram
     class AlgoPoaP_ASC_ITEM
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_claim_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
@@ -636,7 +637,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_parent_address
     AlgoPoaP_ASC_ITEM : +Byte poap_author_address
     AlgoPoaP_ASC_ITEM : +Uint64 poap_asa_id
-    
+
    AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_activate_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_release_time
