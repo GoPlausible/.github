@@ -510,7 +510,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
             "name": "get_metrics",
             "args": [],
             "returns": {
-                "type": "string[]"
+                "type": "string"
             },
             "desc": "Gets all metrics"
         }
@@ -867,7 +867,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "get_metrics",
             "args": [],
             "returns": {
-                "type": "string[]"
+                "type": "string"
             },
             "desc": "Gets all metrics"
         }
