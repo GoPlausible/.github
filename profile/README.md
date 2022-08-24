@@ -640,7 +640,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_author_address
     AlgoPoaP_ASC_ITEM : +Uint64 poap_asa_id
 
-   AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_activate_time
     AlgoPoaP_ASC_ITEM : +Uint64 poap_release_time
 
