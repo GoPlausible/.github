@@ -565,19 +565,28 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
 
     claim --> sub_check_timestamp
     sub_check_timestamp --> claim
-
-    claim --> sub_check_release
-    sub_check_release --> claim
    
-    claim --> sub_check_geo
-    sub_check_geo --> claim
- 
-    claim --> sub_check_qr
-    sub_check_qr --> claim
+
+    claim --> b_has_sig
+    b_has_sig --> sub_check_release
+    sub_check_release --> b_has_sig
+    b_has_sig --> b_has_geo
+    b_has_sig --> b_has_qr
+    b_has_sig --> b_finalize_claim
+    b_has_geo --> sub_check_geo
+    sub_check_geo --> b_has_geo
+    b_has_geo --> b_has_qr
+    
+    b_has_qr --> sub_check_qr
+    sub_check_qr --> b_has_qr
+
   
-    claim --> sub_nft_send
-    sub_nft_send --> claim
-    claim --> b_log_return
+
+
+    claim --> b_finalize_claim
+    b_finalize_claim --> sub_nft_send
+    sub_nft_send --> b_finalize_claim
+    b_finalize_claim --> b_log_return
 
   
     b_method_check --> get_metric
