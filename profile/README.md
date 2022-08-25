@@ -68,7 +68,7 @@ And eternal gratitude toward:
 - Benjamin Guidarelli : A super Dev and great person who always helps me in time of need and endures all my questions!
 - Nullun: A super Dev and amazing person who always helps me .
 
-And special thanks to Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
+And special thanks to Joe Polney, David Greaney and Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
 
 
 # AlgoPoaP technical design:
