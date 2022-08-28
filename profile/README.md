@@ -60,6 +60,8 @@ Also would like to express great gratitude toward:
 - Adriana Belotti (The original idea and initiative of having PoaP on Algorand).
 - Johana Moran for endless support and guidance.
 - Jason Lee for being a mountain of support and motivation.
+- David Greaney for all support and productive guidlines
+- Joe Polney for precious technical guidance and endless help.
 
 And eternal gratitude toward:
 - Jason Weathersby who I learned everything I know on TEAL from.
@@ -68,7 +70,7 @@ And eternal gratitude toward:
 - Benjamin Guidarelli : A super Dev and great person who always helps me in time of need and endures all my questions!
 - Nullun: A super Dev and amazing person who always helps me .
 
-And special thanks to Joe Polney, David Greaney and Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
+And special thanks to David Greaney, Joe Polney, and Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
 
 
 # AlgoPoaP technical design:
