@@ -638,6 +638,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Uint64 poap_end_timestamp
     AlgoPoaP_ASC_ITEM : +Byte poap_name
     AlgoPoaP_ASC_ITEM : +Byte poap_logo
+    AlgoPoaP_ASC_ITEM : +Byte poap_timezone
     AlgoPoaP_ASC_ITEM : +Byte poap_desc
     AlgoPoaP_ASC_ITEM : +Byte poap_address
     AlgoPoaP_ASC_ITEM : +Byte poap_url
@@ -748,6 +749,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 {
                     "type": "string",
                     "name": "poap_logo"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_timezone"
                 },
                 {
                     "type": "string",
