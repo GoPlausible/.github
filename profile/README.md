@@ -419,107 +419,107 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
 
 ```javascript
 {
-    "name":"algopoap-contract",
-    "desc": "AlgoPoaP Parent smart contract",
-    "networks":{
-        "MainNet":{
-            "appID": 0
+  "name":"algopoap-contract",
+  "desc": "AlgoPoaP Parent smart contract",
+  "networks":{
+      "MainNet":{
+          "appID": 0
+      },
+      "TestNet":{
+          "appID": 106595642
+      }
+  },
+  "methods":[
+    {
+          "name": "setup",
+          "args": [
+            {
+              "type": "string",
+              "name": "version"
+            }
+          ],
+          "returns": {
+            "type": "string"
+          },
+          "desc": "Sets up the AlgoPoaP main contract, sets and logs the version and returns"
         },
-        "TestNet":{
-            "appID": 0
-        }
-    },
-    "methods":[
       {
-            "name": "setup",
-            "args": [
-              {
-                "type": "string",
-                "name": "version"
-              }
-            ],
-            "returns": {
-              "type": "string"
+          "name": "item_create",
+          "args": [
+            {
+              "type": "pay",
+              "name": "pay"
             },
-            "desc": "Sets up the AlgoPoaP main contract, sets and logs the version and returns"
+            {
+              "type": "byte[]",
+              "name": "asc_approval_bytes"
+            },
+            {
+              "type": "byte[]",
+              "name": "asc_clear_bytes"
+            }
+          ],
+          "returns": {
+            "type": "string"
           },
+          "desc": "Creates a new AlgoPoaP item smart contract and returns the app id"
+        },
         {
-            "name": "item_create",
-            "args": [
-              {
-                "type": "pay",
-                "name": "pay"
-              },
-              {
-                "type": "byte[]",
-                "name": "asc_approval_bytes"
-              },
-              {
-                "type": "byte[]",
-                "name": "asc_clear_bytes"
-              }
-            ],
-            "returns": {
-              "type": "uint64"
+          "name": "item_update",
+          "args": [
+            {
+              "type": "application",
+              "name": "application"
             },
-            "desc": "Creates a new AlgoPoaP item smart contract and returns the app id"
+            {
+              "type": "byte[]",
+              "name": "asc_approval_bytes"
+            },
+            {
+              "type": "byte[]",
+              "name": "asc_clear_bytes"
+            }
+          ],
+          "returns": {
+            "type": "string"
           },
-          {
-            "name": "item_update",
-            "args": [
-              {
-                "type": "application",
-                "name": "application"
-              },
-              {
-                "type": "byte[]",
-                "name": "asc_approval_bytes"
-              },
-              {
-                "type": "byte[]",
-                "name": "asc_clear_bytes"
-              }
-            ],
-            "returns": {
-              "type": "uint64"
-            },
-            "desc": "Updates an AlgoPoaP item smart contract and returns bool (true on success)"
+          "desc": "Updates an AlgoPoaP item smart contract and returns item application ID"
+        },
+        {
+          "name": "item_delete",
+          "args": [
+            {
+              "type": "application",
+              "name": "application"
+            }
+          ],
+          "returns": {
+            "type": "void"
           },
-          {
-            "name": "item_delete",
-            "args": [
-              {
-                "type": "application",
-                "name": "application"
-              }
-            ],
-            "returns": {
-              "type": "void"
-            },
-            "desc": "Deletes an AlgoPoaP item smart contract and returns void (approve only)"
+          "desc": "Deletes an AlgoPoaP item smart contract and returns void (approve only)"
+        },
+        {
+          "name": "get_metric",
+          "args": [
+            {
+              "type": "string",
+              "name": "metric_signature"
+            }
+          ],
+          "returns": {
+            "type": "string"
           },
-          {
-            "name": "get_metric",
-            "args": [
-              {
-                "type": "string",
-                "name": "metric_signature"
-              }
-            ],
-            "returns": {
-              "type": "byte[]"
-            },
-            "desc": "Gets an specific metric by signature string"
+          "desc": "Gets an specific metric by signature string"
+        },
+        {
+          "name": "get_metrics",
+          "args": [],
+          "returns": {
+              "type": "string"
           },
-         {
-            "name": "get_metrics",
-            "args": [],
-            "returns": {
-                "type": "string"
-            },
-            "desc": "Gets all metrics"
-        }
-    ]
+          "desc": "Gets all metrics"
+      }
+  ]
 }
 
 ```
