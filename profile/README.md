@@ -403,10 +403,10 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +Byte poap_last_attendee
     AlgoPoaP_ASC : +setup(string)string
-    AlgoPoaP_ASC : +item_create(pay,byte[],byte[])uint64
-    AlgoPoaP_ASC : +item_update(application,byte[],byte[])uint64
+    AlgoPoaP_ASC : +item_create(pay,byte[],byte[])string
+    AlgoPoaP_ASC : +item_update(application,byte[],byte[])string
     AlgoPoaP_ASC : +item_delete(application)void
-    AlgoPoaP_ASC : +get_metrics()byte[]
+    AlgoPoaP_ASC : +get_metrics()string
     AlgoPoaP_ASC : +get_metric(string)string
     
 ```
