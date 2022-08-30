@@ -921,6 +921,55 @@ Since AlgoPoaP is totally decentralized, trustless and permission-less: Every Al
 The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPoaP item contract which will be created via an inner transaction.
 
 
+### Simple deployment and unit tests included
+
+```shell
+> algopoap-smartcontracts@0.0.4 start
+[ALGOPOAP: ] [2022-08-30T16:26:36.462Z] [info]: ------------------------------
+[ALGOPOAP: ] [2022-08-30T16:26:36.463Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+  name: 'item_update',
+  description: 'Updates an AlgoPoaP item smart contract and returns item application ID',
+  args: [Array],
+  returns: [Object]
+}
+[ALGOPOAP: ] [2022-08-30T16:26:42.933Z] [info]: AlgoPoaP Main Contract ABI Exec method result = 107325601
+[ALGOPOAP: ] [2022-08-30T16:26:43.294Z] [info]: ------------------------------
+[ALGOPOAP: ] [2022-08-30T16:26:43.295Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+  name: 're_setup',
+  description: 'Sets up an AlgoPoaP smart contract item after first setup',
+  args: [Array],
+  returns: [Object]
+}
+[ALGOPOAP: ] [2022-08-30T16:26:51.351Z] [info]: AlgoPoaP Main Contract ABI Exec method result = 107325874
+[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: ------------------------------
+[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+  name: 'activate',
+  description: 'Activates an AlgoPoaP item smart contract and returns string',
+  args: [Array],
+  returns: [Object]
+}
+[ALGOPOAP: ] [2022-08-30T16:26:59.712Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_activate
+[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
+[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+  name: 'release',
+  description: "Releases AlgoPoaP and allows all AlgoPoaP attendee's to start claiming",
+  args: [Array],
+  returns: [Object]
+}
+[ALGOPOAP: ] [2022-08-30T16:27:07.941Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_released
+[ALGOPOAP: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
+[ALGOPOAP: ] [2022-08-30T16:27:08.291Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+  name: 'claim',
+  description: 'Claims an AlgoPoaP for an attendee and returns NFT sending inner-transaction hash',
+  args: [Array],
+  returns: [Object]
+}
+[ALGOPOAP: ] [2022-08-30T16:27:16.355Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_claimed
+
+
+```
+
+
 
 
 
