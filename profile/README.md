@@ -699,7 +699,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
         }
     },
     "methods": [
-      {
+        {
             "name": "setup",
             "args": [
                 {
@@ -707,40 +707,12 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "pay_min_fee"
                 },
                 {
-                    "type": "account",
+                    "type": "address",
                     "name": "author_account"
                 },
                 {
                     "type": "application",
                     "name": "parent_application"
-                },
-                {
-                    "type": "uint16",
-                    "name": "poap_lat_1"
-                },
-                {
-                    "type": "uint48",
-                    "name": "poap_lat_2"
-                },
-                {
-                    "type": "uint24",
-                    "name": "poap_lng_1"
-                },
-                {
-                    "type": "uint48",
-                    "name": "poap_lng_2"
-                },
-                {
-                    "type": "uint24",
-                    "name": "poap_geo_buffer"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_start_timestamp"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_end_timestamp"
                 },
                 {
                     "type": "string",
@@ -752,11 +724,11 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "poap_timezone"
+                    "name": "poap_desc"
                 },
                 {
                     "type": "string",
-                    "name": "poap_desc"
+                    "name": "poap_timezone"
                 },
                 {
                     "type": "string",
@@ -775,31 +747,116 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "poap_company_name"
                 },
                 {
+                    "type": "uint64",
+                    "name": "poap_start_timestamp"
+                },
+                {
                     "type": "string",
-                    "name": "poap_company_logo"
+                    "name": "poap_lat"
                 },
                 {
-                    "type": "bool",
-                    "name": "poaP_has_nft"
+                    "type": "string",
+                    "name": "poap_lng"
                 },
                 {
-                    "type": "bool",
-                    "name": "poap_has_geo"
+                    "type": "uint64",
+                    "name": "poap_geo_buffer"
                 },
                 {
-                    "type": "bool",
-                    "name": "poap_has_sig"
+                    "type": "uint64",
+                    "name": "poap_attendee_qty"
                 },
                 {
-                    "type": "bool",
-                    "name": "poap_has_qrcode"
+                    "type": "string",
+                    "name": "poap_switches"
                 }
-                
             ],
             "returns": {
                 "type": "string"
             },
-            "desc": "Sets up an AlgoPoaP smart contract item"
+            "desc": "Sets up an AlgoPoaP smart contract item for the first time"
+        },
+        {
+            "name": "re_setup",
+            "args": [
+                {
+                    "type": "pay",
+                    "name": "pay_min_fee"
+                },
+                {
+                    "type": "address",
+                    "name": "author_account"
+                },
+                {
+                    "type": "application",
+                    "name": "parent_application"
+                },
+                {
+                    "type": "asset",
+                    "name": "item_nft"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_name"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_logo"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_desc"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_timezone"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_address"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_url"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_email"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_company_name"
+                },
+                {
+                    "type": "uint64",
+                    "name": "poap_start_timestamp"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_lat"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_lng"
+                },
+                {
+                    "type": "uint64",
+                    "name": "poap_geo_buffer"
+                },
+                {
+                    "type": "uint64",
+                    "name": "poap_attendee_qty"
+                },
+                {
+                    "type": "string",
+                    "name": "poap_switches"
+                }
+              
+            ],
+            "returns": {
+                "type": "string"
+            },
+            "desc": "Sets up an AlgoPoaP smart contract item after first setup"
         },
         {
             "name": "activate",
@@ -815,49 +872,43 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 {
                     "type": "application",
                     "name": "parent_application"
+                },
+                {
+                    "type": "asset",
+                    "name": "nft_asa"
                 }
             ],
             "returns": {
-                "type": "byte[]"
+                "type": "string"
             },
-            "desc": "Activates an AlgoPoaP item smart contract and returns all metrics"
+            "desc": "Activates an AlgoPoaP item smart contract and returns string"
         },
         {
             "name": "claim",
             "args": [
-            
                 {
-                    "type": "axfer",
-                    "name": "optin_algopoap_nft"
-                },
-                
-                {
-                    "type": "account",
-                    "name": "attendee_account"
+                    "type": "asset",
+                    "name": "nft_asset"
                 },
                 {
                     "type": "application",
                     "name": "parent_application"
                 },
                 {
-                    "type": "uint16",
-                    "name": "lat_1"
+                    "type": "pay",
+                    "name": "pay_min_fee"
                 },
                 {
-                    "type": "uint48",
-                    "name": "lat_2"
+                    "type": "axfer",
+                    "name": "optin_algopoap_nft"
                 },
                 {
-                    "type": "uint24",
-                    "name": "lng_1"
+                    "type": "string",
+                    "name": "lat"
                 },
                 {
-                    "type": "uint48",
-                    "name": "lng_2"
-                },
-                {
-                    "type": "uint24",
-                    "name": "geo_buffer"
+                    "type": "string",
+                    "name": "lng"
                 },
                 {
                     "type": "uint64",
@@ -867,7 +918,6 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "type": "string",
                     "name": "qr_secret"
                 }
-                
             ],
             "returns": {
                 "type": "string"
@@ -878,12 +928,12 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "release",
             "args": [
                 {
-                    "type": "appl",
-                    "name": "parent_call"
+                    "type": "application",
+                    "name": "parent_contract"
                 }
             ],
             "returns": {
-                "type": "byte[]"
+                "type": "string"
             },
             "desc": "Releases AlgoPoaP and allows all AlgoPoaP attendee's to start claiming"
         },
