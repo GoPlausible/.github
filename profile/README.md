@@ -708,12 +708,16 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "pay_min_fee"
                 },
                 {
-                    "type": "address",
+                    "type": "account",
                     "name": "author_account"
                 },
                 {
                     "type": "application",
                     "name": "parent_application"
+                },
+                {
+                    "type": "string",
+                    "name": "reserved"
                 },
                 {
                     "type": "string",
@@ -748,28 +752,8 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "poap_company_name"
                 },
                 {
-                    "type": "uint64",
-                    "name": "poap_start_timestamp"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_lat"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_lng"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_geo_buffer"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_attendee_qty"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_switches"
+                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
+                    "name": "poap_uint64_tuple"
                 }
             ],
             "returns": {
@@ -785,7 +769,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "pay_min_fee"
                 },
                 {
-                    "type": "address",
+                    "type": "account",
                     "name": "author_account"
                 },
                 {
@@ -824,33 +808,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "type": "string",
                     "name": "poap_email"
                 },
+            
                 {
-                    "type": "string",
-                    "name": "poap_company_name"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_start_timestamp"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_lat"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_lng"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_geo_buffer"
-                },
-                {
-                    "type": "uint64",
-                    "name": "poap_attendee_qty"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_switches"
+                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
+                    "name": "poap_uint64_tuple"
                 }
               
             ],
@@ -905,19 +866,11 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "lat"
-                },
-                {
-                    "type": "string",
-                    "name": "lng"
-                },
-                {
-                    "type": "uint64",
-                    "name": "timestamp"
-                },
-                {
-                    "type": "string",
                     "name": "qr_secret"
+                },
+                {
+                    "type": "(uint64,uint64,uint64,uint64,uint64)",
+                    "name": "claim_uint64_tuple"
                 }
             ],
             "returns": {
