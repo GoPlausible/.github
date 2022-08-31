@@ -1,7 +1,7 @@
 # AlgoPoaP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM V1.1) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
+### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM6) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
 
 - [AlgoPoaP Concept](#algopoap-concept)
 
@@ -222,7 +222,7 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 ## AlgoPoaP Smart Contracts 
 [top↑](#algopoap)
 
-AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM V1.1. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
+AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM6. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
 
 ----
 ### Entities Relations:
