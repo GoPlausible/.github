@@ -387,8 +387,6 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     class AlgoPoaP_ASC
     AlgoPoaP_ASC : +Uint64 poap_onboard_count
     AlgoPoaP_ASC : +Uint64 poap_count
-    AlgoPoaP_ASC : +Uint64 poap_author_count
-    AlgoPoaP_ASC : +Uint64 poap_attendee_count
     AlgoPoaP_ASC : +Byte poap_last_appid
     AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +Byte poap_last_attendee
