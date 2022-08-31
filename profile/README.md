@@ -387,16 +387,6 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     class AlgoPoaP_ASC
     AlgoPoaP_ASC : +Uint64 poap_onboard_count
     AlgoPoaP_ASC : +Uint64 poap_count
-    AlgoPoaP_ASC : +Uint64 poap_txn_count
-    AlgoPoaP_ASC : +Uint64 poap_claim_count
-    AlgoPoaP_ASC : +Uint64 poap_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_nft_issuance_count
-    AlgoPoaP_ASC : +Uint64 poap_txn_issuance_count
-
-    AlgoPoaP_ASC : +Uint64 poap_geo_check_count
-    AlgoPoaP_ASC : +Uint64 poap_qr_check_count
-    AlgoPoaP_ASC : +Uint64 poap_sig_check_count
-
     AlgoPoaP_ASC : +Uint64 poap_author_count
     AlgoPoaP_ASC : +Uint64 poap_attendee_count
     AlgoPoaP_ASC : +Byte poap_last_appid
