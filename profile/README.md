@@ -670,10 +670,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
  
 
-    AlgoPoaP_ASC_ITEM : +setup(pay,address,application,string,string,string,string,string,string,string,string,uint64,string,string,uint64,uint64,string)string
-    AlgoPoaP_ASC_ITEM : +re_setup(pay,address,application,asset,string,string,string,string,string,string,string,string,uint64,string,string,uint64,uint64,string)string
+    AlgoPoaP_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    AlgoPoaP_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
     AlgoPoaP_ASC_ITEM : +activate(pay,axfer,application,asset)string
-    AlgoPoaP_ASC_ITEM : +claim(asset,application,pay,axfer,string,string,uint64,string)string
+    AlgoPoaP_ASC_ITEM : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
     AlgoPoaP_ASC_ITEM : +release(application)string
     AlgoPoaP_ASC_ITEM : +get_metric(string)string
     AlgoPoaP_ASC_ITEM : +get_metrics()string
