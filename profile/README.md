@@ -40,12 +40,10 @@ AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main
  
 - [Algorand NFDomain (algopoap.algo)](https://app.nf.domains/name/algopoap.algo)
 
-## AlgoPoaP code repositories:
+## AlgoPoaP public code repositories:
 [top↑](#algopoap)
 
 - [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
-
-- [AlgoPoaP's Frontend Repository](https://github.com/AlgoPoaP/algopoap)
 
 
 **#AlgoDevs & #Algofam:Please do not forget to star both of above repos!!** :grin:
@@ -600,25 +598,19 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     class AlgoPoaP_ASC_ITEM
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_claim_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
-
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_geo_check_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_qr_check_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_sig_check_count
-
   
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_attendee
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_issuance
+    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_claim
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
     AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
 
 
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_1
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_2
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_1
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_2
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_dec
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_dec
     AlgoPoaP_ASC_ITEM : +Uint64 poap_geo_buffer
     AlgoPoaP_ASC_ITEM : +Uint64 poap_start_timestamp
     AlgoPoaP_ASC_ITEM : +Uint64 poap_end_timestamp
@@ -633,6 +625,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_has_geo
     AlgoPoaP_ASC_ITEM : +Byte poap_has_sig
     AlgoPoaP_ASC_ITEM : +Byte poap_has_qrcode
+    AlgoPoaP_ASC_ITEM : +Byte poap_attendee_qty
     AlgoPoaP_ASC_ITEM : +Byte author_pays_fee
     AlgoPoaP_ASC_ITEM : +Byte poap_qr_secret
 
