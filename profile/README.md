@@ -16,19 +16,6 @@
   - [Attendee's Journey](#attendees-journey)
   - [Smart Contracts](#algopoap-smart-contracts)
 
-
-## AlgoPoaP concept:
-[top↑](#algopoap)
-
-The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
-
-AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
-
-AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
-
-![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
-----
-
 ## AlgoPoaP links
 [top↑](#algopoap)
 
@@ -46,7 +33,81 @@ AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main
 - [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
 
 
-**#AlgoDevs & #Algofam:Please do not forget to star both of above repos!!** :grin:
+## AlgoPoaP concept:
+[top↑](#algopoap)
+
+The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
+
+AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
+
+AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
+
+![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
+
+## Geo considerations:
+
+Geo approximations on latitude and longitude unit changes (4 decimal place unit e.g. 0.0001):
+
+- The latitude unit of change per 0.0001 change ~ 11 meters
+- For longitude, the simplified approximation is used based on this schema generated using Geolib library.
+  
+```javascript
+[
+  {
+    "lat": 0,
+    "distance": 11
+  },
+  {
+    "lat": 20,
+    "distance": 10
+  },
+  {
+    "lat": 32,
+    "distance": 9
+  },
+  {
+    "lat": 41,
+    "distance": 8
+  },
+  {
+    "lat": 48,
+    "distance": 7
+  },
+  {
+    "lat": 55,
+    "distance": 6
+  },
+  {
+    "lat": 61,
+    "distance": 5
+  },
+  {
+    "lat": 67,
+    "distance": 4
+  },
+  {
+    "lat": 72,
+    "distance": 3
+  },
+  {
+    "lat": 78,
+    "distance": 2
+  },
+  {
+    "lat": 83,
+    "distance": 1
+  },
+  {
+    "lat": 88,
+    "distance": 0
+  }
+]
+
+```
+Latitudes are "parallels" while longitudes are "meridians" that all meet at the poles. For latitude, there is a set distance traveled per degree latitude no matter where you are on a spherical globe. For longitude, it depends what latitude you are at.
+
+![Lines of Latitude and Longitude](https://i.stack.imgur.com/BBmMe.gif)
+----
 
 ## AlgoPoaP Credits
 [top↑](#algopoap)
@@ -648,8 +709,8 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
  
 
-    AlgoPoaP_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
-    AlgoPoaP_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    AlgoPoaP_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    AlgoPoaP_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
     AlgoPoaP_ASC_ITEM : +activate(pay,axfer,application,asset)string
     AlgoPoaP_ASC_ITEM : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
     AlgoPoaP_ASC_ITEM : +release(application)string
@@ -726,11 +787,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "poap_email"
                 },
                 {
-                    "type": "string",
-                    "name": "poap_company_name"
-                },
-                {
-                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
+                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
                     "name": "poap_uint64_tuple"
                 }
             ],
@@ -788,7 +845,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 },
             
                 {
-                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
+                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
                     "name": "poap_uint64_tuple"
                 }
               
@@ -827,6 +884,10 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "name": "claim",
             "args": [
                 {
+                    "type": "pay",
+                    "name": "pay_min_fee"
+                },
+                {
                     "type": "asset",
                     "name": "nft_asset"
                 },
@@ -835,12 +896,8 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                     "name": "parent_application"
                 },
                 {
-                    "type": "pay",
-                    "name": "pay_min_fee"
-                },
-                {
-                    "type": "axfer",
-                    "name": "optin_algopoap_nft"
+                    "type": "account",
+                    "name": "attendee_account"
                 },
                 {
                     "type": "string",
@@ -896,14 +953,12 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ```
 ----
 
-
-
 Since AlgoPoaP is totally decentralized, trustless and permission-less: Every AlgoPoaP item author has full authority of the created PoaPs (AlgoPoaP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
 The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPoaP item contract which will be created via an inner transaction.
 
 
-### Simple deployment and unit tests included
+### Simple basic deployment and unit tests included
 
 ```shell
 > algopoap-smartcontracts@0.0.4 start
