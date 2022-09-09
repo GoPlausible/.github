@@ -106,6 +106,8 @@ Geo approximations on latitude and longitude unit changes (4 decimal place unit 
 ```
 Latitudes are "parallels" while longitudes are "meridians" that all meet at the poles. For latitude, there is a set distance traveled per degree latitude no matter where you are on a spherical globe. For longitude, it depends what latitude you are at.
 
+[Use this link to play around distance change per unit of lng on each lat](https://www.movable-type.co.uk/scripts/latlong.html)
+
 ![Lines of Latitude and Longitude](https://i.stack.imgur.com/BBmMe.gif)
 ----
 
