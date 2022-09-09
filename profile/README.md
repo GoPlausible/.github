@@ -49,7 +49,7 @@ AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main
 Geo approximations on latitude and longitude unit changes (4 decimal place unit e.g. 0.0001):
 
 - The latitude unit of change per 0.0001 change ~ 11 meters
-- For longitude, the simplified approximation is used based on this schema generated using Geolib library.
+- For longitude, the simplified approximation is used based on this schema generated using Geolib library (distance in meters per 0.0001 lng change on specific lat range).
   
 ```javascript
 [
