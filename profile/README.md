@@ -291,11 +291,11 @@ All methods expenses and fee details are in following table (those not in this t
 | ------------- |:-------------:| -----:|
 | New PoaP                     | 1 MinFee      |   2 MinFee |
 | Setup PoaP                   | 1 MinFee      |   1 MinFee |
-| Activate PoaP(Author pays)   | 3 MinFee      |   Attendee_Qty * 3 * MinFee |
+| Activate PoaP(Author pays)   | 3 MinFee      |   Attendee_Qty * 4 * MinFee |
 | Activate PoaP(Attendee pays) | 3 MinFee      |   1 MinFee |
 | Release PoaP| 1 MinFee       | 1 MinFee      |   0  |
 | Claim PoaP(Author pays)      | 1 MinFee      |   0  |
-| Claim PoaP(Attendee pays)    | 2 MinFee      |   0  |
+| Claim PoaP(Attendee pays)    | 3 MinFee      |   0  |
 
 ----
 
