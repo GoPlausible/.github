@@ -285,6 +285,18 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 
 AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM6. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
 
+All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
+
+| Method | Fee           | Amount|
+| ------------- |:-------------:| -----:|
+| New PoaP                     | 1 MinFee      |   2 MinFee |
+| Setup PoaP                   | 1 MinFee      |   1 MinFee |
+| Activate PoaP(Author pays)   | 3 MinFee      |   Attendee_Qty * 3 * MinFee |
+| Activate PoaP(Attendee pays) | 3 MinFee      |   1 MinFee |
+| Release PoaP| 1 MinFee       | 1 MinFee      |   0  |
+| Claim PoaP(Author pays)      | 1 MinFee      |   0  |
+| Claim PoaP(Attendee pays)    | 2 MinFee      |   0  |
+
 ----
 ### Entities Relations:
 
