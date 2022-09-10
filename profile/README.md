@@ -298,6 +298,7 @@ All methods expenses and fee details are in following table (those not in this t
 | Claim PoaP(Attendee pays)    | 2 MinFee      |   0  |
 
 ----
+
 ### Entities Relations:
 
 ```mermaid
