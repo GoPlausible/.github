@@ -287,7 +287,7 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
-| Method | Fee           | Amount|
+| Method | Fee           | Amount|Description|
 | ------------- |:-------------:| -----:|
 | New PoaP                     | 1 MinFee      |   2 MinFee |
 | Setup PoaP                   | 1 MinFee      |   1 MinFee |
@@ -672,7 +672,9 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ```mermaid
   classDiagram
     class AlgoPoaP_ASC_ITEM
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_attendee_count
+
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_onboard_count
+    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_claim_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
     AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
