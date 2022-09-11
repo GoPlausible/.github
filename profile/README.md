@@ -462,6 +462,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +Uint64 poap_onboard_count
     AlgoPoaP_ASC : +Uint64 poap_count
     AlgoPoaP_ASC : +Byte poap_last_appid
+    AlgoPoaP_ASC : +Byte poap_last_author
     AlgoPoaP_ASC : +setup(string)string
     AlgoPoaP_ASC : +item_create(pay,byte[],byte[])string
     AlgoPoaP_ASC : +item_update(application,byte[],byte[])string
