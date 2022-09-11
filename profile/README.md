@@ -295,7 +295,7 @@ All methods expenses and fee details are in following table (those not in this t
 | Activate PoaP(Attendee pays) | 3 MinFee      |   1 MinFee |
 | Release PoaP| 1 MinFee       | 1 MinFee      |   0  |
 | Claim PoaP(Author pays)      | 1 MinFee      |   0  |
-| Claim PoaP(Attendee pays)    | 3 MinFee      |   0  |
+| Claim PoaP(Attendee pays)    | 4 MinFee      |   0  |
 
 ----
 
