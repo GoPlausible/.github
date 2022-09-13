@@ -489,7 +489,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "appID": 0
       },
       "TestNet":{
-          "appID": 106595642
+          "appID": 109555013
       }
   },
   "methods":[
@@ -755,7 +755,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "appID": 0
         },
         "TestNet": {
-            "appID": 0
+            "appID": 109691598
         }
     },
     "methods": [
