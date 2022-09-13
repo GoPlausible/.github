@@ -289,7 +289,7 @@ All methods expenses and fee details are in following table (those not in this t
 
 Note: This section (Fees) is subject to further updates and changes and is work in progress!
 
-| Method | Fee           | Amount|Description|
+| Method | Fee           | Amount|
 | ------------- |:-------------:| -----:|
 | New PoaP                     | 1 MinFee      |   2 MinFee |
 | Setup PoaP                   | 1 MinFee      |   1 MinFee |
