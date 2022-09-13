@@ -980,6 +980,8 @@ The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract 
 
 ### Simple basic deployment and unit tests included
 
+Note: These are available under [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts) and more unit test scenarios are to be added for audit process.
+
 ```shell
 > algopoap-smartcontracts@0.0.4 start
 [ALGOPOAP: ] [2022-08-30T16:26:36.462Z] [info]: ------------------------------
