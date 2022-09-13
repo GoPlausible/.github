@@ -287,6 +287,8 @@ AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL 
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
+Note: This section (Fees) is subject to further updates and changes and is work in progress!
+
 | Method | Fee           | Amount|Description|
 | ------------- |:-------------:| -----:|
 | New PoaP                     | 1 MinFee      |   2 MinFee |
