@@ -1,0 +1,1899 @@
+<svg version="1.1" baseProfile="full" width="6118" height="7570" viewBox="0 0 6118 7570" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" style="font-weight:bold; font-size:12pt; font-family:'courier', Helvetica, sans-serif;;stroke-width:3;stroke-linejoin:round;stroke-linecap:round">
+  <title>nomnoml</title>
+  <desc>#font: courier
+[entry|
+b b_main
+]
+[b_main|
+txn RekeyTo
+global ZeroAddress
+==
+assert
+txn CloseRemainderTo
+global ZeroAddress
+==
+assert
+txn AssetCloseTo
+global ZeroAddress
+==
+assert
+txn TypeEnum
+int appl
+==
+assert
+txn Fee
+global MinTxnFee
+&lt;=
+assert
+txn NumAppArgs
+int 0
+==
+bz b_method_check
+]
+[bz_b_method_check|
+txn ApplicationID
+bz b_creation
+]
+[bz_b_creation|
+txn OnCompletion
+int DeleteApplication
+==
+bnz b_deletion
+]
+[bnz_b_deletion|
+txn OnCompletion
+int UpdateApplication
+==
+bnz b_update
+]
+[bnz_b_update|
+txn OnCompletion
+int CloseOut
+==
+bnz b_closeout
+]
+[bnz_b_closeout|
+txn OnCompletion
+int OptIn
+==
+bnz b_optin
+]
+[bnz_b_optin|
+txn OnCompletion
+int NoOp
+==
+bnz b_error
+]
+[bnz_b_error|
+b b_error
+]
+[b_method_check|
+method "budget_increase_call_1()void"
+txn ApplicationArgs 0
+==
+bnz method_budget_increase_call
+]
+[bnz_method_budget_increase_call|
+method "setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string"
+txn ApplicationArgs 0
+==
+bnz method_setup
+]
+[bnz_method_setup|
+method "activate(pay,axfer,application,asset,string)string"
+txn ApplicationArgs 0
+==
+bnz method_activate
+]
+[bnz_method_activate|
+method "release(application)string"
+txn ApplicationArgs 0
+==
+bnz method_release
+]
+[bnz_method_release|
+method "claim(pay,asset,application,address,byte\[64\],string,(uint64,uint64,uint64,uint64,uint64))string"
+txn ApplicationArgs 0
+==
+bnz method_claim
+]
+[bnz_method_claim|
+method "get_metric(string)string"
+txn ApplicationArgs 0
+==
+bnz method_get_metric
+]
+[bnz_method_get_metric|
+method "get_metrics()string\[\]"
+txn ApplicationArgs 0
+==
+bnz method_get_metrics
+]
+[bnz_method_get_metrics|
+b b_error
+]
+[sub_check_owner|
+txn Sender
+global CreatorAddress
+==
+assert
+retsub
+]
+[sub_check_author|
+txn Sender
+byte "poap_author_address"
+app_global_get
+==
+assert
+retsub
+]
+[b_creation|
+byte "poap_author_address"
+txn Note
+app_global_put
+byte "algopoap_item_create"
+b b_log_return
+]
+[b_optin|
+byte "poap_item_attendee_count"
+dup
+app_global_get
+int 1
++
+app_global_put
+byte "poap_item_last_attendee"
+txn Sender
+app_global_put
+byte "poap_item_onboard_count"
+dup
+app_global_get
+int 1
++
+app_global_put
+byte "algopoap_item_optin_"
+txn Sender
+concat
+b b_log_return
+]
+[b_deletion|
+callsub sub_check_owner
+]
+[callsub_sub_check_owner|
+byte 0x151f7c75
+global CurrentApplicationID
+itob
+concat
+b b_log_return
+]
+[b_update|
+callsub sub_check_owner
+]
+[b_closeout|
+byte "algopoap_item_closeout"
+txn Sender
+concat
+b b_log_return
+]
+[b_noop|
+b b_error
+]
+[sub_create_nft|
+itxn_begin
+int acfg
+itxn_field TypeEnum
+byte "poap_attendee_qty"
+app_global_get
+int 10
++
+itxn_field ConfigAssetTotal
+int 0
+itxn_field ConfigAssetDecimals
+byte "PoaP"
+itxn_field ConfigAssetUnitName
+byte "AlgoPoaP"
+itxn_field ConfigAssetName
+byte "poap_url"
+app_global_get
+itxn_field ConfigAssetURL
+global CurrentApplicationAddress
+dup
+dup2
+itxn_field ConfigAssetManager
+itxn_field ConfigAssetReserve
+itxn_field ConfigAssetFreeze
+itxn_field ConfigAssetClawback
+itxn_submit
+byte "poap_asa_id"
+itxn CreatedAssetID
+dup
+store 0
+app_global_put
+retsub
+]
+[b_config_nft|
+dup
+itob
+store 0
+itxn_begin
+itxn_field ConfigAsset
+int acfg
+itxn_field TypeEnum
+global CurrentApplicationAddress
+dup
+dup2
+itxn_field ConfigAssetManager
+itxn_field ConfigAssetReserve
+itxn_field ConfigAssetFreeze
+itxn_field ConfigAssetClawback
+itxn_submit
+byte 0x151f7c75
+load 0
+concat
+b b_log_return
+]
+[sub_send_nft|
+itxn_begin
+int axfer
+itxn_field TypeEnum
+load 0
+itxn_field XferAsset
+load 2
+itxn_field AssetSender
+load 3
+itxn_field AssetAmount
+load 4
+itxn_field AssetReceiver
+itxn_submit
+byte "poap_item_nft_issuance_count"
+dup
+app_global_get
+int 1
++
+app_global_put
+byte "poap_item_last_nft_issuance"
+txn Sender
+app_global_put
+retsub
+]
+[sub_check_timestamp|
+global LatestTimestamp
+byte "poap_activate_time"
+app_global_get
+dup
+store 17
+&gt;=
+assert
+load 7
+load 17
+&gt;=
+assert
+retsub
+]
+[sub_check_geo|
+byte "poap_lat"
+app_global_get
+load 13
+==
+byte "poap_lng"
+app_global_get
+load 15
+==
+&amp;&amp;
+assert
+byte "poap_lng_unit_diff"
+app_global_get
+store 18
+byte "poap_lat_dec"
+app_global_get
+load 14
+-
+store 19
+byte "poap_lng_dec"
+app_global_get
+load 16
+-
+store 20
+byte "poap_geo_radius"
+app_global_get
+store 21
+int 11
+store 22
+load 19
+load 22
+*
+int 2
+exp
+store 23
+load 20
+load 18
+*
+int 2
+exp
+store 24
+load 21
+int 2
+exp
+store 25
+load 21
+load 19
+load 22
+*
+&gt;
+assert
+load 21
+load 20
+load 18
+*
+&gt;
+assert
+load 23
+load 24
++
+load 25
+&lt;=
+assert
+retsub
+]
+[sub_check_release|
+byte "poap_is_released"
+app_global_get
+byte "true"
+==
+assert
+retsub
+]
+[sub_check_qr_secret|
+load 6
+extract 2 0
+load 8
+load 4
+ed25519verify_bare
+assert
+load 6
+sha512_256
+byte "poap_shared_secret"
+app_global_get
+==
+retsub
+]
+[b_has_sig|
+callsub sub_check_release
+]
+[callsub_sub_check_release|
+byte "poap_has_geo"
+app_global_get
+int 1
+==
+bnz b_has_geo
+]
+[bnz_b_has_geo|
+byte "poap_has_qrcode"
+app_global_get
+int 1
+==
+bnz b_has_qr
+]
+[bnz_b_has_qr|
+b b_finalize_claim
+]
+[b_has_geo|
+callsub sub_check_geo
+]
+[callsub_sub_check_geo|
+byte "poap_has_qrcode"
+app_global_get
+int 1
+==
+bnz b_has_qr
+]
+[b_has_qr|
+callsub sub_check_qr_secret
+]
+[callsub_sub_check_qr_secret|
+b b_finalize_claim
+]
+[b_finalize_claim|
+byte "poap_asa_id"
+app_global_get
+store 0
+txn Sender
+store 2
+int 1
+store 3
+callsub sub_send_nft
+]
+[callsub_sub_send_nft|
+byte 0x151f7c75
+byte "algopoap_item_activate"
+concat
+b b_log_return
+]
+[b_activate_author_pays|
+byte "poap_attendee_qty"
+app_global_get
+int 3
+*
+global MinTxnFee
+*
+gtxn 0 Amount
+&gt;=
+assert
+b b_activate_finalize
+]
+[b_activate_default|
+gtxn 0 Amount
+int 0
+==
+assert
+b b_activate_finalize
+]
+[b_activate_finalize|
+byte "poap_is_activated"
+byte "true"
+app_global_put
+byte "poap_shared_secret"
+txn ApplicationArgs 3
+app_global_put
+byte "poap_activate_time"
+global LatestTimestamp
+app_global_put
+byte "poap_asa_id"
+app_global_get
+store 0
+global CurrentApplicationAddress
+store 2
+int 1
+store 3
+byte "poap_author_address"
+app_global_get
+store 4
+callsub sub_send_nft
+]
+[method_budget_increase_call|
+global GroupSize
+int 5
+==
+assert
+method "claim(pay,asset,application,address,byte\[64\],string,(uint64,uint64,uint64,uint64,uint64))string"
+gtxn 4 ApplicationArgs 0
+==
+assert
+byte 0x151f7c75
+byte "budget_increase_call"
+concat
+log
+int 1
+return
+]
+[method_activate|
+callsub sub_check_author
+]
+[callsub_sub_check_author|
+global GroupSize
+int 2
+==
+assert
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+assert
+gtxn 0 CloseRemainderTo
+global ZeroAddress
+==
+assert
+gtxn 0 AssetCloseTo
+global ZeroAddress
+==
+assert
+gtxn 0 TypeEnum
+int pay
+==
+assert
+gtxn 0 Fee
+global MinTxnFee
+&lt;=
+assert
+gtxn 0 Amount
+global MinTxnFee
+&lt;=
+assert
+byte "poap_item_onboard_count"
+int 0
+app_global_put
+byte "poap_item_txn_count"
+int 0
+app_global_put
+byte "poap_item_claim_count"
+int 0
+app_global_put
+byte "poap_item_nft_issuance_count"
+int 0
+app_global_put
+byte "poap_item_txn_issuance_count"
+int 0
+app_global_put
+byte "poap_item_last_attendee"
+byte "-"
+app_global_put
+byte "poap_item_last_nft_issuance"
+byte "-"
+app_global_put
+byte "poap_item_last_txn_issuance"
+byte "-"
+app_global_put
+byte "poap_name"
+txn ApplicationArgs 4
+app_global_put
+byte "poap_logo"
+txn ApplicationArgs 5
+app_global_put
+byte "poap_desc"
+txn ApplicationArgs 6
+app_global_put
+byte "poap_timezone"
+txn ApplicationArgs 7
+app_global_put
+byte "poap_address"
+txn ApplicationArgs 8
+app_global_put
+byte "poap_url"
+txn ApplicationArgs 9
+app_global_put
+byte "poap_email"
+txn ApplicationArgs 10
+app_global_put
+txn ApplicationArgs 11
+store 10
+byte "poap_start_timestamp"
+load 10
+int 0
+extract_uint64
+app_global_put
+byte "poap_lat"
+load 10
+int 8
+extract_uint64
+app_global_put
+byte "poap_lat_dec"
+load 10
+int 16
+extract_uint64
+app_global_put
+byte "poap_lng"
+load 10
+int 24
+extract_uint64
+app_global_put
+byte "poap_lng_dec"
+load 10
+int 32
+extract_uint64
+app_global_put
+byte "poap_geo_radius"
+load 10
+int 40
+extract_uint64
+app_global_put
+byte "poap_attendee_qty"
+load 10
+int 48
+extract_uint64
+app_global_put
+byte "poap_has_nft"
+load 10
+int 56
+extract_uint64
+app_global_put
+byte "poap_has_geo"
+load 10
+int 64
+extract_uint64
+app_global_put
+byte "poap_has_sig"
+load 10
+int 72
+extract_uint64
+app_global_put
+byte "poap_has_qrcode"
+load 10
+int 80
+extract_uint64
+app_global_put
+byte "poap_lng_unit_diff"
+load 10
+int 88
+extract_uint64
+app_global_put
+byte "author_pays_fee"
+load 10
+int 96
+extract_uint64
+app_global_put
+int 0
+byte "poap_asa_id"
+app_global_get_ex
+bnz b_config_nft
+]
+[bnz_b_activate_author_pays|
+b b_activate_default
+]
+[method_release|
+callsub sub_check_author
+]
+[b_claim_author_pays|
+gtxn 3 Amount
+int 0
+==
+assert
+gtxn 3 Fee
+store 23
+itxn_begin
+int pay
+itxn_field TypeEnum
+txn Sender
+itxn_field Receiver
+load 23
+itxn_field Amount
+int 1000
+itxn_field Fee
+itxn_submit
+b b_claim_check
+]
+[b_claim_default|
+gtxn 3 Fee
+global MinTxnFee
+int 2
+*
+&lt;=
+assert
+b b_claim_check
+]
+[b_claim_check|
+byte "poap_author_address"
+app_global_get
+store 4
+txn ApplicationArgs 4
+store 8
+txn ApplicationArgs 5
+store 6
+txn ApplicationArgs 6
+store 10
+load 10
+int 0
+extract_uint64
+store 13
+load 10
+int 8
+extract_uint64
+store 14
+load 10
+int 16
+extract_uint64
+store 15
+load 10
+int 24
+extract_uint64
+store 16
+load 10
+int 32
+extract_uint64
+store 7
+callsub sub_check_timestamp
+]
+[callsub_sub_check_timestamp|
+byte "poap_has_sig"
+app_global_get
+int 1
+==
+bnz b_has_sig
+]
+[bnz_b_has_sig|
+byte "poap_has_geo"
+app_global_get
+int 1
+==
+bnz b_has_geo
+]
+[method_claim|
+int 0
+global CurrentApplicationID
+app_opted_in
+assert
+global GroupSize
+int 5
+==
+assert
+gtxn 3 RekeyTo
+global ZeroAddress
+==
+assert
+gtxn 3 CloseRemainderTo
+global ZeroAddress
+==
+assert
+gtxn 3 AssetCloseTo
+global ZeroAddress
+==
+assert
+gtxn 3 TypeEnum
+int pay
+==
+assert
+gtxn 3 Amount
+int 0
+==
+assert
+byte "author_pays_fee"
+app_global_get
+int 1
+==
+bnz b_claim_author_pays
+]
+[bnz_b_claim_author_pays|
+b b_claim_default
+]
+[method_get_metric|
+byte 0x151f7c75
+byte "single metric"
+concat
+b b_log_return
+]
+[method_get_metrics|
+byte 0x151f7c75
+byte "All metrics"
+concat
+b b_log_return
+]
+[method_setup|
+callsub sub_check_author
+]
+[bnz_b_config_nft|
+callsub sub_create_nft
+]
+[callsub_sub_create_nft|
+byte 0x151f7c75
+load 0
+itob
+concat
+b b_log_return
+]
+[b_log_return|
+log
+byte "poap_item_txn_count"
+dup
+app_global_get
+int 1
++
+app_global_put
+int 1
+return
+]
+[b_error|
+err
+]
+[entry]-&gt;[b_main]
+[b_main]-&gt;[b_method_check]
+[b_main]-&gt;[bz_b_method_check]
+[bz_b_method_check]-&gt;[b_creation]
+[bz_b_method_check]-&gt;[bz_b_creation]
+[bz_b_creation]-&gt;[b_deletion]
+[bz_b_creation]-&gt;[bnz_b_deletion]
+[bnz_b_deletion]-&gt;[b_update]
+[bnz_b_deletion]-&gt;[bnz_b_update]
+[bnz_b_update]-&gt;[b_closeout]
+[bnz_b_update]-&gt;[bnz_b_closeout]
+[bnz_b_closeout]-&gt;[b_optin]
+[bnz_b_closeout]-&gt;[bnz_b_optin]
+[bnz_b_optin]-&gt;[b_error]
+[bnz_b_optin]-&gt;[bnz_b_error]
+[bnz_b_error]-&gt;[b_error]
+[b_method_check]-&gt;[method_budget_increase_call]
+[b_method_check]-&gt;[bnz_method_budget_increase_call]
+[bnz_method_budget_increase_call]-&gt;[method_budget_increase_call]
+[bnz_method_budget_increase_call]-&gt;[bnz_method_budget_increase_call]
+[bnz_method_budget_increase_call]-&gt;[method_budget_increase_call]
+[bnz_method_budget_increase_call]-&gt;[bnz_method_budget_increase_call]
+[bnz_method_budget_increase_call]-&gt;[method_setup]
+[bnz_method_budget_increase_call]-&gt;[bnz_method_setup]
+[bnz_method_setup]-&gt;[method_setup]
+[bnz_method_setup]-&gt;[bnz_method_setup]
+[bnz_method_setup]-&gt;[method_activate]
+[bnz_method_setup]-&gt;[bnz_method_activate]
+[bnz_method_activate]-&gt;[method_release]
+[bnz_method_activate]-&gt;[bnz_method_release]
+[bnz_method_release]-&gt;[method_claim]
+[bnz_method_release]-&gt;[bnz_method_claim]
+[bnz_method_claim]-&gt;[method_get_metric]
+[bnz_method_claim]-&gt;[bnz_method_get_metric]
+[bnz_method_get_metric]-&gt;[method_get_metrics]
+[bnz_method_get_metric]-&gt;[bnz_method_get_metrics]
+[bnz_method_get_metrics]-&gt;[b_error]
+[b_creation]-&gt;[b_log_return]
+[b_optin]-&gt;[b_log_return]
+[b_deletion]-&gt;[sub_check_owner]
+[b_deletion]-&gt;[callsub_sub_check_owner]
+[callsub_sub_check_owner]-&gt;[b_log_return]
+[callsub_sub_check_owner]-&gt;[b_log_return]
+[b_update]-&gt;[sub_check_owner]
+[b_update]-&gt;[callsub_sub_check_owner]
+[b_closeout]-&gt;[b_log_return]
+[b_noop]-&gt;[b_error]
+[b_config_nft]-&gt;[b_log_return]
+[b_has_sig]-&gt;[sub_check_release]
+[b_has_sig]-&gt;[callsub_sub_check_release]
+[callsub_sub_check_release]-&gt;[b_has_geo]
+[callsub_sub_check_release]-&gt;[bnz_b_has_geo]
+[bnz_b_has_geo]-&gt;[b_has_qr]
+[bnz_b_has_geo]-&gt;[bnz_b_has_qr]
+[bnz_b_has_geo]-&gt;[b_has_qr]
+[bnz_b_has_geo]-&gt;[bnz_b_has_qr]
+[bnz_b_has_qr]-&gt;[b_finalize_claim]
+[bnz_b_has_qr]-&gt;[b_finalize_claim]
+[bnz_b_has_qr]-&gt;[b_finalize_claim]
+[b_has_geo]-&gt;[sub_check_geo]
+[b_has_geo]-&gt;[callsub_sub_check_geo]
+[callsub_sub_check_geo]-&gt;[b_has_qr]
+[callsub_sub_check_geo]-&gt;[bnz_b_has_qr]
+[b_has_qr]-&gt;[sub_check_qr_secret]
+[b_has_qr]-&gt;[callsub_sub_check_qr_secret]
+[callsub_sub_check_qr_secret]-&gt;[b_finalize_claim]
+[b_finalize_claim]-&gt;[sub_send_nft]
+[b_finalize_claim]-&gt;[callsub_sub_send_nft]
+[callsub_sub_send_nft]-&gt;[b_log_return]
+[callsub_sub_send_nft]-&gt;[b_log_return]
+[b_activate_author_pays]-&gt;[b_activate_finalize]
+[b_activate_default]-&gt;[b_activate_finalize]
+[b_activate_finalize]-&gt;[sub_send_nft]
+[b_activate_finalize]-&gt;[callsub_sub_send_nft]
+[method_activate]-&gt;[sub_check_author]
+[method_activate]-&gt;[callsub_sub_check_author]
+[callsub_sub_check_author]-&gt;[b_activate_author_pays]
+[callsub_sub_check_author]-&gt;[bnz_b_activate_author_pays]
+[callsub_sub_check_author]-&gt;[b_log_return]
+[callsub_sub_check_author]-&gt;[b_config_nft]
+[callsub_sub_check_author]-&gt;[bnz_b_config_nft]
+[bnz_b_activate_author_pays]-&gt;[b_activate_default]
+[method_release]-&gt;[sub_check_author]
+[method_release]-&gt;[callsub_sub_check_author]
+[b_claim_author_pays]-&gt;[b_claim_check]
+[b_claim_default]-&gt;[b_claim_check]
+[b_claim_check]-&gt;[sub_check_timestamp]
+[b_claim_check]-&gt;[callsub_sub_check_timestamp]
+[callsub_sub_check_timestamp]-&gt;[b_has_sig]
+[callsub_sub_check_timestamp]-&gt;[bnz_b_has_sig]
+[bnz_b_has_sig]-&gt;[b_has_geo]
+[bnz_b_has_sig]-&gt;[bnz_b_has_geo]
+[method_claim]-&gt;[b_claim_author_pays]
+[method_claim]-&gt;[bnz_b_claim_author_pays]
+[bnz_b_claim_author_pays]-&gt;[b_claim_default]
+[method_get_metric]-&gt;[b_log_return]
+[method_get_metrics]-&gt;[b_log_return]
+[method_setup]-&gt;[sub_check_author]
+[method_setup]-&gt;[callsub_sub_check_author]
+[bnz_b_config_nft]-&gt;[sub_create_nft]
+[bnz_b_config_nft]-&gt;[callsub_sub_create_nft]
+[callsub_sub_create_nft]-&gt;[b_log_return]</desc>
+  <path d="M3143.3 75.5 L3143.3 95.5 L3143.3 115.5 L3143.3 115.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3137.9 102.2 L3143.3 108.8 L3148.6 102.2 L3143.3 115.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3040.3 328.6 L753.5 542.5 L753.5 562.5 L753.5 562.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M748.2 549.2 L753.5 555.8 L758.8 549.2 L753.5 562.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3246.3 327.8 L5771 542.5 L5771 616 L5771 616 L5771 689.5 L5771 689.5 L5771 763 L5771 763 L5771 836.5 L5771 836.5 L5771 985 L5771 985 L5771 1133.5 L5771 1133.5 L5771 1207 L5771 1207 L5771 1280.5 L5771 1280.5 L5771 1354 L5771 1354 L5771 1427.5 L5771 1427.5 L5771 1718.5 L5771 1718.5 L5771 2009.5 L5771 2009.5 L5771 2060.5 L5771 2060.5 L5771 2111.5 L5771 2111.5 L5771 2282.5 L5771 2282.5 L5771 2453.5 L5771 2453.5 L5771 2722 L5771 2722 L5771 2990.5 L5771 2990.5 L5771 3124 L5771 3124 L5771 3257.5 L5771 3257.5 L5771 3308.5 L5771 3308.5 L5771 3359.5 L5771 3359.5 L5771 3448 L5771 3448 L5771 3536.5 L5771 3536.5 L5771 3556.5 L5771 3556.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5765.7 3543.2 L5771 3549.8 L5776.3 3543.2 L5771 3556.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5682 3599.8 L4678 3653.5 L4678 4777 L4678 4777 L4678 5900.5 L4678 5900.5 L4678 5974 L4678 5974 L4678 6047.5 L4678 6047.5 L4678 6181 L4678 6181 L4678 6314.5 L4678 6314.5 L4678 6508 L4678 6508 L4678 6701.5 L4678 6701.5 L4678 6916.5 L4678 6916.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4672.7 6903.2 L4678 6909.8 L4683.3 6903.2 L4678 6916.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5771 3633.5 L5771 3653.5 L5771 4723.5 L5771 4723.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5765.7 4710.2 L5771 4716.8 L5776.3 4710.2 L5771 4723.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5726.5 4830.5 L4835.5 5900.5 L4835.5 5974 L4835.5 5974 L4835.5 6047.5 L4835.5 6047.5 L4835.5 6150 L4835.5 6150 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4830.2 6136.7 L4835.5 6143.3 L4840.8 6136.7 L4835.5 6150 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5771 4830.5 L5771 5900.5 L5771 5920.5 L5771 5920.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5765.7 5907.2 L5771 5913.8 L5776.3 5907.2 L5771 5920.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5663 5987 L5160 6047.5 L5160 6150 L5160 6150 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5154.7 6136.7 L5160 6143.3 L5165.3 6136.7 L5160 6150 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5771 6027.5 L5771 6047.5 L5771 6127.5 L5771 6127.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5765.7 6114.2 L5771 6120.8 L5776.3 6114.2 L5771 6127.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5687 6209.2 L5373.8 6314.5 L5373.8 6508 L5373.8 6508 L5373.8 6701.5 L5373.8 6701.5 L5373.8 6924 L5373.8 6924 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5368.4 6910.7 L5373.8 6917.3 L5379.1 6910.7 L5373.8 6924 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5804.7 6234.5 L5855 6314.5 L5855 6454.5 L5855 6454.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5849.7 6441.2 L5855 6447.8 L5860.3 6441.2 L5855 6454.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5816.4 6561.5 L5715.3 6701.5 L5715.3 6811.5 L5715.3 6811.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5709.9 6798.2 L5715.3 6804.8 L5720.6 6798.2 L5715.3 6811.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5893.6 6561.5 L5994.8 6701.5 L5994.8 6924 L5994.8 6924 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5989.4 6910.7 L5994.8 6917.3 L6000.1 6910.7 L5994.8 6924 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5985 7031 L5944.5 7253.5 L5944.5 7364.5 L5944.5 7364.5 L5944.5 7475.5 L5944.5 7475.5 L5692.8 7519.3 L5692.8 7519.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5705 7511.7 L5699.3 7518.1 L5706.8 7522.3 L5692.8 7519.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M6004.5 7031 L6045 7253.5 L6045 7333.5 L6045 7333.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M6039.7 7320.2 L6045 7326.8 L6050.3 7320.2 L6045 7333.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M6045 7395.5 L6045 7475.5 L5692.8 7521.1 L5692.8 7521.1 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5705.3 7514.1 L5699.4 7520.3 L5706.7 7524.7 L5692.8 7521.1 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M580.3 669.5 L515.5 689.5 L515.5 763 L515.5 763 L515.5 836.5 L515.5 836.5 L515.5 856.5 L515.5 856.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M510.2 843.2 L515.5 849.8 L520.8 843.2 L515.5 856.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M937.5 634.5 L1485 689.5 L1485 709.5 L1485 709.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1479.7 696.2 L1485 702.8 L1490.3 696.2 L1485 709.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1470.4 816.5 L1465 836.5 L1017.5 906.5 L1017.5 906.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1029.8 899.2 L1024.1 905.5 L1031.5 909.7 L1017.5 906.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2414.5 744.4 L4165 709.5 L4602.6 709.5 L4602.6 709.5 L5040.3 763 L5040.3 763 L4602.6 816.5 L4602.6 816.5 L4165 816.5 L4165 816.5 L2414.5 781.6 L2414.5 781.6 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2427.9 776.5 L2421.2 781.7 L2427.7 787.2 L2414.5 781.6 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1499.6 816.5 L1505 836.5 L1505 985 L1505 985 L1505 1133.5 L1505 1133.5 L1505 1207 L1505 1207 L1505 1280.5 L1505 1280.5 L1505 1323 L1505 1323 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1499.7 1309.7 L1505 1316.3 L1510.3 1309.7 L1505 1323 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1738.7 816.5 L1833.5 836.5 L1833.5 931.5 L1833.5 931.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1828.2 918.2 L1833.5 924.8 L1838.8 918.2 L1833.5 931.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1826.3 1038.5 L1813.5 1133.5 L1813.5 1207 L1813.5 1207 L1813.5 1280.5 L1813.5 1280.5 L1627 1324.9 L1627 1324.9 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1638.7 1316.7 L1633.5 1323.4 L1641.2 1327 L1627 1324.9 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2122 977.4 L3853.8 931.5 L4286.8 931.5 L4286.8 931.5 L4719.8 985 L4719.8 985 L4286.8 1038.5 L4286.8 1038.5 L3853.8 1038.5 L3853.8 1038.5 L2122 992.6 L2122 992.6 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2135.5 987.7 L2128.7 992.8 L2135.2 998.3 L2122 992.6 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1840.7 1038.5 L1853.5 1133.5 L1853.5 1207 L1853.5 1207 L1853.5 1280.5 L1853.5 1280.5 L1853.5 1323 L1853.5 1323 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1848.2 1309.7 L1853.5 1316.3 L1858.8 1309.7 L1853.5 1323 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2122 1020.9 L3027.5 1133.5 L3027.5 1153.5 L3027.5 1153.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3022.2 1140.2 L3027.5 1146.8 L3032.8 1140.2 L3027.5 1153.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2853 1221.4 L2137.5 1280.5 L2137.5 1323 L2137.5 1323 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2132.2 1309.7 L2137.5 1316.3 L2142.8 1309.7 L2137.5 1323 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3202 1245.6 L3359.5 1280.5 L3359.5 1300.5 L3359.5 1300.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3354.2 1287.2 L3359.5 1293.8 L3364.8 1287.2 L3359.5 1300.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3023.2 1407.5 L2897.5 1427.5 L2897.5 1447.5 L2897.5 1447.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2892.2 1434.2 L2897.5 1440.8 L2902.8 1434.2 L2897.5 1447.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3861.5 1393.1 L4302.3 1427.5 L4302.3 1718.5 L4302.3 1718.5 L4302.3 2009.5 L4302.3 2009.5 L4302.3 2060.5 L4302.3 2060.5 L4302.3 2111.5 L4302.3 2111.5 L4302.3 2282.5 L4302.3 2282.5 L4302.3 2453.5 L4302.3 2453.5 L4302.3 2722 L4302.3 2722 L4302.3 2990.5 L4302.3 2990.5 L4302.3 3124 L4302.3 3124 L4302.3 3257.5 L4302.3 3257.5 L4302.3 3308.5 L4302.3 3308.5 L4302.3 3359.5 L4302.3 3359.5 L4302.3 3448 L4302.3 3448 L4302.3 3536.5 L4302.3 3536.5 L4302.3 3595 L4302.3 3595 L4302.3 3653.5 L4302.3 3653.5 L4302.3 4777 L4302.3 4777 L4302.3 5900.5 L4302.3 5900.5 L4302.3 5974 L4302.3 5974 L4302.3 6047.5 L4302.3 6047.5 L4302.3 6127.5 L4302.3 6127.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4296.9 6114.2 L4302.3 6120.8 L4307.6 6114.2 L4302.3 6127.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4198 6234.5 L4042 6314.5 L4042 6508 L4042 6508 L4042 6701.5 L4042 6701.5 L4042 6924 L4042 6924 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4036.7 6910.7 L4042 6917.3 L4047.3 6910.7 L4042 6924 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4349.6 6234.5 L4420.5 6314.5 L4420.5 6454.5 L4420.5 6454.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4415.2 6441.2 L4420.5 6447.8 L4425.8 6441.2 L4420.5 6454.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4381.2 6561.5 L4278.5 6701.5 L4278.5 6924 L4278.5 6924 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4273.2 6910.7 L4278.5 6917.3 L4283.8 6910.7 L4278.5 6924 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4439 6561.5 L4487.3 6701.5 L4487.3 6977.5 L4487.3 6977.5 L4487.3 7253.5 L4487.3 7253.5 L4924.3 7341.8 L4924.3 7341.8 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4910.1 7344.4 L4917.7 7340.5 L4912.2 7333.9 L4924.3 7341.8 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5036.8 7395.5 L5036.8 7475.5 L5609.8 7523.1 L5609.8 7523.1 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5596 7527.3 L5603.1 7522.5 L5596.9 7516.6 L5609.8 7523.1 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4678 7038.5 L4678 7253.5 L4653.6 7273.5 L4653.6 7273.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4660.5 7260.9 L4658.7 7269.3 L4667.3 7269.2 L4653.6 7273.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5715.3 7143.5 L5715.3 7253.5 L4674 7352.1 L4674 7352.1 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4686.8 7345.5 L4680.6 7351.4 L4687.8 7356.1 L4674 7352.1 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4821.9 6212 L4776.8 6314.5 L4830.7 6447 L4830.7 6447 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4820.7 6436.7 L4828.2 6440.8 L4830.6 6432.6 L4830.7 6447 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4868.5 6212 L4977.8 6314.5 L5088.9 6447 L5088.9 6447 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5076.2 6440.2 L5084.6 6441.9 L5084.4 6433.4 L5088.9 6447 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5140 6569 L5140 6701.5 L5140 6977.5 L5140 6977.5 L5140 7253.5 L5140 7253.5 L4674 7340.1 L4674 7340.1 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4686.1 7332.4 L4680.6 7338.9 L4688.1 7342.9 L4674 7340.1 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5127 6212 L5017.8 6314.5 L4906.6 6447 L4906.6 6447 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4911.1 6433.4 L4910.9 6441.9 L4919.3 6440.2 L4906.6 6447 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5183.4 6212 L5260.8 6314.5 L5178.1 6447 L5178.1 6447 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5180.6 6432.9 L5181.6 6441.3 L5189.6 6438.5 L5178.1 6447 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5373.8 7031 L5373.8 7253.5 L4674 7346.9 L4674 7346.9 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4686.5 7339.9 L4680.6 7346.1 L4687.9 7350.5 L4674 7346.9 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M5853.5 7395.5 L5853.5 7475.5 L5692.8 7516 L5692.8 7516 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M5704.4 7507.6 L5699.2 7514.4 L5707 7517.9 L5692.8 7516 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2178.8 7143.5 L2178.8 7253.5 L4411 7358.3 L4411 7358.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4397.4 7363 L4404.3 7358 L4397.9 7352.4 L4411 7358.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3067.2 3339.5 L3042.8 3359.5 L3042.8 3379.5 L3042.8 3379.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3037.4 3366.2 L3042.8 3372.8 L3048.1 3366.2 L3042.8 3379.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3232 3335.1 L3348.8 3359.5 L3348.8 3387 L3348.8 3387 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3343.4 3373.7 L3348.8 3380.3 L3354.1 3373.7 L3348.8 3387 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3297.7 3509 L3274.8 3536.5 L3274.8 3564 L3274.8 3564 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3269.4 3550.7 L3274.8 3557.3 L3280.1 3550.7 L3274.8 3564 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3475.8 3476.1 L3748.5 3536.5 L3748.5 3595 L3748.5 3595 L3748.5 3653.5 L3748.5 3653.5 L3874 4716 L3874 4716 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3867.2 4703.4 L3873.3 4709.4 L3877.8 4702.1 L3874 4716 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3871.1 4838 L3694.5 5900.5 L3544.2 5943 L3544.2 5943 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3555.5 5934.2 L3550.6 5941.2 L3558.4 5944.5 L3544.2 5943 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3885 4838 L3950.5 5900.5 L3898.9 5943 L3898.9 5943 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3905.8 5930.4 L3904 5938.8 L3912.6 5938.6 L3898.9 5943 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3861.3 6005 L3861.3 6047.5 L3861.3 6181 L3861.3 6181 L3861.3 6314.5 L3861.3 6314.5 L3811.1 6424.5 L3811.1 6424.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3811.8 6410.2 L3813.8 6418.4 L3821.5 6414.6 L3811.1 6424.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3200.7 3626 L3135 3653.5 L3135 4281 L3135 4281 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3129.7 4267.7 L3135 4274.3 L3140.3 4267.7 L3135 4281 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3348.8 3626 L3414.5 3653.5 L3414.5 4716 L3414.5 4716 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3409.2 4702.7 L3414.5 4709.3 L3419.8 4702.7 L3414.5 4716 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3398.7 4838 L3124 5900.5 L3303.5 5943 L3303.5 5943 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3289.3 5945.1 L3297.1 5941.5 L3291.8 5934.7 L3303.5 5943 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3427.5 4838 L3654.5 5900.5 L3774 5943 L3774 5943 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3759.7 5943.6 L3767.8 5940.8 L3763.3 5933.5 L3774 5943 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3330.3 6005 L3187.5 6047.5 L3187.5 6067.5 L3187.5 6067.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3182.2 6054.2 L3187.5 6060.8 L3192.8 6054.2 L3187.5 6067.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3498.5 6005 L3586.3 6047.5 L3586.3 6150 L3586.3 6150 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3580.9 6136.7 L3586.3 6143.3 L3591.6 6136.7 L3586.3 6150 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3586.3 6212 L3586.3 6314.5 L3692.4 6424.5 L3692.4 6424.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3679.3 6418.6 L3687.8 6419.7 L3687 6411.2 L3692.4 6424.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3670 6548.1 L3275.8 6701.5 L2727.8 6910.8 L2727.8 6910.8 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2738.3 6901.1 L2734 6908.5 L2742.1 6911.1 L2727.8 6910.8 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3849.6 6591.5 L3950.5 6701.5 L3404.9 6924 L3404.9 6924 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3415.3 6914 L3411.1 6921.5 L3419.3 6923.9 L3404.9 6924 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3273.8 7031 L3273.8 7253.5 L4411 7353 L4411 7353 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4397.3 7357.1 L4404.4 7352.4 L4398.2 7346.5 L4411 7353 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1194.5 6279.5 L1194.5 6314.5 L1208.5 6334.5 L1208.5 6334.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1196.5 6326.6 L1204.6 6329 L1205.2 6320.5 L1208.5 6334.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1464.5 6242 L1464.5 6314.5 L1450.5 6334.5 L1450.5 6334.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1453.8 6320.5 L1454.4 6329 L1462.5 6326.6 L1450.5 6334.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1311.6 6681.5 L1309.5 6701.5 L2378.8 6938.8 L2378.8 6938.8 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2364.6 6941.1 L2372.2 6937.3 L2366.9 6930.7 L2378.8 6938.8 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1489.5 6662.2 L1530.3 6701.5 L3127.8 6954.4 L3127.8 6954.4 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3113.7 6957.6 L3121.2 6953.3 L3115.4 6947 L3127.8 6954.4 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1853.5 1385 L1853.5 1427.5 L1853.5 1650 L1853.5 1650 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1848.2 1636.7 L1853.5 1643.3 L1858.8 1636.7 L1853.5 1650 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1956.4 1385 L2097.5 1427.5 L2097.5 1718.5 L2097.5 1718.5 L2097.5 2009.5 L2097.5 2009.5 L2097.5 2060.5 L2097.5 2060.5 L2097.5 2111.5 L2097.5 2111.5 L2097.5 2282.5 L2097.5 2282.5 L2097.5 2453.5 L2097.5 2453.5 L2097.5 2722 L2097.5 2722 L2097.5 2990.5 L2097.5 2990.5 L2097.5 3124 L2097.5 3124 L2097.5 3257.5 L2097.5 3257.5 L2097.5 3308.5 L2097.5 3308.5 L2097.5 3359.5 L2097.5 3359.5 L2097.5 3448 L2097.5 3448 L2097.5 3536.5 L2097.5 3536.5 L2097.5 3595 L2097.5 3595 L2097.5 3653.5 L2097.5 3653.5 L2072.5 3794.3 L2072.5 3794.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2069.6 3780.2 L2073.7 3787.7 L2080.1 3782.1 L2072.5 3794.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1723.5 5055.7 L1194.5 5900.5 L1194.5 5974 L1194.5 5974 L1194.5 6047.5 L1194.5 6047.5 L1194.5 6082.5 L1194.5 6082.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1189.2 6069.2 L1194.5 6075.8 L1199.8 6069.2 L1194.5 6082.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1723.5 5229.3 L1464.5 5900.5 L1464.5 5943 L1464.5 5943 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1459.2 5929.7 L1464.5 5936.3 L1469.8 5929.7 L1464.5 5943 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1723.5 5568.3 L1650.3 5900.5 L1650.3 5974 L1650.3 5974 L1650.3 6047.5 L1650.3 6047.5 L1650.3 6181 L1650.3 6181 L1650.3 6314.5 L1650.3 6314.5 L1650.3 6508 L1650.3 6508 L1650.3 6701.5 L1650.3 6701.5 L1650.3 6977.5 L1650.3 6977.5 L1650.3 7253.5 L1650.3 7253.5 L4411 7359.5 L4411 7359.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4397.5 7364.3 L4404.3 7359.2 L4397.9 7353.6 L4411 7359.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2072.5 5475.3 L2178.8 5900.5 L2178.8 5974 L2178.8 5974 L2178.8 6047.5 L2178.8 6047.5 L2178.8 6181 L2178.8 6181 L2178.8 6314.5 L2178.8 6314.5 L2178.8 6508 L2178.8 6508 L2178.8 6701.5 L2178.8 6701.5 L2178.8 6811.5 L2178.8 6811.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2173.4 6798.2 L2178.8 6804.8 L2184.1 6798.2 L2178.8 6811.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2072.5 4970.1 L2913.5 5900.5 L2913.5 5974 L2913.5 5974 L2913.5 6047.5 L2913.5 6047.5 L2913.5 6181 L2913.5 6181 L2913.5 6314.5 L2913.5 6314.5 L2913.5 6477 L2913.5 6477 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2908.2 6463.7 L2913.5 6470.3 L2918.8 6463.7 L2913.5 6477 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1464.5 6005 L1464.5 6047.5 L1464.5 6120 L1464.5 6120 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1459.2 6106.7 L1464.5 6113.3 L1469.8 6106.7 L1464.5 6120 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2137.5 1385 L2137.5 1427.5 L1920.4 1650 L1920.4 1650 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1925.8 1636.7 L1925 1645.2 L1933.5 1644.2 L1920.4 1650 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2259.5 1372.4 L2625 1427.5 L2625 1718.5 L2625 1718.5 L2625 2009.5 L2625 2009.5 L2625 2060.5 L2625 2060.5 L2625 2111.5 L2625 2111.5 L2625 2282.5 L2625 2282.5 L2625 2453.5 L2625 2453.5 L2625 2722 L2625 2722 L2625 2990.5 L2625 2990.5 L2625 3124 L2625 3124 L2625 3257.5 L2625 3257.5 L2625 3308.5 L2625 3308.5 L2625 3359.5 L2625 3359.5 L2625 3448 L2625 3448 L2625 3536.5 L2625 3536.5 L2625 3595 L2625 3595 L2625 3653.5 L2625 3653.5 L2072.5 4507.3 L2072.5 4507.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2075.3 4493.2 L2076.1 4501.7 L2084.2 4499 L2072.5 4507.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2801.5 2433.5 L2801.5 2453.5 L2808.7 2473.5 L2808.7 2473.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2799.1 2462.7 L2806.4 2467.2 L2809.2 2459.1 L2808.7 2473.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3891.8 2358.5 L3891.8 2453.5 L3034 2685.1 L3034 2685.1 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3045.5 2676.5 L3040.4 2683.4 L3048.3 2686.8 L3034 2685.1 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2808.7 2970.5 L2801.5 2990.5 L2801.5 3010.5 L2801.5 3010.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2796.2 2997.2 L2801.5 3003.8 L2806.8 2997.2 L2801.5 3010.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3034 2898.6 L3105 2990.5 L3105 3063 L3105 3063 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3099.7 3049.7 L3105 3056.3 L3110.3 3049.7 L3105 3063 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3105 3185 L3105 3257.5 L3105 3277.5 L3105 3277.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3099.7 3264.2 L3105 3270.8 L3110.3 3264.2 L3105 3277.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3241.5 3146.9 L3901.3 3257.5 L3901.3 3308.5 L3901.3 3308.5 L3901.3 3359.5 L3901.3 3359.5 L3901.3 3387 L3901.3 3387 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3895.9 3373.7 L3901.3 3380.3 L3906.6 3373.7 L3901.3 3387 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3823.5 3509 L3788.5 3536.5 L3382.8 3582.7 L3382.8 3582.7 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3395.4 3575.9 L3389.4 3581.9 L3396.6 3586.5 L3382.8 3582.7 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3935.2 3509 L3950.5 3536.5 L3950.5 3595 L3950.5 3595 L3950.5 3653.5 L3950.5 3653.5 L3885 4716 L3885 4716 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3880.5 4702.4 L3885.4 4709.3 L3891.2 4703 L3885 4716 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2808.1 1989.5 L2801.5 2009.5 L2801.5 2060.5 L2801.5 2060.5 L2801.5 2111.5 L2801.5 2111.5 L2801.5 2131.5 L2801.5 2131.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2796.2 2118.2 L2801.5 2124.8 L2806.8 2118.2 L2801.5 2131.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3034 1758.5 L3891.8 2009.5 L3891.8 2029.5 L3891.8 2029.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3886.4 2016.2 L3891.8 2022.8 L3897.1 2016.2 L3891.8 2029.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3891.8 2091.5 L3891.8 2111.5 L3891.8 2206.5 L3891.8 2206.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3886.4 2193.2 L3891.8 2199.8 L3897.1 2193.2 L3891.8 2206.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4042 7031 L4042 7253.5 L4411 7335.3 L4411 7335.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4396.8 7337.7 L4404.5 7333.9 L4399.1 7327.2 L4411 7335.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M4278.5 7031 L4278.5 7253.5 L4411 7309.2 L4411 7309.2 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4396.6 7309 L4404.9 7306.6 L4400.8 7299.1 L4411 7309.2 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1505 1385 L1505 1427.5 L1771.5 1650 L1771.5 1650 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1757.8 1645.5 L1766.3 1645.7 L1764.6 1637.4 L1771.5 1650 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M1579.7 1385 L1682 1427.5 L1682 1718.5 L1682 1718.5 L1682 2009.5 L1682 2009.5 L1682 2060.5 L1682 2060.5 L1682 2111.5 L1682 2111.5 L1682 2282.5 L1682 2282.5 L1682 2453.5 L1682 2453.5 L1682 2722 L1682 2722 L1682 2990.5 L1682 2990.5 L1682 3124 L1682 3124 L1682 3257.5 L1682 3257.5 L1682 3308.5 L1682 3308.5 L1682 3359.5 L1682 3359.5 L1682 3448 L1682 3448 L1682 3536.5 L1682 3536.5 L1682 3595 L1682 3595 L1682 3653.5 L1682 3653.5 L1723.5 3869.4 L1723.5 3869.4 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M1715.7 3857.3 L1722.2 3862.8 L1726.2 3855.3 L1723.5 3869.4 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2861.9 6539 L2591.3 6701.5 L2767.8 6846.3 L2767.8 6846.3 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M2754.1 6841.9 L2762.6 6842 L2760.8 6833.7 L2767.8 6846.3 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M2965.1 6539 L3235.8 6701.5 L3497.9 6916.5 L3497.9 6916.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M3484.2 6912.2 L3492.7 6912.3 L3491 6903.9 L3497.9 6916.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <path d="M3572.3 7038.5 L3572.3 7253.5 L4411 7349.5 L4411 7349.5 " style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <path d="M4397.1 7353.2 L4404.4 7348.7 L4398.4 7342.6 L4411 7349.5 Z" style="stroke:#33322E;fill:#33322E;stroke-dasharray:none;"></path>
+  <rect x="3097.5" y="13.5" height="62" width="92" id="entry" class="node highlighted" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3143.5" y="35" style="fill: #33322E;text-anchor: middle;">entry</text>
+  <path d="M3097.5 44.5 L3189.5 44.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3105.5" y="66" style="fill: #33322E;font-weight:normal;">b b_main</text>
+  <rect x="3040.5" y="115.5" height="407" width="206" id="b_main" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3143.5" y="137" style="fill: #33322E;text-anchor: middle;">b_main</text>
+  <path d="M3040.5 146.5 L3246.5 146.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3048.5" y="168" style="fill: #33322E;font-weight:normal;">txn RekeyTo</text>
+  <text x="3048.5" y="183" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="3048.5" y="198" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3048.5" y="213" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3048.5" y="228" style="fill: #33322E;font-weight:normal;">txn CloseRemainderTo</text>
+  <text x="3048.5" y="243" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="3048.5" y="258" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3048.5" y="273" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3048.5" y="288" style="fill: #33322E;font-weight:normal;">txn AssetCloseTo</text>
+  <text x="3048.5" y="303" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="3048.5" y="318" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3048.5" y="333" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3048.5" y="348" style="fill: #33322E;font-weight:normal;">txn TypeEnum</text>
+  <text x="3048.5" y="363" style="fill: #33322E;font-weight:normal;">int appl</text>
+  <text x="3048.5" y="378" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3048.5" y="393" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3048.5" y="408" style="fill: #33322E;font-weight:normal;">txn Fee</text>
+  <text x="3048.5" y="423" style="fill: #33322E;font-weight:normal;">global MinTxnFee</text>
+  <text x="3048.5" y="438" style="fill: #33322E;font-weight:normal;">&lt;=</text>
+  <text x="3048.5" y="453" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3048.5" y="468" style="fill: #33322E;font-weight:normal;">txn NumAppArgs</text>
+  <text x="3048.5" y="483" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="3048.5" y="498" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3048.5" y="513" style="fill: #33322E;font-weight:normal;">bz b_method_check</text>
+  <rect x="5682.5" y="3556.5" height="77" width="178" id="bz_b_method_check" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5771.5" y="3578" style="fill: #33322E;text-anchor: middle;">bz_b_method_check</text>
+  <path d="M5682.5 3587.5 L5860.5 3587.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5690.5" y="3609" style="fill: #33322E;font-weight:normal;">txn ApplicationID</text>
+  <text x="5690.5" y="3624" style="fill: #33322E;font-weight:normal;">bz b_creation</text>
+  <rect x="5663.5" y="4723.5" height="107" width="216" id="bz_b_creation" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5771.5" y="4745" style="fill: #33322E;text-anchor: middle;">bz_b_creation</text>
+  <path d="M5663.5 4754.5 L5879.5 4754.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5671.5" y="4776" style="fill: #33322E;font-weight:normal;">txn OnCompletion</text>
+  <text x="5671.5" y="4791" style="fill: #33322E;font-weight:normal;">int DeleteApplication</text>
+  <text x="5671.5" y="4806" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="5671.5" y="4821" style="fill: #33322E;font-weight:normal;">bnz b_deletion</text>
+  <rect x="5663.5" y="5920.5" height="107" width="216" id="bnz_b_deletion" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5771.5" y="5942" style="fill: #33322E;text-anchor: middle;">bnz_b_deletion</text>
+  <path d="M5663.5 5951.5 L5879.5 5951.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5671.5" y="5973" style="fill: #33322E;font-weight:normal;">txn OnCompletion</text>
+  <text x="5671.5" y="5988" style="fill: #33322E;font-weight:normal;">int UpdateApplication</text>
+  <text x="5671.5" y="6003" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="5671.5" y="6018" style="fill: #33322E;font-weight:normal;">bnz b_update</text>
+  <rect x="5687.5" y="6127.5" height="107" width="168" id="bnz_b_update" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5771.5" y="6149" style="fill: #33322E;text-anchor: middle;">bnz_b_update</text>
+  <path d="M5687.5 6158.5 L5855.5 6158.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5695.5" y="6180" style="fill: #33322E;font-weight:normal;">txn OnCompletion</text>
+  <text x="5695.5" y="6195" style="fill: #33322E;font-weight:normal;">int CloseOut</text>
+  <text x="5695.5" y="6210" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="5695.5" y="6225" style="fill: #33322E;font-weight:normal;">bnz b_closeout</text>
+  <rect x="5771.5" y="6454.5" height="107" width="168" id="bnz_b_closeout" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5855.5" y="6476" style="fill: #33322E;text-anchor: middle;">bnz_b_closeout</text>
+  <path d="M5771.5 6485.5 L5939.5 6485.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5779.5" y="6507" style="fill: #33322E;font-weight:normal;">txn OnCompletion</text>
+  <text x="5779.5" y="6522" style="fill: #33322E;font-weight:normal;">int OptIn</text>
+  <text x="5779.5" y="6537" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="5779.5" y="6552" style="fill: #33322E;font-weight:normal;">bnz b_optin</text>
+  <rect x="5910.5" y="6924.5" height="107" width="168" id="bnz_b_optin" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5994.5" y="6946" style="fill: #33322E;text-anchor: middle;">bnz_b_optin</text>
+  <path d="M5910.5 6955.5 L6078.5 6955.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5918.5" y="6977" style="fill: #33322E;font-weight:normal;">txn OnCompletion</text>
+  <text x="5918.5" y="6992" style="fill: #33322E;font-weight:normal;">int NoOp</text>
+  <text x="5918.5" y="7007" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="5918.5" y="7022" style="fill: #33322E;font-weight:normal;">bnz b_error</text>
+  <rect x="5984.5" y="7333.5" height="62" width="121" id="bnz_b_error" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="6045" y="7355" style="fill: #33322E;text-anchor: middle;">bnz_b_error</text>
+  <path d="M5984.5 7364.5 L6105.5 7364.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5992.5" y="7386" style="fill: #33322E;font-weight:normal;">b b_error</text>
+  <rect x="569.5" y="562.5" height="107" width="368" id="b_method_check" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="753.5" y="584" style="fill: #33322E;text-anchor: middle;">b_method_check</text>
+  <path d="M569.5 593.5 L937.5 593.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="577.5" y="615" style="fill: #33322E;font-weight:normal;">method "budget_increase_call_1()void"</text>
+  <text x="577.5" y="630" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="577.5" y="645" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="577.5" y="660" style="fill: #33322E;font-weight:normal;">bnz method_budget_increase_call</text>
+  <rect x="555.5" y="709.5" height="107" width="1859" id="bnz_method_budget_increase_call" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1485" y="731" style="fill: #33322E;text-anchor: middle;">bnz_method_budget_increase_call</text>
+  <path d="M555.5 740.5 L2414.5 740.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="563.5" y="762" style="fill: #33322E;font-weight:normal;">method "setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string"</text>
+  <text x="563.5" y="777" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="563.5" y="792" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="563.5" y="807" style="fill: #33322E;font-weight:normal;">bnz method_setup</text>
+  <rect x="1545.5" y="931.5" height="107" width="577" id="bnz_method_setup" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1834" y="953" style="fill: #33322E;text-anchor: middle;">bnz_method_setup</text>
+  <path d="M1545.5 962.5 L2122.5 962.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1553.5" y="984" style="fill: #33322E;font-weight:normal;">method "activate(pay,axfer,application,asset,string)string"</text>
+  <text x="1553.5" y="999" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="1553.5" y="1014" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1553.5" y="1029" style="fill: #33322E;font-weight:normal;">bnz method_activate</text>
+  <rect x="2853.5" y="1153.5" height="107" width="349" id="bnz_method_activate" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3028" y="1175" style="fill: #33322E;text-anchor: middle;">bnz_method_activate</text>
+  <path d="M2853.5 1184.5 L3202.5 1184.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2861.5" y="1206" style="fill: #33322E;font-weight:normal;">method "release(application)string"</text>
+  <text x="2861.5" y="1221" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="2861.5" y="1236" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2861.5" y="1251" style="fill: #33322E;font-weight:normal;">bnz method_release</text>
+  <rect x="2857.5" y="1300.5" height="107" width="1004" id="bnz_method_release" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3359.5" y="1322" style="fill: #33322E;text-anchor: middle;">bnz_method_release</text>
+  <path d="M2857.5 1331.5 L3861.5 1331.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2865.5" y="1353" style="fill: #33322E;font-weight:normal;">method "claim(pay,asset,application,address,byte[64],string,(uint64,uint64,uint64,uint64,uint64))string"</text>
+  <text x="2865.5" y="1368" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="2865.5" y="1383" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2865.5" y="1398" style="fill: #33322E;font-weight:normal;">bnz method_claim</text>
+  <rect x="4137.5" y="6127.5" height="107" width="330" id="bnz_method_claim" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4302.5" y="6149" style="fill: #33322E;text-anchor: middle;">bnz_method_claim</text>
+  <path d="M4137.5 6158.5 L4467.5 6158.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4145.5" y="6180" style="fill: #33322E;font-weight:normal;">method "get_metric(string)string"</text>
+  <text x="4145.5" y="6195" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="4145.5" y="6210" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="4145.5" y="6225" style="fill: #33322E;font-weight:normal;">bnz method_get_metric</text>
+  <rect x="4270.5" y="6454.5" height="107" width="301" id="bnz_method_get_metric" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4421" y="6476" style="fill: #33322E;text-anchor: middle;">bnz_method_get_metric</text>
+  <path d="M4270.5 6485.5 L4571.5 6485.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4278.5" y="6507" style="fill: #33322E;font-weight:normal;">method "get_metrics()string[]"</text>
+  <text x="4278.5" y="6522" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 0</text>
+  <text x="4278.5" y="6537" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="4278.5" y="6552" style="fill: #33322E;font-weight:normal;">bnz method_get_metrics</text>
+  <rect x="4924.5" y="7333.5" height="62" width="225" id="bnz_method_get_metrics" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5037" y="7355" style="fill: #33322E;text-anchor: middle;">bnz_method_get_metrics</text>
+  <path d="M4924.5 7364.5 L5149.5 7364.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4932.5" y="7386" style="fill: #33322E;font-weight:normal;">b b_error</text>
+  <rect x="4747.5" y="6447.5" height="122" width="216" id="sub_check_owner" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4855.5" y="6469" style="fill: #33322E;text-anchor: middle;">sub_check_owner</text>
+  <path d="M4747.5 6478.5 L4963.5 6478.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4755.5" y="6500" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="4755.5" y="6515" style="fill: #33322E;font-weight:normal;">global CreatorAddress</text>
+  <text x="4755.5" y="6530" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="4755.5" y="6545" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="4755.5" y="6560" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="1722.5" y="1650.5" height="137" width="263" id="sub_check_author" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1854" y="1672" style="fill: #33322E;text-anchor: middle;">sub_check_author</text>
+  <path d="M1722.5 1681.5 L1985.5 1681.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1730.5" y="1703" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="1730.5" y="1718" style="fill: #33322E;font-weight:normal;">byte "poap_author_address"</text>
+  <text x="1730.5" y="1733" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="1730.5" y="1748" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1730.5" y="1763" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1730.5" y="1778" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="4541.5" y="6916.5" height="122" width="273" id="b_creation" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4678" y="6938" style="fill: #33322E;text-anchor: middle;">b_creation</text>
+  <path d="M4541.5 6947.5 L4814.5 6947.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4549.5" y="6969" style="fill: #33322E;font-weight:normal;">byte "poap_author_address"</text>
+  <text x="4549.5" y="6984" style="fill: #33322E;font-weight:normal;">txn Note</text>
+  <text x="4549.5" y="6999" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="4549.5" y="7014" style="fill: #33322E;font-weight:normal;">byte "algopoap_item_create"</text>
+  <text x="4549.5" y="7029" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="5559.5" y="6811.5" height="332" width="311" id="b_optin" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5715" y="6833" style="fill: #33322E;text-anchor: middle;">b_optin</text>
+  <path d="M5559.5 6842.5 L5870.5 6842.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5567.5" y="6864" style="fill: #33322E;font-weight:normal;">byte "poap_item_attendee_count"</text>
+  <text x="5567.5" y="6879" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="5567.5" y="6894" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="5567.5" y="6909" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="5567.5" y="6924" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="5567.5" y="6939" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="5567.5" y="6954" style="fill: #33322E;font-weight:normal;">byte "poap_item_last_attendee"</text>
+  <text x="5567.5" y="6969" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="5567.5" y="6984" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="5567.5" y="6999" style="fill: #33322E;font-weight:normal;">byte "poap_item_onboard_count"</text>
+  <text x="5567.5" y="7014" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="5567.5" y="7029" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="5567.5" y="7044" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="5567.5" y="7059" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="5567.5" y="7074" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="5567.5" y="7089" style="fill: #33322E;font-weight:normal;">byte "algopoap_item_optin_"</text>
+  <text x="5567.5" y="7104" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="5567.5" y="7119" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="5567.5" y="7134" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="4718.5" y="6150.5" height="62" width="235" id="b_deletion" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4836" y="6172" style="fill: #33322E;text-anchor: middle;">b_deletion</text>
+  <path d="M4718.5 6181.5 L4953.5 6181.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4726.5" y="6203" style="fill: #33322E;font-weight:normal;">callsub sub_check_owner</text>
+  <rect x="5003.5" y="6447.5" height="122" width="273" id="callsub_sub_check_owner" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5140" y="6469" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_owner</text>
+  <path d="M5003.5 6478.5 L5276.5 6478.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5011.5" y="6500" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="5011.5" y="6515" style="fill: #33322E;font-weight:normal;">global CurrentApplicationID</text>
+  <text x="5011.5" y="6530" style="fill: #33322E;font-weight:normal;">itob</text>
+  <text x="5011.5" y="6545" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="5011.5" y="6560" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="5042.5" y="6150.5" height="62" width="235" id="b_update" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5160" y="6172" style="fill: #33322E;text-anchor: middle;">b_update</text>
+  <path d="M5042.5 6181.5 L5277.5 6181.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5050.5" y="6203" style="fill: #33322E;font-weight:normal;">callsub sub_check_owner</text>
+  <rect x="5227.5" y="6924.5" height="107" width="292" id="b_closeout" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5373.5" y="6946" style="fill: #33322E;text-anchor: middle;">b_closeout</text>
+  <path d="M5227.5 6955.5 L5519.5 6955.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5235.5" y="6977" style="fill: #33322E;font-weight:normal;">byte "algopoap_item_closeout"</text>
+  <text x="5235.5" y="6992" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="5235.5" y="7007" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="5235.5" y="7022" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="5802.5" y="7333.5" height="62" width="102" id="b_noop" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5853.5" y="7355" style="fill: #33322E;text-anchor: middle;">b_noop</text>
+  <path d="M5802.5 7364.5 L5904.5 7364.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5810.5" y="7386" style="fill: #33322E;font-weight:normal;">b b_error</text>
+  <rect x="2767.5" y="6721.5" height="512" width="320" id="sub_create_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2927.5" y="6743" style="fill: #33322E;text-anchor: middle;">sub_create_nft</text>
+  <path d="M2767.5 6752.5 L3087.5 6752.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2775.5" y="6774" style="fill: #33322E;font-weight:normal;">itxn_begin</text>
+  <text x="2775.5" y="6789" style="fill: #33322E;font-weight:normal;">int acfg</text>
+  <text x="2775.5" y="6804" style="fill: #33322E;font-weight:normal;">itxn_field TypeEnum</text>
+  <text x="2775.5" y="6819" style="fill: #33322E;font-weight:normal;">byte "poap_attendee_qty"</text>
+  <text x="2775.5" y="6834" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2775.5" y="6849" style="fill: #33322E;font-weight:normal;">int 10</text>
+  <text x="2775.5" y="6864" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="2775.5" y="6879" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetTotal</text>
+  <text x="2775.5" y="6894" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="2775.5" y="6909" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetDecimals</text>
+  <text x="2775.5" y="6924" style="fill: #33322E;font-weight:normal;">byte "PoaP"</text>
+  <text x="2775.5" y="6939" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetUnitName</text>
+  <text x="2775.5" y="6954" style="fill: #33322E;font-weight:normal;">byte "AlgoPoaP"</text>
+  <text x="2775.5" y="6969" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetName</text>
+  <text x="2775.5" y="6984" style="fill: #33322E;font-weight:normal;">byte "poap_url"</text>
+  <text x="2775.5" y="6999" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2775.5" y="7014" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetURL</text>
+  <text x="2775.5" y="7029" style="fill: #33322E;font-weight:normal;">global CurrentApplicationAddress</text>
+  <text x="2775.5" y="7044" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2775.5" y="7059" style="fill: #33322E;font-weight:normal;">dup2</text>
+  <text x="2775.5" y="7074" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetManager</text>
+  <text x="2775.5" y="7089" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetReserve</text>
+  <text x="2775.5" y="7104" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetFreeze</text>
+  <text x="2775.5" y="7119" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetClawback</text>
+  <text x="2775.5" y="7134" style="fill: #33322E;font-weight:normal;">itxn_submit</text>
+  <text x="2775.5" y="7149" style="fill: #33322E;font-weight:normal;">byte "poap_asa_id"</text>
+  <text x="2775.5" y="7164" style="fill: #33322E;font-weight:normal;">itxn CreatedAssetID</text>
+  <text x="2775.5" y="7179" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2775.5" y="7194" style="fill: #33322E;font-weight:normal;">store 0</text>
+  <text x="2775.5" y="7209" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="2775.5" y="7224" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="2018.5" y="6811.5" height="332" width="320" id="b_config_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2178.5" y="6833" style="fill: #33322E;text-anchor: middle;">b_config_nft</text>
+  <path d="M2018.5 6842.5 L2338.5 6842.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2026.5" y="6864" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2026.5" y="6879" style="fill: #33322E;font-weight:normal;">itob</text>
+  <text x="2026.5" y="6894" style="fill: #33322E;font-weight:normal;">store 0</text>
+  <text x="2026.5" y="6909" style="fill: #33322E;font-weight:normal;">itxn_begin</text>
+  <text x="2026.5" y="6924" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAsset</text>
+  <text x="2026.5" y="6939" style="fill: #33322E;font-weight:normal;">int acfg</text>
+  <text x="2026.5" y="6954" style="fill: #33322E;font-weight:normal;">itxn_field TypeEnum</text>
+  <text x="2026.5" y="6969" style="fill: #33322E;font-weight:normal;">global CurrentApplicationAddress</text>
+  <text x="2026.5" y="6984" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2026.5" y="6999" style="fill: #33322E;font-weight:normal;">dup2</text>
+  <text x="2026.5" y="7014" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetManager</text>
+  <text x="2026.5" y="7029" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetReserve</text>
+  <text x="2026.5" y="7044" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetFreeze</text>
+  <text x="2026.5" y="7059" style="fill: #33322E;font-weight:normal;">itxn_field ConfigAssetClawback</text>
+  <text x="2026.5" y="7074" style="fill: #33322E;font-weight:normal;">itxn_submit</text>
+  <text x="2026.5" y="7089" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="2026.5" y="7104" style="fill: #33322E;font-weight:normal;">load 0</text>
+  <text x="2026.5" y="7119" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="2026.5" y="7134" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="2378.5" y="6789.5" height="377" width="349" id="sub_send_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2553" y="6811" style="fill: #33322E;text-anchor: middle;">sub_send_nft</text>
+  <path d="M2378.5 6820.5 L2727.5 6820.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2386.5" y="6842" style="fill: #33322E;font-weight:normal;">itxn_begin</text>
+  <text x="2386.5" y="6857" style="fill: #33322E;font-weight:normal;">int axfer</text>
+  <text x="2386.5" y="6872" style="fill: #33322E;font-weight:normal;">itxn_field TypeEnum</text>
+  <text x="2386.5" y="6887" style="fill: #33322E;font-weight:normal;">load 0</text>
+  <text x="2386.5" y="6902" style="fill: #33322E;font-weight:normal;">itxn_field XferAsset</text>
+  <text x="2386.5" y="6917" style="fill: #33322E;font-weight:normal;">load 2</text>
+  <text x="2386.5" y="6932" style="fill: #33322E;font-weight:normal;">itxn_field AssetSender</text>
+  <text x="2386.5" y="6947" style="fill: #33322E;font-weight:normal;">load 3</text>
+  <text x="2386.5" y="6962" style="fill: #33322E;font-weight:normal;">itxn_field AssetAmount</text>
+  <text x="2386.5" y="6977" style="fill: #33322E;font-weight:normal;">load 4</text>
+  <text x="2386.5" y="6992" style="fill: #33322E;font-weight:normal;">itxn_field AssetReceiver</text>
+  <text x="2386.5" y="7007" style="fill: #33322E;font-weight:normal;">itxn_submit</text>
+  <text x="2386.5" y="7022" style="fill: #33322E;font-weight:normal;">byte "poap_item_nft_issuance_count"</text>
+  <text x="2386.5" y="7037" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2386.5" y="7052" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2386.5" y="7067" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="2386.5" y="7082" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="2386.5" y="7097" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="2386.5" y="7112" style="fill: #33322E;font-weight:normal;">byte "poap_item_last_nft_issuance"</text>
+  <text x="2386.5" y="7127" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="2386.5" y="7142" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="2386.5" y="7157" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="2674.5" y="3010.5" height="227" width="254" id="sub_check_timestamp" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2801.5" y="3032" style="fill: #33322E;text-anchor: middle;">sub_check_timestamp</text>
+  <path d="M2674.5 3041.5 L2928.5 3041.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2682.5" y="3063" style="fill: #33322E;font-weight:normal;">global LatestTimestamp</text>
+  <text x="2682.5" y="3078" style="fill: #33322E;font-weight:normal;">byte "poap_activate_time"</text>
+  <text x="2682.5" y="3093" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2682.5" y="3108" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="2682.5" y="3123" style="fill: #33322E;font-weight:normal;">store 17</text>
+  <text x="2682.5" y="3138" style="fill: #33322E;font-weight:normal;">&gt;=</text>
+  <text x="2682.5" y="3153" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2682.5" y="3168" style="fill: #33322E;font-weight:normal;">load 7</text>
+  <text x="2682.5" y="3183" style="fill: #33322E;font-weight:normal;">load 17</text>
+  <text x="2682.5" y="3198" style="fill: #33322E;font-weight:normal;">&gt;=</text>
+  <text x="2682.5" y="3213" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2682.5" y="3228" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="3008.5" y="4281.5" height="992" width="254" id="sub_check_geo" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3135.5" y="4303" style="fill: #33322E;text-anchor: middle;">sub_check_geo</text>
+  <path d="M3008.5 4312.5 L3262.5 4312.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3016.5" y="4334" style="fill: #33322E;font-weight:normal;">byte "poap_lat"</text>
+  <text x="3016.5" y="4349" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4364" style="fill: #33322E;font-weight:normal;">load 13</text>
+  <text x="3016.5" y="4379" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3016.5" y="4394" style="fill: #33322E;font-weight:normal;">byte "poap_lng"</text>
+  <text x="3016.5" y="4409" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4424" style="fill: #33322E;font-weight:normal;">load 15</text>
+  <text x="3016.5" y="4439" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3016.5" y="4454" style="fill: #33322E;font-weight:normal;">&amp;&amp;</text>
+  <text x="3016.5" y="4469" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3016.5" y="4484" style="fill: #33322E;font-weight:normal;">byte "poap_lng_unit_diff"</text>
+  <text x="3016.5" y="4499" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4514" style="fill: #33322E;font-weight:normal;">store 18</text>
+  <text x="3016.5" y="4529" style="fill: #33322E;font-weight:normal;">byte "poap_lat_dec"</text>
+  <text x="3016.5" y="4544" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4559" style="fill: #33322E;font-weight:normal;">load 14</text>
+  <text x="3016.5" y="4574" style="fill: #33322E;font-weight:normal;">-</text>
+  <text x="3016.5" y="4589" style="fill: #33322E;font-weight:normal;">store 19</text>
+  <text x="3016.5" y="4604" style="fill: #33322E;font-weight:normal;">byte "poap_lng_dec"</text>
+  <text x="3016.5" y="4619" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4634" style="fill: #33322E;font-weight:normal;">load 16</text>
+  <text x="3016.5" y="4649" style="fill: #33322E;font-weight:normal;">-</text>
+  <text x="3016.5" y="4664" style="fill: #33322E;font-weight:normal;">store 20</text>
+  <text x="3016.5" y="4679" style="fill: #33322E;font-weight:normal;">byte "poap_geo_radius"</text>
+  <text x="3016.5" y="4694" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3016.5" y="4709" style="fill: #33322E;font-weight:normal;">store 21</text>
+  <text x="3016.5" y="4724" style="fill: #33322E;font-weight:normal;">int 11</text>
+  <text x="3016.5" y="4739" style="fill: #33322E;font-weight:normal;">store 22</text>
+  <text x="3016.5" y="4754" style="fill: #33322E;font-weight:normal;">load 19</text>
+  <text x="3016.5" y="4769" style="fill: #33322E;font-weight:normal;">load 22</text>
+  <text x="3016.5" y="4784" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="3016.5" y="4799" style="fill: #33322E;font-weight:normal;">int 2</text>
+  <text x="3016.5" y="4814" style="fill: #33322E;font-weight:normal;">exp</text>
+  <text x="3016.5" y="4829" style="fill: #33322E;font-weight:normal;">store 23</text>
+  <text x="3016.5" y="4844" style="fill: #33322E;font-weight:normal;">load 20</text>
+  <text x="3016.5" y="4859" style="fill: #33322E;font-weight:normal;">load 18</text>
+  <text x="3016.5" y="4874" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="3016.5" y="4889" style="fill: #33322E;font-weight:normal;">int 2</text>
+  <text x="3016.5" y="4904" style="fill: #33322E;font-weight:normal;">exp</text>
+  <text x="3016.5" y="4919" style="fill: #33322E;font-weight:normal;">store 24</text>
+  <text x="3016.5" y="4934" style="fill: #33322E;font-weight:normal;">load 21</text>
+  <text x="3016.5" y="4949" style="fill: #33322E;font-weight:normal;">int 2</text>
+  <text x="3016.5" y="4964" style="fill: #33322E;font-weight:normal;">exp</text>
+  <text x="3016.5" y="4979" style="fill: #33322E;font-weight:normal;">store 25</text>
+  <text x="3016.5" y="4994" style="fill: #33322E;font-weight:normal;">load 21</text>
+  <text x="3016.5" y="5009" style="fill: #33322E;font-weight:normal;">load 19</text>
+  <text x="3016.5" y="5024" style="fill: #33322E;font-weight:normal;">load 22</text>
+  <text x="3016.5" y="5039" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="3016.5" y="5054" style="fill: #33322E;font-weight:normal;">&gt;</text>
+  <text x="3016.5" y="5069" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3016.5" y="5084" style="fill: #33322E;font-weight:normal;">load 21</text>
+  <text x="3016.5" y="5099" style="fill: #33322E;font-weight:normal;">load 20</text>
+  <text x="3016.5" y="5114" style="fill: #33322E;font-weight:normal;">load 18</text>
+  <text x="3016.5" y="5129" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="3016.5" y="5144" style="fill: #33322E;font-weight:normal;">&gt;</text>
+  <text x="3016.5" y="5159" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3016.5" y="5174" style="fill: #33322E;font-weight:normal;">load 23</text>
+  <text x="3016.5" y="5189" style="fill: #33322E;font-weight:normal;">load 24</text>
+  <text x="3016.5" y="5204" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="3016.5" y="5219" style="fill: #33322E;font-weight:normal;">load 25</text>
+  <text x="3016.5" y="5234" style="fill: #33322E;font-weight:normal;">&lt;=</text>
+  <text x="3016.5" y="5249" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3016.5" y="5264" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="2925.5" y="3379.5" height="137" width="235" id="sub_check_release" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3043" y="3401" style="fill: #33322E;text-anchor: middle;">sub_check_release</text>
+  <path d="M2925.5 3410.5 L3160.5 3410.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2933.5" y="3432" style="fill: #33322E;font-weight:normal;">byte "poap_is_released"</text>
+  <text x="2933.5" y="3447" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2933.5" y="3462" style="fill: #33322E;font-weight:normal;">byte "true"</text>
+  <text x="2933.5" y="3477" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2933.5" y="3492" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2933.5" y="3507" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="3060.5" y="6067.5" height="227" width="254" id="sub_check_qr_secret" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3187.5" y="6089" style="fill: #33322E;text-anchor: middle;">sub_check_qr_secret</text>
+  <path d="M3060.5 6098.5 L3314.5 6098.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3068.5" y="6120" style="fill: #33322E;font-weight:normal;">load 6</text>
+  <text x="3068.5" y="6135" style="fill: #33322E;font-weight:normal;">extract 2 0</text>
+  <text x="3068.5" y="6150" style="fill: #33322E;font-weight:normal;">load 8</text>
+  <text x="3068.5" y="6165" style="fill: #33322E;font-weight:normal;">load 4</text>
+  <text x="3068.5" y="6180" style="fill: #33322E;font-weight:normal;">ed25519verify_bare</text>
+  <text x="3068.5" y="6195" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3068.5" y="6210" style="fill: #33322E;font-weight:normal;">load 6</text>
+  <text x="3068.5" y="6225" style="fill: #33322E;font-weight:normal;">sha512_256</text>
+  <text x="3068.5" y="6240" style="fill: #33322E;font-weight:normal;">byte "poap_shared_secret"</text>
+  <text x="3068.5" y="6255" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3068.5" y="6270" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3068.5" y="6285" style="fill: #33322E;font-weight:normal;">retsub</text>
+  <rect x="2978.5" y="3277.5" height="62" width="254" id="b_has_sig" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3105.5" y="3299" style="fill: #33322E;text-anchor: middle;">b_has_sig</text>
+  <path d="M2978.5 3308.5 L3232.5 3308.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2986.5" y="3330" style="fill: #33322E;font-weight:normal;">callsub sub_check_release</text>
+  <rect x="3221.5" y="3387.5" height="122" width="254" id="callsub_sub_check_release" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3348.5" y="3409" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_release</text>
+  <path d="M3221.5 3418.5 L3475.5 3418.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3229.5" y="3440" style="fill: #33322E;font-weight:normal;">byte "poap_has_geo"</text>
+  <text x="3229.5" y="3455" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3229.5" y="3470" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="3229.5" y="3485" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3229.5" y="3500" style="fill: #33322E;font-weight:normal;">bnz b_has_geo</text>
+  <rect x="3768.5" y="4716.5" height="122" width="225" id="bnz_b_has_geo" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3881" y="4738" style="fill: #33322E;text-anchor: middle;">bnz_b_has_geo</text>
+  <path d="M3768.5 4747.5 L3993.5 4747.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3776.5" y="4769" style="fill: #33322E;font-weight:normal;">byte "poap_has_qrcode"</text>
+  <text x="3776.5" y="4784" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3776.5" y="4799" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="3776.5" y="4814" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3776.5" y="4829" style="fill: #33322E;font-weight:normal;">bnz b_has_qr</text>
+  <rect x="3767.5" y="5943.5" height="62" width="187" id="bnz_b_has_qr" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3861" y="5965" style="fill: #33322E;text-anchor: middle;">bnz_b_has_qr</text>
+  <path d="M3767.5 5974.5 L3954.5 5974.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3775.5" y="5996" style="fill: #33322E;font-weight:normal;">b b_finalize_claim</text>
+  <rect x="3166.5" y="3564.5" height="62" width="216" id="b_has_geo" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3274.5" y="3586" style="fill: #33322E;text-anchor: middle;">b_has_geo</text>
+  <path d="M3166.5 3595.5 L3382.5 3595.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3174.5" y="3617" style="fill: #33322E;font-weight:normal;">callsub sub_check_geo</text>
+  <rect x="3302.5" y="4716.5" height="122" width="225" id="callsub_sub_check_geo" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3415" y="4738" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_geo</text>
+  <path d="M3302.5 4747.5 L3527.5 4747.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3310.5" y="4769" style="fill: #33322E;font-weight:normal;">byte "poap_has_qrcode"</text>
+  <text x="3310.5" y="4784" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3310.5" y="4799" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="3310.5" y="4814" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3310.5" y="4829" style="fill: #33322E;font-weight:normal;">bnz b_has_qr</text>
+  <rect x="3298.5" y="5943.5" height="62" width="273" id="b_has_qr" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3435" y="5965" style="fill: #33322E;text-anchor: middle;">b_has_qr</text>
+  <path d="M3298.5 5974.5 L3571.5 5974.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3306.5" y="5996" style="fill: #33322E;font-weight:normal;">callsub sub_check_qr_secret</text>
+  <rect x="3449.5" y="6150.5" height="62" width="273" id="callsub_sub_check_qr_secret" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3586" y="6172" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_qr_secret</text>
+  <path d="M3449.5 6181.5 L3722.5 6181.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3457.5" y="6203" style="fill: #33322E;font-weight:normal;">b b_finalize_claim</text>
+  <rect x="3670.5" y="6424.5" height="167" width="206" id="b_finalize_claim" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3773.5" y="6446" style="fill: #33322E;text-anchor: middle;">b_finalize_claim</text>
+  <path d="M3670.5 6455.5 L3876.5 6455.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3678.5" y="6477" style="fill: #33322E;font-weight:normal;">byte "poap_asa_id"</text>
+  <text x="3678.5" y="6492" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3678.5" y="6507" style="fill: #33322E;font-weight:normal;">store 0</text>
+  <text x="3678.5" y="6522" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="3678.5" y="6537" style="fill: #33322E;font-weight:normal;">store 2</text>
+  <text x="3678.5" y="6552" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="3678.5" y="6567" style="fill: #33322E;font-weight:normal;">store 3</text>
+  <text x="3678.5" y="6582" style="fill: #33322E;font-weight:normal;">callsub sub_send_nft</text>
+  <rect x="3127.5" y="6924.5" height="107" width="292" id="callsub_sub_send_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3273.5" y="6946" style="fill: #33322E;text-anchor: middle;">callsub_sub_send_nft</text>
+  <path d="M3127.5 6955.5 L3419.5 6955.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3135.5" y="6977" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="3135.5" y="6992" style="fill: #33322E;font-weight:normal;">byte "algopoap_item_activate"</text>
+  <text x="3135.5" y="7007" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="3135.5" y="7022" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="1072.5" y="6082.5" height="197" width="244" id="b_activate_author_pays" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1194.5" y="6104" style="fill: #33322E;text-anchor: middle;">b_activate_author_pays</text>
+  <path d="M1072.5 6113.5 L1316.5 6113.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1080.5" y="6135" style="fill: #33322E;font-weight:normal;">byte "poap_attendee_qty"</text>
+  <text x="1080.5" y="6150" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="1080.5" y="6165" style="fill: #33322E;font-weight:normal;">int 3</text>
+  <text x="1080.5" y="6180" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="1080.5" y="6195" style="fill: #33322E;font-weight:normal;">global MinTxnFee</text>
+  <text x="1080.5" y="6210" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="1080.5" y="6225" style="fill: #33322E;font-weight:normal;">gtxn 0 Amount</text>
+  <text x="1080.5" y="6240" style="fill: #33322E;font-weight:normal;">&gt;=</text>
+  <text x="1080.5" y="6255" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1080.5" y="6270" style="fill: #33322E;font-weight:normal;">b b_activate_finalize</text>
+  <rect x="1356.5" y="6120.5" height="122" width="216" id="b_activate_default" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1464.5" y="6142" style="fill: #33322E;text-anchor: middle;">b_activate_default</text>
+  <path d="M1356.5 6151.5 L1572.5 6151.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1364.5" y="6173" style="fill: #33322E;font-weight:normal;">gtxn 0 Amount</text>
+  <text x="1364.5" y="6188" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1364.5" y="6203" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1364.5" y="6218" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1364.5" y="6233" style="fill: #33322E;font-weight:normal;">b b_activate_finalize</text>
+  <rect x="1169.5" y="6334.5" height="347" width="320" id="b_activate_finalize" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1329.5" y="6356" style="fill: #33322E;text-anchor: middle;">b_activate_finalize</text>
+  <path d="M1169.5 6365.5 L1489.5 6365.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1177.5" y="6387" style="fill: #33322E;font-weight:normal;">byte "poap_is_activated"</text>
+  <text x="1177.5" y="6402" style="fill: #33322E;font-weight:normal;">byte "true"</text>
+  <text x="1177.5" y="6417" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1177.5" y="6432" style="fill: #33322E;font-weight:normal;">byte "poap_shared_secret"</text>
+  <text x="1177.5" y="6447" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 3</text>
+  <text x="1177.5" y="6462" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1177.5" y="6477" style="fill: #33322E;font-weight:normal;">byte "poap_activate_time"</text>
+  <text x="1177.5" y="6492" style="fill: #33322E;font-weight:normal;">global LatestTimestamp</text>
+  <text x="1177.5" y="6507" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1177.5" y="6522" style="fill: #33322E;font-weight:normal;">byte "poap_asa_id"</text>
+  <text x="1177.5" y="6537" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="1177.5" y="6552" style="fill: #33322E;font-weight:normal;">store 0</text>
+  <text x="1177.5" y="6567" style="fill: #33322E;font-weight:normal;">global CurrentApplicationAddress</text>
+  <text x="1177.5" y="6582" style="fill: #33322E;font-weight:normal;">store 2</text>
+  <text x="1177.5" y="6597" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="1177.5" y="6612" style="fill: #33322E;font-weight:normal;">store 3</text>
+  <text x="1177.5" y="6627" style="fill: #33322E;font-weight:normal;">byte "poap_author_address"</text>
+  <text x="1177.5" y="6642" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="1177.5" y="6657" style="fill: #33322E;font-weight:normal;">store 4</text>
+  <text x="1177.5" y="6672" style="fill: #33322E;font-weight:normal;">callsub sub_send_nft</text>
+  <rect x="13.5" y="856.5" height="257" width="1004" id="method_budget_increase_call" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="515.5" y="878" style="fill: #33322E;text-anchor: middle;">method_budget_increase_call</text>
+  <path d="M13.5 887.5 L1017.5 887.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="21.5" y="909" style="fill: #33322E;font-weight:normal;">global GroupSize</text>
+  <text x="21.5" y="924" style="fill: #33322E;font-weight:normal;">int 5</text>
+  <text x="21.5" y="939" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="21.5" y="954" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="21.5" y="969" style="fill: #33322E;font-weight:normal;">method "claim(pay,asset,application,address,byte[64],string,(uint64,uint64,uint64,uint64,uint64))string"</text>
+  <text x="21.5" y="984" style="fill: #33322E;font-weight:normal;">gtxn 4 ApplicationArgs 0</text>
+  <text x="21.5" y="999" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="21.5" y="1014" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="21.5" y="1029" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="21.5" y="1044" style="fill: #33322E;font-weight:normal;">byte "budget_increase_call"</text>
+  <text x="21.5" y="1059" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="21.5" y="1074" style="fill: #33322E;font-weight:normal;">log</text>
+  <text x="21.5" y="1089" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="21.5" y="1104" style="fill: #33322E;font-weight:normal;">return</text>
+  <rect x="1731.5" y="1323.5" height="62" width="244" id="method_activate" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1853.5" y="1345" style="fill: #33322E;text-anchor: middle;">method_activate</text>
+  <path d="M1731.5 1354.5 L1975.5 1354.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1739.5" y="1376" style="fill: #33322E;font-weight:normal;">callsub sub_check_author</text>
+  <rect x="1723.5" y="3673.5" height="2207" width="349" id="callsub_sub_check_author" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1898" y="3695" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_author</text>
+  <path d="M1723.5 3704.5 L2072.5 3704.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1731.5" y="3726" style="fill: #33322E;font-weight:normal;">global GroupSize</text>
+  <text x="1731.5" y="3741" style="fill: #33322E;font-weight:normal;">int 2</text>
+  <text x="1731.5" y="3756" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1731.5" y="3771" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="3786" style="fill: #33322E;font-weight:normal;">gtxn 0 RekeyTo</text>
+  <text x="1731.5" y="3801" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="1731.5" y="3816" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1731.5" y="3831" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="3846" style="fill: #33322E;font-weight:normal;">gtxn 0 CloseRemainderTo</text>
+  <text x="1731.5" y="3861" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="1731.5" y="3876" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1731.5" y="3891" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="3906" style="fill: #33322E;font-weight:normal;">gtxn 0 AssetCloseTo</text>
+  <text x="1731.5" y="3921" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="1731.5" y="3936" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1731.5" y="3951" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="3966" style="fill: #33322E;font-weight:normal;">gtxn 0 TypeEnum</text>
+  <text x="1731.5" y="3981" style="fill: #33322E;font-weight:normal;">int pay</text>
+  <text x="1731.5" y="3996" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="1731.5" y="4011" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="4026" style="fill: #33322E;font-weight:normal;">gtxn 0 Fee</text>
+  <text x="1731.5" y="4041" style="fill: #33322E;font-weight:normal;">global MinTxnFee</text>
+  <text x="1731.5" y="4056" style="fill: #33322E;font-weight:normal;">&lt;=</text>
+  <text x="1731.5" y="4071" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="4086" style="fill: #33322E;font-weight:normal;">gtxn 0 Amount</text>
+  <text x="1731.5" y="4101" style="fill: #33322E;font-weight:normal;">global MinTxnFee</text>
+  <text x="1731.5" y="4116" style="fill: #33322E;font-weight:normal;">&lt;=</text>
+  <text x="1731.5" y="4131" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="1731.5" y="4146" style="fill: #33322E;font-weight:normal;">byte "poap_item_onboard_count"</text>
+  <text x="1731.5" y="4161" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4176" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4191" style="fill: #33322E;font-weight:normal;">byte "poap_item_txn_count"</text>
+  <text x="1731.5" y="4206" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4221" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4236" style="fill: #33322E;font-weight:normal;">byte "poap_item_claim_count"</text>
+  <text x="1731.5" y="4251" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4266" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4281" style="fill: #33322E;font-weight:normal;">byte "poap_item_nft_issuance_count"</text>
+  <text x="1731.5" y="4296" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4311" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4326" style="fill: #33322E;font-weight:normal;">byte "poap_item_txn_issuance_count"</text>
+  <text x="1731.5" y="4341" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4356" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4371" style="fill: #33322E;font-weight:normal;">byte "poap_item_last_attendee"</text>
+  <text x="1731.5" y="4386" style="fill: #33322E;font-weight:normal;">byte "-"</text>
+  <text x="1731.5" y="4401" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4416" style="fill: #33322E;font-weight:normal;">byte "poap_item_last_nft_issuance"</text>
+  <text x="1731.5" y="4431" style="fill: #33322E;font-weight:normal;">byte "-"</text>
+  <text x="1731.5" y="4446" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4461" style="fill: #33322E;font-weight:normal;">byte "poap_item_last_txn_issuance"</text>
+  <text x="1731.5" y="4476" style="fill: #33322E;font-weight:normal;">byte "-"</text>
+  <text x="1731.5" y="4491" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4506" style="fill: #33322E;font-weight:normal;">byte "poap_name"</text>
+  <text x="1731.5" y="4521" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 4</text>
+  <text x="1731.5" y="4536" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4551" style="fill: #33322E;font-weight:normal;">byte "poap_logo"</text>
+  <text x="1731.5" y="4566" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 5</text>
+  <text x="1731.5" y="4581" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4596" style="fill: #33322E;font-weight:normal;">byte "poap_desc"</text>
+  <text x="1731.5" y="4611" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 6</text>
+  <text x="1731.5" y="4626" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4641" style="fill: #33322E;font-weight:normal;">byte "poap_timezone"</text>
+  <text x="1731.5" y="4656" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 7</text>
+  <text x="1731.5" y="4671" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4686" style="fill: #33322E;font-weight:normal;">byte "poap_address"</text>
+  <text x="1731.5" y="4701" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 8</text>
+  <text x="1731.5" y="4716" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4731" style="fill: #33322E;font-weight:normal;">byte "poap_url"</text>
+  <text x="1731.5" y="4746" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 9</text>
+  <text x="1731.5" y="4761" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4776" style="fill: #33322E;font-weight:normal;">byte "poap_email"</text>
+  <text x="1731.5" y="4791" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 10</text>
+  <text x="1731.5" y="4806" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4821" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 11</text>
+  <text x="1731.5" y="4836" style="fill: #33322E;font-weight:normal;">store 10</text>
+  <text x="1731.5" y="4851" style="fill: #33322E;font-weight:normal;">byte "poap_start_timestamp"</text>
+  <text x="1731.5" y="4866" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="4881" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="4896" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="4911" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="4926" style="fill: #33322E;font-weight:normal;">byte "poap_lat"</text>
+  <text x="1731.5" y="4941" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="4956" style="fill: #33322E;font-weight:normal;">int 8</text>
+  <text x="1731.5" y="4971" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="4986" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5001" style="fill: #33322E;font-weight:normal;">byte "poap_lat_dec"</text>
+  <text x="1731.5" y="5016" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5031" style="fill: #33322E;font-weight:normal;">int 16</text>
+  <text x="1731.5" y="5046" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5061" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5076" style="fill: #33322E;font-weight:normal;">byte "poap_lng"</text>
+  <text x="1731.5" y="5091" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5106" style="fill: #33322E;font-weight:normal;">int 24</text>
+  <text x="1731.5" y="5121" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5136" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5151" style="fill: #33322E;font-weight:normal;">byte "poap_lng_dec"</text>
+  <text x="1731.5" y="5166" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5181" style="fill: #33322E;font-weight:normal;">int 32</text>
+  <text x="1731.5" y="5196" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5211" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5226" style="fill: #33322E;font-weight:normal;">byte "poap_geo_radius"</text>
+  <text x="1731.5" y="5241" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5256" style="fill: #33322E;font-weight:normal;">int 40</text>
+  <text x="1731.5" y="5271" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5286" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5301" style="fill: #33322E;font-weight:normal;">byte "poap_attendee_qty"</text>
+  <text x="1731.5" y="5316" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5331" style="fill: #33322E;font-weight:normal;">int 48</text>
+  <text x="1731.5" y="5346" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5361" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5376" style="fill: #33322E;font-weight:normal;">byte "poap_has_nft"</text>
+  <text x="1731.5" y="5391" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5406" style="fill: #33322E;font-weight:normal;">int 56</text>
+  <text x="1731.5" y="5421" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5436" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5451" style="fill: #33322E;font-weight:normal;">byte "poap_has_geo"</text>
+  <text x="1731.5" y="5466" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5481" style="fill: #33322E;font-weight:normal;">int 64</text>
+  <text x="1731.5" y="5496" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5511" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5526" style="fill: #33322E;font-weight:normal;">byte "poap_has_sig"</text>
+  <text x="1731.5" y="5541" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5556" style="fill: #33322E;font-weight:normal;">int 72</text>
+  <text x="1731.5" y="5571" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5586" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5601" style="fill: #33322E;font-weight:normal;">byte "poap_has_qrcode"</text>
+  <text x="1731.5" y="5616" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5631" style="fill: #33322E;font-weight:normal;">int 80</text>
+  <text x="1731.5" y="5646" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5661" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5676" style="fill: #33322E;font-weight:normal;">byte "poap_lng_unit_diff"</text>
+  <text x="1731.5" y="5691" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5706" style="fill: #33322E;font-weight:normal;">int 88</text>
+  <text x="1731.5" y="5721" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5736" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5751" style="fill: #33322E;font-weight:normal;">byte "author_pays_fee"</text>
+  <text x="1731.5" y="5766" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="1731.5" y="5781" style="fill: #33322E;font-weight:normal;">int 96</text>
+  <text x="1731.5" y="5796" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="1731.5" y="5811" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="1731.5" y="5826" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="1731.5" y="5841" style="fill: #33322E;font-weight:normal;">byte "poap_asa_id"</text>
+  <text x="1731.5" y="5856" style="fill: #33322E;font-weight:normal;">app_global_get_ex</text>
+  <text x="1731.5" y="5871" style="fill: #33322E;font-weight:normal;">bnz b_config_nft</text>
+  <rect x="1333.5" y="5943.5" height="62" width="263" id="bnz_b_activate_author_pays" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1465" y="5965" style="fill: #33322E;text-anchor: middle;">bnz_b_activate_author_pays</text>
+  <path d="M1333.5 5974.5 L1596.5 5974.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1341.5" y="5996" style="fill: #33322E;font-weight:normal;">b b_activate_default</text>
+  <rect x="2015.5" y="1323.5" height="62" width="244" id="method_release" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2137.5" y="1345" style="fill: #33322E;text-anchor: middle;">method_release</text>
+  <path d="M2015.5 1354.5 L2259.5 1354.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2023.5" y="1376" style="fill: #33322E;font-weight:normal;">callsub sub_check_author</text>
+  <rect x="2703.5" y="2131.5" height="302" width="197" id="b_claim_author_pays" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2802" y="2153" style="fill: #33322E;text-anchor: middle;">b_claim_author_pays</text>
+  <path d="M2703.5 2162.5 L2900.5 2162.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2711.5" y="2184" style="fill: #33322E;font-weight:normal;">gtxn 3 Amount</text>
+  <text x="2711.5" y="2199" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="2711.5" y="2214" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2711.5" y="2229" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2711.5" y="2244" style="fill: #33322E;font-weight:normal;">gtxn 3 Fee</text>
+  <text x="2711.5" y="2259" style="fill: #33322E;font-weight:normal;">store 23</text>
+  <text x="2711.5" y="2274" style="fill: #33322E;font-weight:normal;">itxn_begin</text>
+  <text x="2711.5" y="2289" style="fill: #33322E;font-weight:normal;">int pay</text>
+  <text x="2711.5" y="2304" style="fill: #33322E;font-weight:normal;">itxn_field TypeEnum</text>
+  <text x="2711.5" y="2319" style="fill: #33322E;font-weight:normal;">txn Sender</text>
+  <text x="2711.5" y="2334" style="fill: #33322E;font-weight:normal;">itxn_field Receiver</text>
+  <text x="2711.5" y="2349" style="fill: #33322E;font-weight:normal;">load 23</text>
+  <text x="2711.5" y="2364" style="fill: #33322E;font-weight:normal;">itxn_field Amount</text>
+  <text x="2711.5" y="2379" style="fill: #33322E;font-weight:normal;">int 1000</text>
+  <text x="2711.5" y="2394" style="fill: #33322E;font-weight:normal;">itxn_field Fee</text>
+  <text x="2711.5" y="2409" style="fill: #33322E;font-weight:normal;">itxn_submit</text>
+  <text x="2711.5" y="2424" style="fill: #33322E;font-weight:normal;">b b_claim_check</text>
+  <rect x="3805.5" y="2206.5" height="152" width="173" id="b_claim_default" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3892" y="2228" style="fill: #33322E;text-anchor: middle;">b_claim_default</text>
+  <path d="M3805.5 2237.5 L3978.5 2237.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3813.5" y="2259" style="fill: #33322E;font-weight:normal;">gtxn 3 Fee</text>
+  <text x="3813.5" y="2274" style="fill: #33322E;font-weight:normal;">global MinTxnFee</text>
+  <text x="3813.5" y="2289" style="fill: #33322E;font-weight:normal;">int 2</text>
+  <text x="3813.5" y="2304" style="fill: #33322E;font-weight:normal;">*</text>
+  <text x="3813.5" y="2319" style="fill: #33322E;font-weight:normal;">&lt;=</text>
+  <text x="3813.5" y="2334" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="3813.5" y="2349" style="fill: #33322E;font-weight:normal;">b b_claim_check</text>
+  <rect x="2761.5" y="2473.5" height="497" width="273" id="b_claim_check" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2898" y="2495" style="fill: #33322E;text-anchor: middle;">b_claim_check</text>
+  <path d="M2761.5 2504.5 L3034.5 2504.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2769.5" y="2526" style="fill: #33322E;font-weight:normal;">byte "poap_author_address"</text>
+  <text x="2769.5" y="2541" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2769.5" y="2556" style="fill: #33322E;font-weight:normal;">store 4</text>
+  <text x="2769.5" y="2571" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 4</text>
+  <text x="2769.5" y="2586" style="fill: #33322E;font-weight:normal;">store 8</text>
+  <text x="2769.5" y="2601" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 5</text>
+  <text x="2769.5" y="2616" style="fill: #33322E;font-weight:normal;">store 6</text>
+  <text x="2769.5" y="2631" style="fill: #33322E;font-weight:normal;">txn ApplicationArgs 6</text>
+  <text x="2769.5" y="2646" style="fill: #33322E;font-weight:normal;">store 10</text>
+  <text x="2769.5" y="2661" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="2769.5" y="2676" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="2769.5" y="2691" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="2769.5" y="2706" style="fill: #33322E;font-weight:normal;">store 13</text>
+  <text x="2769.5" y="2721" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="2769.5" y="2736" style="fill: #33322E;font-weight:normal;">int 8</text>
+  <text x="2769.5" y="2751" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="2769.5" y="2766" style="fill: #33322E;font-weight:normal;">store 14</text>
+  <text x="2769.5" y="2781" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="2769.5" y="2796" style="fill: #33322E;font-weight:normal;">int 16</text>
+  <text x="2769.5" y="2811" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="2769.5" y="2826" style="fill: #33322E;font-weight:normal;">store 15</text>
+  <text x="2769.5" y="2841" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="2769.5" y="2856" style="fill: #33322E;font-weight:normal;">int 24</text>
+  <text x="2769.5" y="2871" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="2769.5" y="2886" style="fill: #33322E;font-weight:normal;">store 16</text>
+  <text x="2769.5" y="2901" style="fill: #33322E;font-weight:normal;">load 10</text>
+  <text x="2769.5" y="2916" style="fill: #33322E;font-weight:normal;">int 32</text>
+  <text x="2769.5" y="2931" style="fill: #33322E;font-weight:normal;">extract_uint64</text>
+  <text x="2769.5" y="2946" style="fill: #33322E;font-weight:normal;">store 7</text>
+  <text x="2769.5" y="2961" style="fill: #33322E;font-weight:normal;">callsub sub_check_timestamp</text>
+  <rect x="2968.5" y="3063.5" height="122" width="273" id="callsub_sub_check_timestamp" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3105" y="3085" style="fill: #33322E;text-anchor: middle;">callsub_sub_check_timestamp</text>
+  <path d="M2968.5 3094.5 L3241.5 3094.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2976.5" y="3116" style="fill: #33322E;font-weight:normal;">byte "poap_has_sig"</text>
+  <text x="2976.5" y="3131" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2976.5" y="3146" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="2976.5" y="3161" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2976.5" y="3176" style="fill: #33322E;font-weight:normal;">bnz b_has_sig</text>
+  <rect x="3802.5" y="3387.5" height="122" width="197" id="bnz_b_has_sig" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3901" y="3409" style="fill: #33322E;text-anchor: middle;">bnz_b_has_sig</text>
+  <path d="M3802.5 3418.5 L3999.5 3418.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3810.5" y="3440" style="fill: #33322E;font-weight:normal;">byte "poap_has_geo"</text>
+  <text x="3810.5" y="3455" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="3810.5" y="3470" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="3810.5" y="3485" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="3810.5" y="3500" style="fill: #33322E;font-weight:normal;">bnz b_has_geo</text>
+  <rect x="2761.5" y="1447.5" height="542" width="273" id="method_claim" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2898" y="1469" style="fill: #33322E;text-anchor: middle;">method_claim</text>
+  <path d="M2761.5 1478.5 L3034.5 1478.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2769.5" y="1500" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="2769.5" y="1515" style="fill: #33322E;font-weight:normal;">global CurrentApplicationID</text>
+  <text x="2769.5" y="1530" style="fill: #33322E;font-weight:normal;">app_opted_in</text>
+  <text x="2769.5" y="1545" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1560" style="fill: #33322E;font-weight:normal;">global GroupSize</text>
+  <text x="2769.5" y="1575" style="fill: #33322E;font-weight:normal;">int 5</text>
+  <text x="2769.5" y="1590" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1605" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1620" style="fill: #33322E;font-weight:normal;">gtxn 3 RekeyTo</text>
+  <text x="2769.5" y="1635" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="2769.5" y="1650" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1665" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1680" style="fill: #33322E;font-weight:normal;">gtxn 3 CloseRemainderTo</text>
+  <text x="2769.5" y="1695" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="2769.5" y="1710" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1725" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1740" style="fill: #33322E;font-weight:normal;">gtxn 3 AssetCloseTo</text>
+  <text x="2769.5" y="1755" style="fill: #33322E;font-weight:normal;">global ZeroAddress</text>
+  <text x="2769.5" y="1770" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1785" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1800" style="fill: #33322E;font-weight:normal;">gtxn 3 TypeEnum</text>
+  <text x="2769.5" y="1815" style="fill: #33322E;font-weight:normal;">int pay</text>
+  <text x="2769.5" y="1830" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1845" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1860" style="fill: #33322E;font-weight:normal;">gtxn 3 Amount</text>
+  <text x="2769.5" y="1875" style="fill: #33322E;font-weight:normal;">int 0</text>
+  <text x="2769.5" y="1890" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1905" style="fill: #33322E;font-weight:normal;">assert</text>
+  <text x="2769.5" y="1920" style="fill: #33322E;font-weight:normal;">byte "author_pays_fee"</text>
+  <text x="2769.5" y="1935" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="2769.5" y="1950" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="2769.5" y="1965" style="fill: #33322E;font-weight:normal;">==</text>
+  <text x="2769.5" y="1980" style="fill: #33322E;font-weight:normal;">bnz b_claim_author_pays</text>
+  <rect x="3774.5" y="2029.5" height="62" width="235" id="bnz_b_claim_author_pays" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3892" y="2051" style="fill: #33322E;text-anchor: middle;">bnz_b_claim_author_pays</text>
+  <path d="M3774.5 2060.5 L4009.5 2060.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3782.5" y="2082" style="fill: #33322E;font-weight:normal;">b b_claim_default</text>
+  <rect x="3939.5" y="6924.5" height="107" width="206" id="method_get_metric" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4042.5" y="6946" style="fill: #33322E;text-anchor: middle;">method_get_metric</text>
+  <path d="M3939.5 6955.5 L4145.5 6955.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3947.5" y="6977" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="3947.5" y="6992" style="fill: #33322E;font-weight:normal;">byte "single metric"</text>
+  <text x="3947.5" y="7007" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="3947.5" y="7022" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="4185.5" y="6924.5" height="107" width="187" id="method_get_metrics" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4279" y="6946" style="fill: #33322E;text-anchor: middle;">method_get_metrics</text>
+  <path d="M4185.5 6955.5 L4372.5 6955.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4193.5" y="6977" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="4193.5" y="6992" style="fill: #33322E;font-weight:normal;">byte "All metrics"</text>
+  <text x="4193.5" y="7007" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="4193.5" y="7022" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="1383.5" y="1323.5" height="62" width="244" id="method_setup" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="1505.5" y="1345" style="fill: #33322E;text-anchor: middle;">method_setup</text>
+  <path d="M1383.5 1354.5 L1627.5 1354.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="1391.5" y="1376" style="fill: #33322E;font-weight:normal;">callsub sub_check_author</text>
+  <rect x="2801.5" y="6477.5" height="62" width="225" id="bnz_b_config_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="2914" y="6499" style="fill: #33322E;text-anchor: middle;">bnz_b_config_nft</text>
+  <path d="M2801.5 6508.5 L3026.5 6508.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="2809.5" y="6530" style="fill: #33322E;font-weight:normal;">callsub sub_create_nft</text>
+  <rect x="3459.5" y="6916.5" height="122" width="225" id="callsub_sub_create_nft" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="3572" y="6938" style="fill: #33322E;text-anchor: middle;">callsub_sub_create_nft</text>
+  <path d="M3459.5 6947.5 L3684.5 6947.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="3467.5" y="6969" style="fill: #33322E;font-weight:normal;">byte 0x151f7c75</text>
+  <text x="3467.5" y="6984" style="fill: #33322E;font-weight:normal;">load 0</text>
+  <text x="3467.5" y="6999" style="fill: #33322E;font-weight:normal;">itob</text>
+  <text x="3467.5" y="7014" style="fill: #33322E;font-weight:normal;">concat</text>
+  <text x="3467.5" y="7029" style="fill: #33322E;font-weight:normal;">b b_log_return</text>
+  <rect x="4411.5" y="7273.5" height="182" width="263" id="b_log_return" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="4543" y="7295" style="fill: #33322E;text-anchor: middle;">b_log_return</text>
+  <path d="M4411.5 7304.5 L4674.5 7304.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="4419.5" y="7326" style="fill: #33322E;font-weight:normal;">log</text>
+  <text x="4419.5" y="7341" style="fill: #33322E;font-weight:normal;">byte "poap_item_txn_count"</text>
+  <text x="4419.5" y="7356" style="fill: #33322E;font-weight:normal;">dup</text>
+  <text x="4419.5" y="7371" style="fill: #33322E;font-weight:normal;">app_global_get</text>
+  <text x="4419.5" y="7386" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="4419.5" y="7401" style="fill: #33322E;font-weight:normal;">+</text>
+  <text x="4419.5" y="7416" style="fill: #33322E;font-weight:normal;">app_global_put</text>
+  <text x="4419.5" y="7431" style="fill: #33322E;font-weight:normal;">int 1</text>
+  <text x="4419.5" y="7446" style="fill: #33322E;font-weight:normal;">return</text>
+  <rect x="5609.5" y="7495.5" height="62" width="83" id="b_error" class="node" style="stroke:#33322E;fill:#eee8d5;stroke-dasharray:none;"></rect>
+  <text x="5651" y="7517" style="fill: #33322E;text-anchor: middle;">b_error</text>
+  <path d="M5609.5 7526.5 L5692.5 7526.5" style="stroke:#33322E;fill:none;stroke-dasharray:none;"></path>
+  <text x="5617.5" y="7548" style="fill: #33322E;font-weight:normal;">err</text>
+</svg>

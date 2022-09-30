@@ -38,7 +38,7 @@
 
 The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
 
-AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls!
+AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
 
 AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
@@ -397,58 +397,8 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ### AlgoPoaP ASC TEAL Graph:
 [top↑](#algopoap)
 
-```mermaid
-  stateDiagram-v2
-    [*] --> b_main
-   
-    b_main --> b_method_check
-    b_main --> b_creation
-    b_creation --> b_log_return
+![AlgoPoaP Item ASC TEAL Graph](./main_contract.svg)
 
-    b_main --> b_optin
-    b_optin --> b_log_return
-
-    b_main --> b_deletion
-    b_deletion --> b_log_return
-
-    b_main --> b_update
-    b_update --> b_log_return
-
-    b_main --> b_closeout
-    b_closeout --> b_log_return
-
-
-    b_method_check --> setup
-    setup --> b_log_return
-    
-    b_method_check --> item_create
-    item_create --> b_log_return
-
-    b_method_check --> item_delete
-    item_delete --> b_log_return
-
-    b_method_check --> item_update
-    item_update --> b_log_return
-
-   
-    b_method_check --> get_metrics
-    get_metrics --> sub_metrics_update
-    sub_metrics_update --> get_metrics
-    get_metrics --> b_log_return
-
-    b_method_check --> get_metric
-    get_metric --> sub_metric_update
-    sub_metric_update --> get_metric
-    get_metric --> b_log_return
-
-    b_main --> b_noop
-    b_noop --> b_error
-
-    b_main --> b_error
-
-    b_log_return --> [*]
-    
-```
 ----
 
 ### AlgoPoaP ASC ABI :
@@ -591,80 +541,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
 ### AlgoPoaP Item ASC TEAL Graph:
 [top↑](#algopoap)
 
-```mermaid
-  stateDiagram-v2
-    [*] --> b_main
-    b_main --> b_method_check
-    b_main --> b_creation
-    b_creation --> b_log_return
-    b_main --> b_optin
-    b_optin --> b_log_return
-    b_main --> b_deletion
-    b_deletion --> b_log_return
-    b_main --> b_update
-    b_update --> b_log_return
-    b_main --> b_closeout
-    b_closeout --> b_log_return
-
- 
-    b_main --> b_noop
-    
-    b_noop --> b_error
-    b_main --> b_error
-  
-
-    b_method_check --> setup
-    setup --> sub_create_nft
-    setup --> b_nft_create
-    sub_create_nft --> setup
-    b_nft_create --> b_log_return
-    setup --> b_log_return
-
-    b_method_check --> activate
-    activate --> b_log_return
-
-    b_method_check --> release
-    release --> b_log_return
-
-    b_method_check --> claim
-
-    claim --> sub_check_timestamp
-    sub_check_timestamp --> claim
-   
-
-    claim --> b_has_sig
-    b_has_sig --> sub_check_release
-    sub_check_release --> b_has_sig
-    b_has_sig --> b_has_geo
-    b_has_sig --> b_has_qr
-    b_has_sig --> b_finalize_claim
-    b_has_geo --> sub_check_geo
-    sub_check_geo --> b_has_geo
-    b_has_geo --> b_has_qr
-    
-    b_has_qr --> sub_check_qr
-    sub_check_qr --> b_has_qr
-
-  
-
-
-    claim --> b_finalize_claim
-    b_finalize_claim --> sub_nft_send
-    sub_nft_send --> b_finalize_claim
-    b_finalize_claim --> b_log_return
-
-  
-    b_method_check --> get_metric
-    get_metric --> b_log_return
-    
-  
-    b_method_check --> get_metrics
-    get_metrics --> b_log_return
-    b_method_check --> b_error
-    
-    b_log_return --> [*]
-    
-```
+![AlgoPoaP Item ASC TEAL Graph](./item_contract.svg)
 ----
 
 ### AlgoPoaP ASC ITEM ABI :
