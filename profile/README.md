@@ -586,6 +586,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte poap_attendee_qty
     AlgoPoaP_ASC_ITEM : +Byte author_pays_fee
     AlgoPoaP_ASC_ITEM : +Byte poap_qr_secret
+    AlgoPoaP_ASC_ITEM : +Byte poap_hash
 
 
     AlgoPoaP_ASC_ITEM : +Uint64 poap_parent_id
