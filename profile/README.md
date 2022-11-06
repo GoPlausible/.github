@@ -1,7 +1,7 @@
 # AlgoPoaP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM6) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
+### AlgoPoaP (WIP) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM7) aims to be elevated into a Proof Of Anything Protocol in future with use of already in beta state proofs feature on Algorand (Proof of Anything is Parallel WIP in R&D phase using DevNET).
 
 - [AlgoPoaP Concept](#algopoap-concept)
 
@@ -114,24 +114,9 @@ Latitudes are "parallels" while longitudes are "meridians" that all meet at the 
 ## AlgoPoaP Credits
 [top↑](#algopoap)
 
-@emg110 and @sheghzo are grateful to Algorand Inc and Algorand Foundation for creating such amazing technologies , ecosystem and community in which we proudly BUIDL!
+@emg110 and @sheghzo are grateful to Algorand Inc and Algorand Foundation for everything!
 
-Also would like to express great gratitude toward:
-
-- Adriana Belotti (The original idea and initiative of having PoaP on Algorand).
-- Johana Moran for endless support and guidance.
-- Jason Lee for being a mountain of support and motivation.
-- David Greaney for all support and productive guidlines
-- Joe Polney for precious technical guidance and endless help.
-
-And eternal gratitude toward:
-- Jason Weathersby who I learned everything I know on TEAL from.
-- Ryan R Fox: Who started my new life chapter with Algorand, helps me and mentors me.
-- Russ Fustino: Who kindly tutored me and helped me greatly.
-- Benjamin Guidarelli : A super Dev and great person who always helps me in time of need and endures all my questions!
-- Nullun: A super Dev and amazing person who always helps me .
-
-And special thanks to David Greaney, Joe Polney, and Evangelina Machado for great ideas and comments which we used in AlgoPoaP.
+And special thanks to all AlgoPoaP Slack channel distinguished members for great ideas and comments which we used in AlgoPoaP.
 
 
 # AlgoPoaP technical design:
@@ -139,16 +124,14 @@ And special thanks to David Greaney, Joe Polney, and Evangelina Machado for grea
 
 AlgoPoaP features that are not available on ETH PoaP (it actually only supports time currently!):
 
-- Geo constraint option (location + buffer area radius).
+- Geo constraint option (Geofencing using location + area radius ).
   
 - Authorization Signature constraint option (Author must sign the release before PoaP issuance for claimed Attendees).
   
-- QRCode constraint option (Attendee must scan and then call the AlgoPoaP Item ASC with it in order to claim).
+- Shared Secret constraint option (Attendee must scan a QRCode during calling the AlgoPoaP Item ASC with it in order to claim successfully).
   
-- NFT based or NFT-less (Using transaction note only).
+- Dynamic NFTs per PoaP item (AlgoPoaP is 100% token-less and NFTs are generated and owned by PoaP item contract and that belongs to PoaP item's author).
   
-
-Note: AlgoPoaP does not use a single token for issuing PoaPs and is token-less , instead it uses a per AlgoPoaP item NFT generation (if desired by Author) approach. 
 
 
 AlgoPoaP is consisted of a frontend and smart contracts on Algorand chain:
@@ -283,7 +266,7 @@ AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
 ## AlgoPoaP Smart Contracts 
 [top↑](#algopoap)
 
-AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 6.0 on AVM6. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
+AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 7.0 on AVM7. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
