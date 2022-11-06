@@ -345,8 +345,7 @@ Note: This section (Fees) is subject to further updates and changes and is work 
         id8([item_create]) 
         id9([item_update]) 
         id10([item_delete]) 
-        id11([get_metric]) 
-        id11([get_metrics]) 
+ 
         end
       end
       subgraph itemASC
@@ -364,8 +363,6 @@ Note: This section (Fees) is subject to further updates and changes and is work 
         id18([activate]) 
         id19([claim]) 
         id20([release]) 
-        id21([get_metric]) 
-        id21([get_metrics]) 
         end
       end
       
@@ -402,8 +399,7 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
     AlgoPoaP_ASC : +item_create(pay,byte[],byte[])string
     AlgoPoaP_ASC : +item_update(application,byte[],byte[])string
     AlgoPoaP_ASC : +item_delete(application)void
-    AlgoPoaP_ASC : +get_metrics()string
-    AlgoPoaP_ASC : +get_metric(string)string
+
     
 ```
 Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
@@ -422,7 +418,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "appID": 0
       },
       "TestNet":{
-          "appID": 109555013
+          "appID": 0
       }
   },
   "methods":[
@@ -493,28 +489,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
             "type": "void"
           },
           "desc": "Deletes an AlgoPoaP item smart contract and returns void (approve only)"
-        },
-        {
-          "name": "get_metric",
-          "args": [
-            {
-              "type": "string",
-              "name": "metric_signature"
-            }
-          ],
-          "returns": {
-            "type": "string"
-          },
-          "desc": "Gets an specific metric by signature string"
-        },
-        {
-          "name": "get_metrics",
-          "args": [],
-          "returns": {
-              "type": "string"
-          },
-          "desc": "Gets all metrics"
-      }
+        }
   ]
 }
 
@@ -678,65 +653,6 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "desc": "Sets up an AlgoPoaP smart contract item for the first time"
         },
         {
-            "name": "re_setup",
-            "args": [
-                {
-                    "type": "pay",
-                    "name": "pay_min_fee"
-                },
-                {
-                    "type": "account",
-                    "name": "author_account"
-                },
-                {
-                    "type": "application",
-                    "name": "parent_application"
-                },
-                {
-                    "type": "asset",
-                    "name": "item_nft"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_name"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_logo"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_desc"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_timezone"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_address"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_url"
-                },
-                {
-                    "type": "string",
-                    "name": "poap_email"
-                },
-            
-                {
-                    "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
-                    "name": "poap_uint64_tuple"
-                }
-              
-            ],
-            "returns": {
-                "type": "string"
-            },
-            "desc": "Sets up an AlgoPoaP smart contract item after first setup"
-        },
-        {
             "name": "activate",
             "args": [
                 {
@@ -806,27 +722,6 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
                 "type": "string"
             },
             "desc": "Releases AlgoPoaP and allows all AlgoPoaP attendee's to start claiming"
-        },
-        {
-            "name": "get_metric",
-            "args": [
-                {
-                    "type": "string",
-                    "name": "metric_signature"
-                }
-            ],
-            "returns": {
-                "type": "string"
-            },
-            "desc": "Gets an specific metric by signature string"
-        },
-        {
-            "name": "get_metrics",
-            "args": [],
-            "returns": {
-                "type": "string"
-            },
-            "desc": "Gets all metrics"
         }
     ]
 }
