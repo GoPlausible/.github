@@ -1,7 +1,7 @@
 # AlgoPoaP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPoaP (Beta on TESTNET now) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM7). After MAINNET launch it aims to be extended into a Proof Of Anything Protocol in future using state proofs feature on Algorand.
+### AlgoPoaP (on MAINNET for closed testing) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM7). After MAINNET launch it aims to be extended into a Proof Of Anything Protocol in future using state proofs feature on Algorand.
 
 - [AlgoPoaP Concept](#algopoap-concept)
 
