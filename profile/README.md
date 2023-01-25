@@ -24,6 +24,8 @@
 - [AlgoPoaP Website (algopoap.com)](https://algopoap.com)
 
 - [AlgoPoaP dApp (algopoap.xyz)](https://algopoap.xyz)
+
+- [AlgoPoaP TESTNET dApp (testnet.algopoap.xyz)](https://testnet.algopoap.xyz)
  
 - [Algorand NFDomain (algopoap.algo)](https://app.nf.domains/name/algopoap.algo)
 
