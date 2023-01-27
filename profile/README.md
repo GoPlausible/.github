@@ -1,50 +1,50 @@
-# AlgoPoaP
+# AlgoPOAP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPoaP (on MAINNET for closed testing) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM7). After MAINNET launch it aims to be extended into a Proof Of Anything Protocol in future using state proofs feature on Algorand.
+### AlgoPOAP (on MAINNET for closed testing) is the Proof of Attendance Protocol built on [Algorand](https://algorand.com) (AVM7). After MAINNET launch it aims to be extended into a Proof Of Anything Protocol in future using state proofs feature on Algorand.
 
-- [AlgoPoaP Concept](#algopoap-concept)
+- [AlgoPOAP Concept](#algopoap-concept)
 
-- [AlgoPoaP Links](#algopoap-links)
+- [AlgoPOAP Links](#algopoap-links)
 
-- [AlgoPoaP Repos](#algopoap-code-repositories)
+- [AlgoPOAP Repos](#algopoap-code-repositories)
   
-- [AlgoPoaP Credits](#algopoap-credits)
+- [AlgoPOAP Credits](#algopoap-credits)
 
-- [AlgoPoaP Technical Design](#algopoap-technical-design)
+- [AlgoPOAP Technical Design](#algopoap-technical-design)
   - [Author's Journey](#authors-journey)
   - [Attendee's Journey](#attendees-journey)
   - [Smart Contracts](#algopoap-smart-contracts)
 
-## AlgoPoaP links
+## AlgoPOAP links
 [top↑](#algopoap)
 
-- [AlgoPoaP Github Repos & Documentation](https://github.com/AlgoPoaP)
+- [AlgoPOAP Github Repos & Documentation](https://github.com/AlgoPOAP)
 
-- [AlgoPoaP Website (algopoap.com)](https://algopoap.com)
+- [AlgoPOAP Website (algopoap.com)](https://algopoap.com)
 
-- [AlgoPoaP dApp (algopoap.xyz)](https://algopoap.xyz)
+- [AlgoPOAP dApp (algopoap.xyz)](https://algopoap.xyz)
 
-- [AlgoPoaP TESTNET dApp (testnet.algopoap.xyz)](https://testnet.algopoap.xyz)
+- [AlgoPOAP TESTNET dApp (testnet.algopoap.xyz)](https://testnet.algopoap.xyz)
  
 - [Algorand NFDomain (algopoap.algo)](https://app.nf.domains/name/algopoap.algo)
 
-## AlgoPoaP public code repositories:
+## AlgoPOAP public code repositories:
 [top↑](#algopoap)
 
-- [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts)
+- [AlgoPOAP's Smart Contracts Repository](https://github.com/AlgoPOAP/algopoap-smartcontracts)
 
 
-## AlgoPoaP concept:
+## AlgoPOAP concept:
 [top↑](#algopoap)
 
-The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPoaP elevates, extends and expands that original idea and implements it on Algorand. 
+The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPOAP elevates, extends and expands that original idea and implements it on Algorand. 
 
-AlgoPoaP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
+AlgoPOAP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
 
-AlgoPoaP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
+AlgoPOAP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![AlgoPoaP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
+![AlgoPOAP Concept Diagram](https://user-images.githubusercontent.com/1900448/185964383-27897992-9d72-4847-b989-9fadb16c6a0e.png)
 
 ## Geo considerations:
 
@@ -113,35 +113,35 @@ Latitudes are "parallels" while longitudes are "meridians" that all meet at the 
 ![Lines of Latitude and Longitude](https://i.stack.imgur.com/BBmMe.gif)
 ----
 
-## AlgoPoaP Credits
+## AlgoPOAP Credits
 [top↑](#algopoap)
 
 @emg110 and @sheghzo are grateful to Algorand Inc and Algorand Foundation for everything!
 
-And special thanks to all AlgoPoaP Slack channel distinguished members for great ideas and comments which we used in AlgoPoaP.
+And special thanks to all AlgoPOAP Slack channel distinguished members for great ideas and comments which we used in AlgoPOAP.
 
 
-# AlgoPoaP technical design:
+# AlgoPOAP technical design:
 [top↑](#algopoap)
 
-AlgoPoaP features that are not available on ETH PoaP (it actually only supports time currently!):
+AlgoPOAP features that are not available on ETH PoaP (it actually only supports time currently!):
 
 - Geo constraint option (Geofencing using location + area radius ).
   
 - Authorization Signature constraint option (Author must sign the release before PoaP issuance for claimed Attendees).
   
-- Shared Secret constraint option (Attendee must scan a QRCode during calling the AlgoPoaP Item ASC with it in order to claim successfully).
+- Shared Secret constraint option (Attendee must scan a QRCode during calling the AlgoPOAP Item ASC with it in order to claim successfully).
   
-- Dynamic NFTs per PoaP item (AlgoPoaP is 100% token-less and NFTs are generated and owned by PoaP item contract and that belongs to PoaP item's author).
+- Dynamic NFTs per PoaP item (AlgoPOAP is 100% token-less and NFTs are generated and owned by PoaP item contract and that belongs to PoaP item's author).
   
 
 
-AlgoPoaP is consisted of a frontend and smart contracts on Algorand chain:
+AlgoPOAP is consisted of a frontend and smart contracts on Algorand chain:
 - Frontend
 - Smart Contracts
 
 
-AlgoPoaP frontend has 3 major functions (all in a single view for simplicity):
+AlgoPOAP frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Author UI
 - Attend UI
@@ -151,7 +151,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 
 ```mermaid
   flowchart LR
-  subgraph AlgoPoaP
+  subgraph AlgoPOAP
     direction TB
     subgraph Frontend
         direction RL
@@ -165,8 +165,8 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
         
     end
   end
-  Author --> AlgoPoaP
-  Attendee --> AlgoPoaP
+  Author --> AlgoPOAP
+  Attendee --> AlgoPOAP
   Frontend --> ASC
   
 ```
@@ -176,13 +176,13 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 ### Author's Journey:
 [top↑](#algopoap)
 
-1- Author easily gets onboard by opting into AlgoPoaP's parent ASC.
+1- Author easily gets onboard by opting into AlgoPOAP's parent ASC.
 
 2- Then can create a new PoaP venue.
 
 3- Then activate the venue to let claims begin (This differs than start time option of PoaP).
 
-Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, PoaP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPoaP attendees. 
+Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, PoaP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPOAP attendees. 
 
 Options available for PoaP creation:
 
@@ -198,25 +198,25 @@ Note: QRCode feature is still under heavy re-ideation, re-design and re-everythi
 ```mermaid
 sequenceDiagram 
 actor Author
-participant AlgoPoaP
+participant AlgoPOAP
 participant AlgoPoaP_ASC
 participant AlgoPoaP_Item_ASC
-Author ->> AlgoPoaP: Connect wallet
-Author ->> AlgoPoaP: Sign Optin Call
-AlgoPoaP ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> AlgoPoaP: Return
-Note left of AlgoPoaP: Onboarding
-Author ->> AlgoPoaP: Sign `create_poap` Method TXN
-AlgoPoaP ->> AlgoPoaP_ASC:  `create_poap` Method Call
-AlgoPoaP_ASC -->> AlgoPoaP: Return
+Author ->> AlgoPOAP: Connect wallet
+Author ->> AlgoPOAP: Sign Optin Call
+AlgoPOAP ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> AlgoPOAP: Return
+Note left of AlgoPOAP: Onboarding
+Author ->> AlgoPOAP: Sign `create_poap` Method TXN
+AlgoPOAP ->> AlgoPoaP_ASC:  `create_poap` Method Call
+AlgoPoaP_ASC -->> AlgoPOAP: Return
 Note left of AlgoPoaP_ASC: Create PoaP Venue
-Author ->> AlgoPoaP: Sign `activate_poap` Method TXN
-AlgoPoaP ->> AlgoPoaP_Item_ASC: `activate_poap` Method Call (creates NFT as well)
-AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+Author ->> AlgoPOAP: Sign `activate_poap` Method TXN
+AlgoPOAP ->> AlgoPoaP_Item_ASC: `activate_poap` Method Call (creates NFT as well)
+AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 Note right of AlgoPoaP_ASC: Activate PoaP Venue
-Author ->> AlgoPoaP: Sign `sig_poap` Method TXN
-AlgoPoaP ->> AlgoPoaP_ASC: `sig_poap` Method Call 
-AlgoPoaP_ASC -->> AlgoPoaP: Return
+Author ->> AlgoPOAP: Sign `sig_poap` Method TXN
+AlgoPOAP ->> AlgoPoaP_ASC: `sig_poap` Method Call 
+AlgoPoaP_ASC -->> AlgoPOAP: Return
 Note right of AlgoPoaP_ASC: Release SIG PoaP
 Note right of AlgoPoaP_ASC: Only when SIG option is enabled on PoaP
 
@@ -238,37 +238,37 @@ Note : If SIG is not enabled for PoaP Venue, Claim approval will send PoaP NFT t
 ```mermaid
 sequenceDiagram 
 actor Attendee
-participant AlgoPoaP
+participant AlgoPOAP
 participant AlgoPoaP_ASC
 participant AlgoPoaP_Item_ASC
-Attendee ->> AlgoPoaP: Connect wallet
-Attendee ->> AlgoPoaP: Sign Optin Call
-AlgoPoaP ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> AlgoPoaP: Return
-Note left of AlgoPoaP: Onboarding
+Attendee ->> AlgoPOAP: Connect wallet
+Attendee ->> AlgoPOAP: Sign Optin Call
+AlgoPOAP ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> AlgoPOAP: Return
+Note left of AlgoPOAP: Onboarding
 
-Attendee ->> AlgoPoaP: Sign `apply_poap` Method TXN
-AlgoPoaP ->> AlgoPoaP_Item_ASC:  `apply_poap` Method Call
-AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+Attendee ->> AlgoPOAP: Sign `apply_poap` Method TXN
+AlgoPOAP ->> AlgoPoaP_Item_ASC:  `apply_poap` Method Call
+AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 Note right of AlgoPoaP_ASC: Apply for PoaP Venue
 
 
-Attendee ->> AlgoPoaP: Sign `claim_poap` Method TXN
-AlgoPoaP ->> AlgoPoaP_Item_ASC: `claim_poap` Method Call ( plus optin TXN to PoaP NFT, if required)
+Attendee ->> AlgoPOAP: Sign `claim_poap` Method TXN
+AlgoPOAP ->> AlgoPoaP_Item_ASC: `claim_poap` Method Call ( plus optin TXN to PoaP NFT, if required)
 Note right of AlgoPoaP_ASC: Claim PoaP
 Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
 AlgoPoaP_Item_ASC -->> Attendee: Send NFT
 Note right of AlgoPoaP_ASC: Requires existence of signed release by author in global state
-AlgoPoaP_Item_ASC -->> AlgoPoaP: Return
+AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 
 ```
 
 ----
 
-## AlgoPoaP Smart Contracts 
+## AlgoPOAP Smart Contracts 
 [top↑](#algopoap)
 
-AlgoPoaP ASC System is designed on basis of newest TEAL features came with TEAL v 7.0 on AVM7. AlgoPoaP Parent contract is created and thereafter every AlgoPoaP item is created by this parent contract based on configurations needed.
+AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 7.0 on AVM7. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
@@ -332,7 +332,7 @@ Note: This section (Fees) is subject to further updates and changes and is work 
     id2([Attendee]) --uses--> itemMethodCalls 
   
 
-    subgraph AlgoPoaP
+    subgraph AlgoPOAP
       
       subgraph parentASC
         subgraph parentAppCalls
@@ -376,19 +376,19 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ```
 ----
 
-### AlgoPoaP ASC TEAL Graph:
+### AlgoPOAP ASC TEAL Graph:
 [top↑](#algopoap)
 
-![AlgoPoaP Item ASC TEAL Graph](./main_contract.svg)
+![AlgoPOAP Item ASC TEAL Graph](./main_contract.svg)
 
 ----
 
-### AlgoPoaP ASC ABI :
+### AlgoPOAP ASC ABI :
 [top↑](#algopoap)
 
-Note 1: Data fields are global states of AlgoPoaP parent smart contract.
+Note 1: Data fields are global states of AlgoPOAP parent smart contract.
 
-Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP development but certainly is a priority prior to public TESTNET deployment. It happens on parent smart contract.
+Note 2: Fee collection is not included anywhere at this phase of AlgoPOAP MVP development but certainly is a priority prior to public TESTNET deployment. It happens on parent smart contract.
 
 ```mermaid
   classDiagram
@@ -404,17 +404,17 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPoaP MVP de
 
     
 ```
-Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPoaP smart contract (parent) 
+Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPOAP smart contract (parent) 
 
 ----
 
-### AlgoPoaP ASC ABI Schema :
+### AlgoPOAP ASC ABI Schema :
 [top↑](#algopoap)
 
 ```javascript
 {
   "name":"algopoap-contract",
-  "desc": "AlgoPoaP Parent smart contract",
+  "desc": "AlgoPOAP Parent smart contract",
   "networks":{
       "MainNet":{
           "appID": 0
@@ -435,7 +435,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Sets up the AlgoPoaP main contract, sets and logs the version and returns"
+          "desc": "Sets up the AlgoPOAP main contract, sets and logs the version and returns"
         },
       {
           "name": "item_create",
@@ -456,7 +456,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Creates a new AlgoPoaP item smart contract and returns the app id"
+          "desc": "Creates a new AlgoPOAP item smart contract and returns the app id"
         },
         {
           "name": "item_update",
@@ -477,7 +477,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Updates an AlgoPoaP item smart contract and returns item application ID"
+          "desc": "Updates an AlgoPOAP item smart contract and returns item application ID"
         },
         {
           "name": "item_delete",
@@ -490,7 +490,7 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
           "returns": {
             "type": "void"
           },
-          "desc": "Deletes an AlgoPoaP item smart contract and returns void (approve only)"
+          "desc": "Deletes an AlgoPOAP item smart contract and returns void (approve only)"
         }
   ]
 }
@@ -498,16 +498,16 @@ Note 3: Author user has all metrics in localState of AlgoPoaP Item smart contrac
 ```
 ----
 
-### AlgoPoaP Item ASC TEAL Graph:
+### AlgoPOAP Item ASC TEAL Graph:
 [top↑](#algopoap)
 
-![AlgoPoaP Item ASC TEAL Graph](./item_contract.svg)
+![AlgoPOAP Item ASC TEAL Graph](./item_contract.svg)
 ----
 
-### AlgoPoaP ASC ITEM ABI :
+### AlgoPOAP ASC ITEM ABI :
 [top↑](#algopoap)
 
-Note 1: Data fields are global states of AlgoPoaP item smart contract.
+Note 1: Data fields are global states of AlgoPOAP item smart contract.
 
 ```mermaid
   classDiagram
@@ -581,13 +581,13 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 
 ----
 
-### AlgoPoaP ASC ITEM ABI Schema :
+### AlgoPOAP ASC ITEM ABI Schema :
 [top↑](#algopoap)
 
 ```javascript
 {
     "name": "algopoap-item-contract",
-    "desc": "AlgoPoaP Item smart contract",
+    "desc": "AlgoPOAP Item smart contract",
     "networks": {
         "MainNet": {
             "appID": 0
@@ -652,7 +652,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Sets up an AlgoPoaP smart contract item for the first time"
+            "desc": "Sets up an AlgoPOAP smart contract item for the first time"
         },
         {
             "name": "activate",
@@ -677,7 +677,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Activates an AlgoPoaP item smart contract and returns string"
+            "desc": "Activates an AlgoPOAP item smart contract and returns string"
         },
         {
             "name": "claim",
@@ -710,7 +710,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Claims an AlgoPoaP for an attendee and returns NFT sending inner-transaction hash"
+            "desc": "Claims an AlgoPOAP for an attendee and returns NFT sending inner-transaction hash"
         },
         {
             "name": "release",
@@ -723,7 +723,7 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Releases AlgoPoaP and allows all AlgoPoaP attendee's to start claiming"
+            "desc": "Releases AlgoPOAP and allows all AlgoPOAP attendee's to start claiming"
         }
     ]
 }
@@ -731,57 +731,57 @@ Note 1: Data fields are global states of AlgoPoaP item smart contract.
 ```
 ----
 
-Since AlgoPoaP is totally decentralized, trustless and permission-less: Every AlgoPoaP item author has full authority of the created PoaPs (AlgoPoaP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
+Since AlgoPOAP is totally decentralized, trustless and permission-less: Every AlgoPOAP item author has full authority of the created PoaPs (AlgoPOAP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
-The algopoap_contract.json contains the ABI Schema for parent AlgoPoaP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPoaP item contract which will be created via an inner transaction.
+The algopoap_contract.json contains the ABI Schema for parent AlgoPOAP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPOAP item contract which will be created via an inner transaction.
 
 
 ### Simple basic deployment and unit tests included
 
-Note: These are available under [AlgoPoaP's Smart Contracts Repository](https://github.com/AlgoPoaP/algopoap-smartcontracts) and more unit test scenarios are to be added for audit process.
+Note: These are available under [AlgoPOAP's Smart Contracts Repository](https://github.com/AlgoPOAP/algopoap-smartcontracts) and more unit test scenarios are to be added for audit process.
 
 ```shell
 > algopoap-smartcontracts@0.0.4 start
 [ALGOPOAP: ] [2022-08-30T16:26:36.462Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:36.463Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+[ALGOPOAP: ] [2022-08-30T16:26:36.463Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'item_update',
-  description: 'Updates an AlgoPoaP item smart contract and returns item application ID',
+  description: 'Updates an AlgoPOAP item smart contract and returns item application ID',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:42.933Z] [info]: AlgoPoaP Main Contract ABI Exec method result = 107325601
+[ALGOPOAP: ] [2022-08-30T16:26:42.933Z] [info]: AlgoPOAP Main Contract ABI Exec method result = 107325601
 [ALGOPOAP: ] [2022-08-30T16:26:43.294Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:43.295Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+[ALGOPOAP: ] [2022-08-30T16:26:43.295Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 're_setup',
-  description: 'Sets up an AlgoPoaP smart contract item after first setup',
+  description: 'Sets up an AlgoPOAP smart contract item after first setup',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:51.351Z] [info]: AlgoPoaP Main Contract ABI Exec method result = 107325874
+[ALGOPOAP: ] [2022-08-30T16:26:51.351Z] [info]: AlgoPOAP Main Contract ABI Exec method result = 107325874
 [ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'activate',
-  description: 'Activates an AlgoPoaP item smart contract and returns string',
+  description: 'Activates an AlgoPOAP item smart contract and returns string',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:59.712Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_activate
+[ALGOPOAP: ] [2022-08-30T16:26:59.712Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_activate
 [ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'release',
-  description: "Releases AlgoPoaP and allows all AlgoPoaP attendee's to start claiming",
+  description: "Releases AlgoPOAP and allows all AlgoPOAP attendee's to start claiming",
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:27:07.941Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_released
+[ALGOPOAP: ] [2022-08-30T16:27:07.941Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_released
 [ALGOPOAP: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:27:08.291Z] [info]: AlgoPoaP Item Contract ABI Exec method = ABIMethod {
+[ALGOPOAP: ] [2022-08-30T16:27:08.291Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'claim',
-  description: 'Claims an AlgoPoaP for an attendee and returns NFT sending inner-transaction hash',
+  description: 'Claims an AlgoPOAP for an attendee and returns NFT sending inner-transaction hash',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:27:16.355Z] [info]: AlgoPoaP Main Contract ABI Exec method result = algopoap_item_claimed
+[ALGOPOAP: ] [2022-08-30T16:27:16.355Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_claimed
 
 
 ```
