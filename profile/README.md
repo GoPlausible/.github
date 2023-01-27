@@ -38,7 +38,7 @@
 ## AlgoPOAP concept:
 [top↑](#algopoap)
 
-The original idea of PoaP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPOAP elevates, extends and expands that original idea and implements it on Algorand. 
+The original idea of POAP on blockchain is developed for Ethereum ecosystem and is Token based and lacks many features. AlgoPOAP elevates, extends and expands that original idea and implements it on Algorand. 
 
 AlgoPOAP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
 
