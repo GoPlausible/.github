@@ -1,7 +1,8 @@
 # AlgoPOAP
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### AlgoPOAP is the Proof Of Attendance Protocol on [Algorand](https://algorand.com) (AVM7), aiming at being extended into a Proof Of Anything Protocol in future using Algorand State Proofs.
+### This documentation is subject to update for newer updates please refer to [AlgoPOAP FAQ](https://algopoap.gitbook.io/algopoap/)
+### AlgoPOAP is the Proof Of Attendance Protocol on [Algorand](https://algorand.com) (AVM8), aiming at being extended into a Proof Of Anything Protocol in future using Algorand State Proofs.
 
 - [AlgoPOAP Concept](#algopoap-concept)
 
@@ -268,7 +269,7 @@ AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 ## AlgoPOAP Smart Contracts 
 [top↑](#algopoap)
 
-AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 7.0 on AVM7. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
+AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM7. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
