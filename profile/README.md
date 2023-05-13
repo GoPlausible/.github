@@ -269,7 +269,7 @@ AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 ## AlgoPOAP Smart Contracts 
 [top↑](#algopoap)
 
-AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM7. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
+AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM8. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
