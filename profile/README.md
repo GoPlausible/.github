@@ -46,72 +46,7 @@ AlgoPOAP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main
 
 ![AlgoPOAP Concept Diagram](https://raw.githubusercontent.com/AlgoPOAP/.github/main/profile/AlgoPOAP_Poster.jpeg)
 
-## Geo considerations:
 
-Geo approximations on latitude and longitude unit changes (4 decimal place unit e.g. 0.0001):
-
-- The latitude unit of change per 0.0001 change ~ 11 meters
-- For longitude, the simplified approximation is used based on this schema generated using Geolib library (distance in meters per 0.0001 lng change on specific lat range).
-  
-```javascript
-[
-  {
-    "lat": 0,
-    "distance": 11
-  },
-  {
-    "lat": 20,
-    "distance": 10
-  },
-  {
-    "lat": 32,
-    "distance": 9
-  },
-  {
-    "lat": 41,
-    "distance": 8
-  },
-  {
-    "lat": 48,
-    "distance": 7
-  },
-  {
-    "lat": 55,
-    "distance": 6
-  },
-  {
-    "lat": 61,
-    "distance": 5
-  },
-  {
-    "lat": 67,
-    "distance": 4
-  },
-  {
-    "lat": 72,
-    "distance": 3
-  },
-  {
-    "lat": 78,
-    "distance": 2
-  },
-  {
-    "lat": 83,
-    "distance": 1
-  },
-  {
-    "lat": 88,
-    "distance": 0
-  }
-]
-
-```
-Latitudes are "parallels" while longitudes are "meridians" that all meet at the poles. For latitude, there is a set distance traveled per degree latitude no matter where you are on a spherical globe. For longitude, it depends what latitude you are at.
-
-[Use this link to play around distance change per unit of lng on each lat](https://www.movable-type.co.uk/scripts/latlong.html)
-
-![Lines of Latitude and Longitude](https://i.stack.imgur.com/BBmMe.gif)
-----
 
 ## AlgoPOAP Credits
 [top↑](#algopoap)
@@ -126,11 +61,11 @@ And special thanks to all AlgoPOAP Slack channel distinguished members for great
 
 AlgoPOAP features :
 
-- Geo constraint option (Geofencing using location + area radius ).
+- Geo constraint option (Geofencing using connecting ISP country and allow and ban lists ).
   
 - Authorization Signature constraint option (Author must sign the release before AlgoPOAP issuance for claimed Attendees).
   
-- Shared Secret constraint option (Attendee must scan a QRCode during calling the AlgoPOAP Item ASC with it in order to claim successfully).
+- Shared Secret constraint option (Claimer must scan a QRCode during calling the AlgoPOAP Item ASC with it in order to claim successfully).
   
 - Dynamic NFTs per AlgoPOAP item (AlgoPOAP is 100% token-less and NFTs are generated and owned by AlgoPOAP item contract and that belongs to AlgoPOAP item's author).
   
@@ -166,7 +101,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
     end
   end
   Author --> AlgoPOAP
-  Attendee --> AlgoPOAP
+  Claimer --> AlgoPOAP
   Frontend --> ASC
   
 ```
@@ -182,14 +117,14 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 
 3- Then activate the venue to let claims begin (This differs than start time option of AlgoPOAP).
 
-Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT or TXN to Attendee's wallet but if SIG is enabled then after signing of Author, AlgoPOAP NFT or TXN will be sent automatically to attendee's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPOAP attendees. 
+Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT or TXN to Claimer's wallet but if SIG is enabled then after signing of Author, AlgoPOAP NFT or TXN will be sent automatically to Claimer's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPOAP Claimer. 
 
 Options available for AlgoPOAP creation:
 
 - Time (default enabled): Start time check (compared to LatestTimestamp)
-- Geo: Location point check to be inside a geofence with desired radius (in meters with min of 5m and max of 1000m).
-- Signature: Author's signature is needed to make AlgoPOAP claimable for every attendee, individually. Each and every attendee can receive their single claimed AlgoPOAP (in NFT or TXN depending on AlgoPOAP config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
-- QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Attendee scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
+- Geo: Country allow and ban lists.
+- Signature: Author's signature is needed to make AlgoPOAP claimable for every Claimer, individually. Each and every Claimer can receive their single claimed AlgoPOAP (in NFT or TXN depending on AlgoPOAP config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Claimer scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
 
@@ -227,37 +162,37 @@ Note right of AlgoPoaP_ASC: Only when SIG option is enabled on AlgoPOAP
 ### Attendee's Journey:
 [top↑](#algopoap)
 
-1- Attendee simply gets onboard by opting into parent ASC.
+1- Claimer simply gets onboard by opting into parent ASC.
 
 2- Then get a searchable list of AlgoPOAP venues and applys to one by opting into it.
 
 3- Then after general venue activation (by author) and by satisfying what AlgoPOAP venue options require, claim the AlgoPOAP and get AlgoPOAP NFT if approved.
 
-Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT to Attendee's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to attendee's wallet.
+Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT to Claimer's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to Claimer's wallet.
 
 ```mermaid
 sequenceDiagram 
-actor Attendee
+actor Claimer
 participant AlgoPOAP
 participant AlgoPoaP_ASC
 participant AlgoPoaP_Item_ASC
-Attendee ->> AlgoPOAP: Connect wallet
-Attendee ->> AlgoPOAP: Sign Optin Call
+Claimer ->> AlgoPOAP: Connect wallet
+Claimer ->> AlgoPOAP: Sign Optin Call
 AlgoPOAP ->> AlgoPoaP_ASC: Optin Call
 AlgoPoaP_ASC -->> AlgoPOAP: Return
 Note left of AlgoPOAP: Onboarding
 
-Attendee ->> AlgoPOAP: Sign `apply_algopoap` Method TXN
+Claimer ->> AlgoPOAP: Sign `apply_algopoap` Method TXN
 AlgoPOAP ->> AlgoPoaP_Item_ASC:  `apply_algopoap` Method Call
 AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 Note right of AlgoPoaP_ASC: Apply for AlgoPOAP Venue
 
 
-Attendee ->> AlgoPOAP: Sign `claim_algopoap` Method TXN
+Claimer ->> AlgoPOAP: Sign `claim_algopoap` Method TXN
 AlgoPOAP ->> AlgoPoaP_Item_ASC: `claim_algopoap` Method Call ( plus optin TXN to AlgoPOAP NFT, if required)
 Note right of AlgoPoaP_ASC: Claim AlgoPOAP
 Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
-AlgoPoaP_Item_ASC -->> Attendee: Send NFT
+AlgoPoaP_Item_ASC -->> Claimer: Send NFT
 Note right of AlgoPoaP_ASC: Requires existence of signed release by author in global state
 AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
 
@@ -278,11 +213,11 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 | ------------- |:-------------:| -----:|
 | New AlgoPOAP                     | 1 MinFee      |   2 MinFee |
 | Setup AlgoPOAP                   | 1 MinFee      |   1 MinFee |
-| Activate AlgoPOAP(Author pays)   | 3 MinFee      |   Attendee_Qty * 4 * MinFee |
-| Activate AlgoPOAP(Attendee pays) | 3 MinFee      |   1 MinFee |
+| Activate AlgoPOAP(Author pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
+| Activate AlgoPOAP(Claimer pays) | 3 MinFee      |   1 MinFee |
 | Release AlgoPOAP| 1 MinFee       | 1 MinFee      |   0  |
 | Claim AlgoPOAP(Author pays)      | 1 MinFee      |   0  |
-| Claim AlgoPOAP(Attendee pays)    | 4 MinFee      |   0  |
+| Claim AlgoPOAP(Claimer pays)    | 4 MinFee      |   0  |
 
 ----
 
@@ -293,7 +228,7 @@ Note: This section (Fees) is subject to further updates and changes and is work 
       AlgoPoaP_Service== manages ==>Parent_AlgoPoaP_ASC;
       Parent_AlgoPoaP_ASC== manages ==>AlgoPoaP_item_ASC;
       
-      AlgoPoaP_Attendee== interacts ==>AlgoPoaP_item_ASC;
+      AlgoPoaP_Claimer== interacts ==>AlgoPoaP_item_ASC;
       AlgoPoaP_Author== interacts ==>Parent_AlgoPoaP_ASC;
       AlgoPoaP_Author== interacts ==>AlgoPoaP_item_ASC;
 ```
@@ -328,8 +263,8 @@ Note: This section (Fees) is subject to further updates and changes and is work 
     id1([Author]) --uses--> itemMethodCalls
     
 
-    id2([Attendee]) --uses--> parentAppCalls 
-    id2([Attendee]) --uses--> itemMethodCalls 
+    id2([Claimer]) --uses--> parentAppCalls 
+    id2([Claimer]) --uses--> itemMethodCalls 
   
 
     subgraph AlgoPOAP
@@ -393,10 +328,10 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPOAP MVP de
 ```mermaid
   classDiagram
     class AlgoPoaP_ASC
-    AlgoPoaP_ASC : +Uint64 poap_onboard_count
-    AlgoPoaP_ASC : +Uint64 poap_count
-    AlgoPoaP_ASC : +Byte poap_last_appid
-    AlgoPoaP_ASC : +Byte poap_last_author
+    AlgoPoaP_ASC : +Uint64 algopoap_onboard_count
+    AlgoPoaP_ASC : +Uint64 algopoap_count
+    AlgoPoaP_ASC : +Byte algopoap_last_appid
+    AlgoPoaP_ASC : +Byte algopoap_last_author
     AlgoPoaP_ASC : +setup(string)string
     AlgoPoaP_ASC : +item_create(pay,byte[],byte[])string
     AlgoPoaP_ASC : +item_update(application,byte[],byte[])string
@@ -513,55 +448,42 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
   classDiagram
     class AlgoPoaP_ASC_ITEM
 
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_onboard_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_claim_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_nft_issuance_count
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_item_txn_issuance_count
-  
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_attendee
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_claim
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_nft_issuance
-    AlgoPoaP_ASC_ITEM : +Byte poap_item_last_txn_issuance
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_onboard_count
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_txn_count
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_claim_count
 
-
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lat_dec
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_lng_dec
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_geo_buffer
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_start_timestamp
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_end_timestamp
-    AlgoPoaP_ASC_ITEM : +Byte poap_name
-    AlgoPoaP_ASC_ITEM : +Byte poap_logo
-    AlgoPoaP_ASC_ITEM : +Byte poap_timezone
-    AlgoPoaP_ASC_ITEM : +Byte poap_desc
-    AlgoPoaP_ASC_ITEM : +Byte poap_address
-    AlgoPoaP_ASC_ITEM : +Byte poap_url
-    AlgoPoaP_ASC_ITEM : +Byte poap_email
-    AlgoPoaP_ASC_ITEM : +Byte poap_has_nft
-    AlgoPoaP_ASC_ITEM : +Byte poap_has_geo
-    AlgoPoaP_ASC_ITEM : +Byte poap_has_sig
-    AlgoPoaP_ASC_ITEM : +Byte poap_has_qrcode
-    AlgoPoaP_ASC_ITEM : +Byte poap_attendee_qty
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_start_timestamp
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_end_timestamp
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_name
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_logo
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_timezone
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_desc
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_address
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_url
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_web2
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_nft_media
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_geo
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_release
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_shared_secret
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_attendee_qty
     AlgoPoaP_ASC_ITEM : +Byte author_pays_fee
-    AlgoPoaP_ASC_ITEM : +Byte poap_qr_secret
-    AlgoPoaP_ASC_ITEM : +Byte poap_hash
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_qr_secret
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_hash
 
 
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_parent_id
-    AlgoPoaP_ASC_ITEM : +Byte poap_parent_address
-    AlgoPoaP_ASC_ITEM : +Byte poap_author_address
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_asa_id
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_parent_id
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_parent_address
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_author_address
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_asa_id
 
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_setup_time
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_activate_time
-    AlgoPoaP_ASC_ITEM : +Uint64 poap_release_time
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_setup_time
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_activate_time
+    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_release_time
 
 
-     AlgoPoaP_ASC_ITEM : +Byte poap_is_activated
-    AlgoPoaP_ASC_ITEM : +Byte poap_is_setup
-    AlgoPoaP_ASC_ITEM : +Byte poap_is_released
+     AlgoPoaP_ASC_ITEM : +Byte algopoap_is_activated
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_is_setup
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_is_released
 
 
 
@@ -618,35 +540,35 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "poap_name"
+                    "name": "algopoap_name"
                 },
                 {
                     "type": "string",
-                    "name": "poap_logo"
+                    "name": "algopoap_logo"
                 },
                 {
                     "type": "string",
-                    "name": "poap_desc"
+                    "name": "algopoap_desc"
                 },
                 {
                     "type": "string",
-                    "name": "poap_timezone"
+                    "name": "algopoap_timezone"
                 },
                 {
                     "type": "string",
-                    "name": "poap_address"
+                    "name": "algopoap_address"
                 },
                 {
                     "type": "string",
-                    "name": "poap_url"
+                    "name": "algopoap_url"
                 },
                 {
                     "type": "string",
-                    "name": "poap_email"
+                    "name": "algopoap_web2"
                 },
                 {
                     "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
-                    "name": "poap_uint64_tuple"
+                    "name": "algopoap_uint64_tuple"
                 }
             ],
             "returns": {
