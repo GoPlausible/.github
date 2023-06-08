@@ -44,7 +44,7 @@ AlgoPOAP dApp is consisted of a frontend calling an Algorand ASC system in which
 
 AlgoPOAP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![AlgoPOAP Concept Diagram](https://raw.githubusercontent.com/AlgoPOAP/.github/main/profile/AlgoPOAP.jpeg)
+![AlgoPOAP Concept Diagram](https://raw.githubusercontent.com/AlgoPOAP/.github/main/profile/AlgoPOAP_Poster.jpeg)
 
 ## Geo considerations:
 
