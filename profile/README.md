@@ -14,7 +14,7 @@
 
 - [AlgoPOAP Technical Design](#algopoap-technical-design)
   - [Author's Journey](#authors-journey)
-  - [Attendee's Journey](#attendees-journey)
+  - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#algopoap-smart-contracts)
 
 ## AlgoPOAP links
@@ -63,7 +63,7 @@ AlgoPOAP features :
 
 - Geo constraint option (Geofencing using connecting ISP country and allow and ban lists ).
   
-- Authorization Signature constraint option (Author must sign the release before AlgoPOAP issuance for claimed Attendees).
+- Authorization Signature constraint option (Author must sign the release before AlgoPOAP issuance for claimed claimers).
   
 - Shared Secret constraint option (Claimer must scan a QRCode during calling the AlgoPOAP Item ASC with it in order to claim successfully).
   
@@ -79,7 +79,7 @@ AlgoPOAP is consisted of a frontend and smart contracts on Algorand chain:
 AlgoPOAP frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Author UI
-- Attend UI
+- Claim UI
 
 Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
 
@@ -91,7 +91,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
     subgraph Frontend
         direction RL
         Author_UI
-        Attend_UI
+        Claim_UI
     end
     subgraph ASC
         direction TB
@@ -159,7 +159,7 @@ Note right of AlgoPoaP_ASC: Only when SIG option is enabled on AlgoPOAP
 
 ```
 ----
-### Attendee's Journey:
+### Claimer's Journey:
 [top↑](#algopoap)
 
 1- Claimer simply gets onboard by opting into parent ASC.
@@ -465,7 +465,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
     AlgoPoaP_ASC_ITEM : +Byte algopoap_has_geo
     AlgoPoaP_ASC_ITEM : +Byte algopoap_has_release
     AlgoPoaP_ASC_ITEM : +Byte algopoap_has_shared_secret
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_attendee_qty
+    AlgoPoaP_ASC_ITEM : +Byte algopoap_claimer_qty
     AlgoPoaP_ASC_ITEM : +Byte author_pays_fee
     AlgoPoaP_ASC_ITEM : +Byte algopoap_qr_secret
     AlgoPoaP_ASC_ITEM : +Byte algopoap_hash
@@ -618,7 +618,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
                 },
                 {
                     "type": "account",
-                    "name": "attendee_account"
+                    "name": "claimer_account"
                 },
                 {
                     "type": "string",
@@ -632,7 +632,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Claims an AlgoPOAP for an attendee and returns NFT sending inner-transaction hash"
+            "desc": "Claims an AlgoPOAP for a claimer and returns NFT sending inner-transaction hash"
         },
         {
             "name": "release",
@@ -645,7 +645,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Releases AlgoPOAP and allows all AlgoPOAP attendee's to start claiming"
+            "desc": "Releases AlgoPOAP and allows all AlgoPOAP claimer's to start claiming"
         }
     ]
 }
@@ -691,7 +691,7 @@ Note: These are available under [AlgoPOAP's Smart Contracts Repository](https://
 [ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
 [ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'release',
-  description: "Releases AlgoPOAP and allows all AlgoPOAP attendee's to start claiming",
+  description: "Releases AlgoPOAP and allows all AlgoPOAP claimers to start claiming",
   args: [Array],
   returns: [Object]
 }
@@ -699,7 +699,7 @@ Note: These are available under [AlgoPOAP's Smart Contracts Repository](https://
 [ALGOPOAP: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
 [ALGOPOAP: ] [2022-08-30T16:27:08.291Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
   name: 'claim',
-  description: 'Claims an AlgoPOAP for an attendee and returns NFT sending inner-transaction hash',
+  description: 'Claims an AlgoPOAP for a claimer and returns NFT sending inner-transaction hash',
   args: [Array],
   returns: [Object]
 }
