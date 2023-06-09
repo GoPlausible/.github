@@ -3,7 +3,7 @@
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
 ### This documentation is subject to update for newer updates please refer to [Plausible FAQ](https://goplausible.gitbook.io/goplausible/)
-### Plausible is the Proof Of Anything Protocol on [Algorand](https://algorand.com) (AVM8), aiming at being extended into a Muti-Chain Protocol in future using Algorand State Proofs.
+### Plausible is the Proof Of Anything Protocol reference implementation built on [Algorand](https://algorand.com) (AVM8), aiming at going Muti-Chain.
 
 - [Plausible Concept](#plausible-concept)
 
