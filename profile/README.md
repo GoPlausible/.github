@@ -1,4 +1,4 @@
-# AlgoPOAP
+# Plausible (Formerly AlgoPOAP)
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
 ### This documentation is subject to update for newer updates please refer to [AlgoPOAP FAQ](https://algopoap.gitbook.io/algopoap/)
