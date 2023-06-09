@@ -40,7 +40,7 @@ Plausible dApp is consisted of a frontend calling an Algorand ASC system in whic
 
 Plausible complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![Plausible Concept Diagram](https://raw.githubusercontent.com/Plausible/.github/main/profile/Plausible Concept Diagram.jpeg)
+![Plausible Concept Diagram](https://github.com/GoPlausible/.github/blob/main/profile/Plausible%20Concept%20Diagram.jpeg)
 
 
 
