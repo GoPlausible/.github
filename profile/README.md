@@ -1,82 +1,83 @@
-# Plausible (Formerly AlgoPOAP)
+# Plausible
+### Formerly Plausible
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### This documentation is subject to update for newer updates please refer to [AlgoPOAP FAQ](https://algopoap.gitbook.io/algopoap/)
-### AlgoPOAP is the Proof Of Anything Protocol on [Algorand](https://algorand.com) (AVM8), aiming at being extended into a Muti-Chain Protocol in future using Algorand State Proofs.
+### This documentation is subject to update for newer updates please refer to [Plausible FAQ](https://plausible.gitbook.io/plausible/)
+### Plausible is the Proof Of Anything Protocol on [Algorand](https://algorand.com) (AVM8), aiming at being extended into a Muti-Chain Protocol in future using Algorand State Proofs.
 
-- [AlgoPOAP Concept](#algopoap-concept)
+- [Plausible Concept](#plausible-concept)
 
-- [AlgoPOAP Links](#algopoap-links)
+- [Plausible Links](#plausible-links)
 
-- [AlgoPOAP Repos](#algopoap-code-repositories)
+- [Plausible Repos](#plausible-code-repositories)
   
-- [AlgoPOAP Credits](#algopoap-credits)
+- [Plausible gratitudes](#plausible-credits)
 
-- [AlgoPOAP Technical Design](#algopoap-technical-design)
+- [Plausible Technical Design](#plausible-technical-design)
   - [Author's Journey](#authors-journey)
   - [Claimer's Journey](#claimers-journey)
-  - [Smart Contracts](#algopoap-smart-contracts)
+  - [Smart Contracts](#plausible-smart-contracts)
 
-## AlgoPOAP links
-[top↑](#algopoap)
+## Plausible links
+[top↑](#plausible)
 
-- [AlgoPOAP Github Repos & Documentation](https://github.com/AlgoPOAP)
+- [Plausible Github Repos & Documentation](https://github.com/GoPlausible)
 
-- [AlgoPOAP Website (algopoap.com)](https://algopoap.com)
+- [Plausible Website (plausible.com)](https://goplausible.com)
 
-- [AlgoPOAP dApp (algopoap.xyz)](https://algopoap.xyz)
+- [Plausible dApp (plausible.xyz)](https://goplausible.xyz)
 
-- [AlgoPOAP TESTNET dApp (testnet.algopoap.xyz)](https://testnet.algopoap.xyz)
+- [Plausible TESTNET dApp (testnet.plausible.xyz)](https://testnet.goplausible.xyz)
  
-- [Algorand NFDomain (algopoap.algo)](https://app.nf.domains/name/algopoap.algo)
+- [Algorand NFDomain (plausible.algo)](https://app.nf.domains/name/plausible.algo)
 
-## AlgoPOAP public code repositories:
-[top↑](#algopoap)
+## Plausible public code repositories:
+[top↑](#plausible)
 
-- [AlgoPOAP's Smart Contracts Repository](https://github.com/AlgoPOAP/algopoap-smartcontracts)
-
-
-## AlgoPOAP concept:
-[top↑](#algopoap)
+- [Plausible's Smart Contracts Repository](https://github.com/Plausible/plausible-smartcontracts)
 
 
-AlgoPOAP dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
-
-AlgoPOAP complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
-
-![AlgoPOAP Concept Diagram](https://raw.githubusercontent.com/AlgoPOAP/.github/main/profile/AlgoPOAP_Poster.jpeg)
+## Plausible concept:
+[top↑](#plausible)
 
 
+Plausible dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
 
-## AlgoPOAP Credits
-[top↑](#algopoap)
+Plausible complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-@emg110 and @sheghzo are grateful to Algorand Inc and Algorand Foundation for everything!
-
-And special thanks to all AlgoPOAP Slack channel distinguished members for great ideas and comments which we used in AlgoPOAP.
+![Plausible Concept Diagram](https://raw.githubusercontent.com/Plausible/.github/main/profile/Plausible_Poster.jpeg)
 
 
-# AlgoPOAP technical design:
-[top↑](#algopoap)
 
-AlgoPOAP features :
+## Plausible Gratitudes
+[top↑](#plausible)
+
+@emg110 and @sheghzo are grateful to Algorand Inc, Algorand Foundation, Algorand Ecosystem and AXL Ventures!
+
+And special thanks to all Plausible Slack channel distinguished members for great ideas and comments which we used in Plausible.
+
+
+# Plausible technical design:
+[top↑](#plausible)
+
+Plausible features :
 
 - Geo constraint option (Geofencing using connecting ISP country and allow and ban lists ).
   
-- Authorization Signature constraint option (Author must sign the release before AlgoPOAP issuance for claimed claimers).
+- Authorization Signature constraint option (Author must sign the release before Plausible issuance for claimed claimers).
   
-- Shared Secret constraint option (Claimer must scan a QRCode during calling the AlgoPOAP Item ASC with it in order to claim successfully).
+- Shared Secret constraint option (Claimer must scan a QRCode during calling the Plausible Item ASC with it in order to claim successfully).
   
-- Dynamic NFTs per AlgoPOAP item (AlgoPOAP is 100% token-less and NFTs are generated and owned by AlgoPOAP item contract and that belongs to AlgoPOAP item's author).
+- Dynamic NFTs per Plausible item (Plausible is 100% token-less and NFTs are generated and owned by Plausible item contract and that belongs to Plausible item's author).
   
 
 
-AlgoPOAP is consisted of a frontend and smart contracts on Algorand chain:
+Plausible is consisted of a frontend and smart contracts on Algorand chain:
 - Frontend
 - Smart Contracts
 
 
-AlgoPOAP frontend has 3 major functions (all in a single view for simplicity):
+Plausible frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Author UI
 - Claim UI
@@ -86,7 +87,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 
 ```mermaid
   flowchart LR
-  subgraph AlgoPOAP
+  subgraph Plausible
     direction TB
     subgraph Frontend
         direction RL
@@ -100,8 +101,8 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
         
     end
   end
-  Author --> AlgoPOAP
-  Claimer --> AlgoPOAP
+  Author --> Plausible
+  Claimer --> Plausible
   Frontend --> ASC
   
 ```
@@ -109,21 +110,21 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 ----
 
 ### Author's Journey:
-[top↑](#algopoap)
+[top↑](#plausible)
 
-1- Author easily gets onboard by opting into AlgoPOAP's parent ASC.
+1- Author easily gets onboard by opting into Plausible's parent ASC.
 
-2- Then can create a new AlgoPOAP venue.
+2- Then can create a new Plausible venue.
 
-3- Then activate the venue to let claims begin (This differs than start time option of AlgoPOAP).
+3- Then activate the venue to let claims begin (This differs than start time option of Plausible).
 
-Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT or TXN to Claimer's wallet but if SIG is enabled then after signing of Author, AlgoPOAP NFT or TXN will be sent automatically to Claimer's wallet, after author signs and sends a release method call transaction to release all successfully claimed AlgoPOAP Claimer. 
+Note : If SIG is not enabled for Plausible Venue, Claim approval will send Plausible NFT or TXN to Claimer's wallet but if SIG is enabled then after signing of Author, Plausible NFT or TXN will be sent automatically to Claimer's wallet, after author signs and sends a release method call transaction to release all successfully claimed Plausible Claimer. 
 
-Options available for AlgoPOAP creation:
+Options available for Plausible creation:
 
 - Time (default enabled): Start time check (compared to LatestTimestamp)
 - Geo: Country allow and ban lists.
-- Signature: Author's signature is needed to make AlgoPOAP claimable for every Claimer, individually. Each and every Claimer can receive their single claimed AlgoPOAP (in NFT or TXN depending on AlgoPOAP config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- Signature: Author's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed Plausible (in NFT or TXN depending on Plausible config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
 - QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Claimer scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
@@ -133,77 +134,77 @@ Note: QRCode feature is still under heavy re-ideation, re-design and re-everythi
 ```mermaid
 sequenceDiagram 
 actor Author
-participant AlgoPOAP
+participant Plausible
 participant AlgoPoaP_ASC
 participant AlgoPoaP_Item_ASC
-Author ->> AlgoPOAP: Connect wallet
-Author ->> AlgoPOAP: Sign Optin Call
-AlgoPOAP ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> AlgoPOAP: Return
-Note left of AlgoPOAP: Onboarding
-Author ->> AlgoPOAP: Sign `create_algopoap` Method TXN
-AlgoPOAP ->> AlgoPoaP_ASC:  `create_algopoap` Method Call
-AlgoPoaP_ASC -->> AlgoPOAP: Return
-Note left of AlgoPoaP_ASC: Create AlgoPOAP Venue
-Author ->> AlgoPOAP: Sign `activate_algopoap` Method TXN
-AlgoPOAP ->> AlgoPoaP_Item_ASC: `activate_algopoap` Method Call (creates NFT as well)
-AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
-Note right of AlgoPoaP_ASC: Activate AlgoPOAP Venue
-Author ->> AlgoPOAP: Sign `sig_algopoap` Method TXN
-AlgoPOAP ->> AlgoPoaP_ASC: `sig_algopoap` Method Call 
-AlgoPoaP_ASC -->> AlgoPOAP: Return
-Note right of AlgoPoaP_ASC: Release SIG AlgoPOAP
-Note right of AlgoPoaP_ASC: Only when SIG option is enabled on AlgoPOAP
+Author ->> Plausible: Connect wallet
+Author ->> Plausible: Sign Optin Call
+Plausible ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> Plausible: Return
+Note left of Plausible: Onboarding
+Author ->> Plausible: Sign `create_algopoap` Method TXN
+Plausible ->> AlgoPoaP_ASC:  `create_algopoap` Method Call
+AlgoPoaP_ASC -->> Plausible: Return
+Note left of AlgoPoaP_ASC: Create Plausible Venue
+Author ->> Plausible: Sign `activate_algopoap` Method TXN
+Plausible ->> AlgoPoaP_Item_ASC: `activate_algopoap` Method Call (creates NFT as well)
+AlgoPoaP_Item_ASC -->> Plausible: Return
+Note right of AlgoPoaP_ASC: Activate Plausible Venue
+Author ->> Plausible: Sign `sig_algopoap` Method TXN
+Plausible ->> AlgoPoaP_ASC: `sig_algopoap` Method Call 
+AlgoPoaP_ASC -->> Plausible: Return
+Note right of AlgoPoaP_ASC: Release SIG Plausible
+Note right of AlgoPoaP_ASC: Only when SIG option is enabled on Plausible
 
 
 
 ```
 ----
 ### Claimer's Journey:
-[top↑](#algopoap)
+[top↑](#plausible)
 
 1- Claimer simply gets onboard by opting into parent ASC.
 
-2- Then get a searchable list of AlgoPOAP venues and applys to one by opting into it.
+2- Then get a searchable list of Plausible venues and applys to one by opting into it.
 
-3- Then after general venue activation (by author) and by satisfying what AlgoPOAP venue options require, claim the AlgoPOAP and get AlgoPOAP NFT if approved.
+3- Then after general venue activation (by author) and by satisfying what Plausible venue options require, claim the Plausible and get Plausible NFT if approved.
 
-Note : If SIG is not enabled for AlgoPOAP Venue, Claim approval will send AlgoPOAP NFT to Claimer's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to Claimer's wallet.
+Note : If SIG is not enabled for Plausible Venue, Claim approval will send Plausible NFT to Claimer's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to Claimer's wallet.
 
 ```mermaid
 sequenceDiagram 
 actor Claimer
-participant AlgoPOAP
+participant Plausible
 participant AlgoPoaP_ASC
 participant AlgoPoaP_Item_ASC
-Claimer ->> AlgoPOAP: Connect wallet
-Claimer ->> AlgoPOAP: Sign Optin Call
-AlgoPOAP ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> AlgoPOAP: Return
-Note left of AlgoPOAP: Onboarding
+Claimer ->> Plausible: Connect wallet
+Claimer ->> Plausible: Sign Optin Call
+Plausible ->> AlgoPoaP_ASC: Optin Call
+AlgoPoaP_ASC -->> Plausible: Return
+Note left of Plausible: Onboarding
 
-Claimer ->> AlgoPOAP: Sign `apply_algopoap` Method TXN
-AlgoPOAP ->> AlgoPoaP_Item_ASC:  `apply_algopoap` Method Call
-AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
-Note right of AlgoPoaP_ASC: Apply for AlgoPOAP Venue
+Claimer ->> Plausible: Sign `apply_algopoap` Method TXN
+Plausible ->> AlgoPoaP_Item_ASC:  `apply_algopoap` Method Call
+AlgoPoaP_Item_ASC -->> Plausible: Return
+Note right of AlgoPoaP_ASC: Apply for Plausible Venue
 
 
-Claimer ->> AlgoPOAP: Sign `claim_algopoap` Method TXN
-AlgoPOAP ->> AlgoPoaP_Item_ASC: `claim_algopoap` Method Call ( plus optin TXN to AlgoPOAP NFT, if required)
-Note right of AlgoPoaP_ASC: Claim AlgoPOAP
+Claimer ->> Plausible: Sign `claim_algopoap` Method TXN
+Plausible ->> AlgoPoaP_Item_ASC: `claim_algopoap` Method Call ( plus optin TXN to Plausible NFT, if required)
+Note right of AlgoPoaP_ASC: Claim Plausible
 Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
 AlgoPoaP_Item_ASC -->> Claimer: Send NFT
 Note right of AlgoPoaP_ASC: Requires existence of signed release by author in global state
-AlgoPoaP_Item_ASC -->> AlgoPOAP: Return
+AlgoPoaP_Item_ASC -->> Plausible: Return
 
 ```
 
 ----
 
-## AlgoPOAP Smart Contracts 
-[top↑](#algopoap)
+## Plausible Smart Contracts 
+[top↑](#plausible)
 
-AlgoPOAP ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM8. AlgoPOAP Parent contract is created and thereafter every AlgoPOAP item is created by this parent contract based on configurations needed.
+Plausible ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
@@ -211,13 +212,13 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 
 | Method | Fee           | Amount|
 | ------------- |:-------------:| -----:|
-| New AlgoPOAP                     | 1 MinFee      |   2 MinFee |
-| Setup AlgoPOAP                   | 1 MinFee      |   1 MinFee |
-| Activate AlgoPOAP(Author pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
-| Activate AlgoPOAP(Claimer pays) | 3 MinFee      |   1 MinFee |
-| Release AlgoPOAP| 1 MinFee       | 1 MinFee      |   0  |
-| Claim AlgoPOAP(Author pays)      | 1 MinFee      |   0  |
-| Claim AlgoPOAP(Claimer pays)    | 4 MinFee      |   0  |
+| New Plausible                     | 1 MinFee      |   2 MinFee |
+| Setup Plausible                   | 1 MinFee      |   1 MinFee |
+| Activate Plausible(Author pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
+| Activate Plausible(Claimer pays) | 3 MinFee      |   1 MinFee |
+| Release Plausible| 1 MinFee       | 1 MinFee      |   0  |
+| Claim Plausible(Author pays)      | 1 MinFee      |   0  |
+| Claim Plausible(Claimer pays)    | 4 MinFee      |   0  |
 
 ----
 
@@ -267,7 +268,7 @@ Note: This section (Fees) is subject to further updates and changes and is work 
     id2([Claimer]) --uses--> itemMethodCalls 
   
 
-    subgraph AlgoPOAP
+    subgraph Plausible
       
       subgraph parentASC
         subgraph parentAppCalls
@@ -311,19 +312,19 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ```
 ----
 
-### AlgoPOAP ASC TEAL Graph:
-[top↑](#algopoap)
+### Plausible ASC TEAL Graph:
+[top↑](#plausible)
 
-![AlgoPOAP Item ASC TEAL Graph](./main_contract.svg)
+![Plausible Item ASC TEAL Graph](./main_contract.svg)
 
 ----
 
-### AlgoPOAP ASC ABI :
-[top↑](#algopoap)
+### Plausible ASC ABI :
+[top↑](#plausible)
 
-Note 1: Data fields are global states of AlgoPOAP parent smart contract.
+Note 1: Data fields are global states of Plausible parent smart contract.
 
-Note 2: Fee collection is not included anywhere at this phase of AlgoPOAP MVP development but certainly is a priority prior to public TESTNET deployment. It happens on parent smart contract.
+Note 2: Fee collection is not included anywhere at this phase of Plausible MVP development but certainly is a priority prior to public TESTNET deployment. It happens on parent smart contract.
 
 ```mermaid
   classDiagram
@@ -339,17 +340,17 @@ Note 2: Fee collection is not included anywhere at this phase of AlgoPOAP MVP de
 
     
 ```
-Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of AlgoPOAP smart contract (parent) 
+Note 3: Author user has all metrics in localState of Plausible Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of Plausible smart contract (parent) 
 
 ----
 
-### AlgoPOAP ASC ABI Schema :
-[top↑](#algopoap)
+### Plausible ASC ABI Schema :
+[top↑](#plausible)
 
 ```javascript
 {
-  "name":"algopoap-contract",
-  "desc": "AlgoPOAP Parent smart contract",
+  "name":"plausible-contract",
+  "desc": "Plausible Parent smart contract",
   "networks":{
       "MainNet":{
           "appID": 0
@@ -370,7 +371,7 @@ Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Sets up the AlgoPOAP main contract, sets and logs the version and returns"
+          "desc": "Sets up the Plausible main contract, sets and logs the version and returns"
         },
       {
           "name": "item_create",
@@ -391,7 +392,7 @@ Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Creates a new AlgoPOAP item smart contract and returns the app id"
+          "desc": "Creates a new Plausible item smart contract and returns the app id"
         },
         {
           "name": "item_update",
@@ -412,7 +413,7 @@ Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contrac
           "returns": {
             "type": "string"
           },
-          "desc": "Updates an AlgoPOAP item smart contract and returns item application ID"
+          "desc": "Updates an Plausible item smart contract and returns item application ID"
         },
         {
           "name": "item_delete",
@@ -425,7 +426,7 @@ Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contrac
           "returns": {
             "type": "void"
           },
-          "desc": "Deletes an AlgoPOAP item smart contract and returns void (approve only)"
+          "desc": "Deletes an Plausible item smart contract and returns void (approve only)"
         }
   ]
 }
@@ -433,16 +434,16 @@ Note 3: Author user has all metrics in localState of AlgoPOAP Item smart contrac
 ```
 ----
 
-### AlgoPOAP Item ASC TEAL Graph:
-[top↑](#algopoap)
+### Plausible Item ASC TEAL Graph:
+[top↑](#plausible)
 
-![AlgoPOAP Item ASC TEAL Graph](./item_contract.svg)
+![Plausible Item ASC TEAL Graph](./item_contract.svg)
 ----
 
-### AlgoPOAP ASC ITEM ABI :
-[top↑](#algopoap)
+### Plausible ASC ITEM ABI :
+[top↑](#plausible)
 
-Note 1: Data fields are global states of AlgoPOAP item smart contract.
+Note 1: Data fields are global states of Plausible item smart contract.
 
 ```mermaid
   classDiagram
@@ -503,13 +504,13 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
 
 ----
 
-### AlgoPOAP ASC ITEM ABI Schema :
-[top↑](#algopoap)
+### Plausible ASC ITEM ABI Schema :
+[top↑](#plausible)
 
 ```javascript
 {
-    "name": "algopoap-item-contract",
-    "desc": "AlgoPOAP Item smart contract",
+    "name": "plausible-item-contract",
+    "desc": "Plausible Item smart contract",
     "networks": {
         "MainNet": {
             "appID": 0
@@ -574,7 +575,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Sets up an AlgoPOAP smart contract item for the first time"
+            "desc": "Sets up an Plausible smart contract item for the first time"
         },
         {
             "name": "activate",
@@ -599,7 +600,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Activates an AlgoPOAP item smart contract and returns string"
+            "desc": "Activates an Plausible item smart contract and returns string"
         },
         {
             "name": "claim",
@@ -632,7 +633,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Claims an AlgoPOAP for a claimer and returns NFT sending inner-transaction hash"
+            "desc": "Claims an Plausible for a claimer and returns NFT sending inner-transaction hash"
         },
         {
             "name": "release",
@@ -645,7 +646,7 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Releases AlgoPOAP and allows all AlgoPOAP claimer's to start claiming"
+            "desc": "Releases Plausible and allows all Plausible claimer's to start claiming"
         }
     ]
 }
@@ -653,57 +654,57 @@ Note 1: Data fields are global states of AlgoPOAP item smart contract.
 ```
 ----
 
-Since AlgoPOAP is totally decentralized, trustless and permission-less: Every AlgoPOAP item author has full authority of the created PoaPs (AlgoPOAP-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
+Since Plausible is totally decentralized, trustless and permission-less: Every Plausible item author has full authority of the created PoaPs (Plausible-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
-The algopoap_contract.json contains the ABI Schema for parent AlgoPOAP contract and algopoap_item_contract.json is the full ABI Schema of AlgoPOAP item contract which will be created via an inner transaction.
+The algopoap_contract.json contains the ABI Schema for parent Plausible contract and algopoap_item_contract.json is the full ABI Schema of Plausible item contract which will be created via an inner transaction.
 
 
 ### Simple basic deployment and unit tests included
 
-Note: These are available under [AlgoPOAP's Smart Contracts Repository](https://github.com/AlgoPOAP/algopoap-smartcontracts) and more unit test scenarios are to be added for audit process.
+Note: These are available under [Plausible's Smart Contracts Repository](https://github.com/Plausible/plausible-smartcontracts) and more unit test scenarios are to be added for audit process.
 
 ```shell
-> algopoap-smartcontracts@0.0.4 start
-[ALGOPOAP: ] [2022-08-30T16:26:36.462Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:36.463Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
+> plausible-smartcontracts@0.0.4 start
+[PLAUSIBLE: ] [2022-08-30T16:26:36.462Z] [info]: ------------------------------
+[PLAUSIBLE: ] [2022-08-30T16:26:36.463Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'item_update',
-  description: 'Updates an AlgoPOAP item smart contract and returns item application ID',
+  description: 'Updates an Plausible item smart contract and returns item application ID',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:42.933Z] [info]: AlgoPOAP Main Contract ABI Exec method result = 107325601
-[ALGOPOAP: ] [2022-08-30T16:26:43.294Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:43.295Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
+[PLAUSIBLE: ] [2022-08-30T16:26:42.933Z] [info]: Plausible Main Contract ABI Exec method result = 107325601
+[PLAUSIBLE: ] [2022-08-30T16:26:43.294Z] [info]: ------------------------------
+[PLAUSIBLE: ] [2022-08-30T16:26:43.295Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 're_setup',
-  description: 'Sets up an AlgoPOAP smart contract item after first setup',
+  description: 'Sets up an Plausible smart contract item after first setup',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:51.351Z] [info]: AlgoPOAP Main Contract ABI Exec method result = 107325874
-[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:26:51.786Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
+[PLAUSIBLE: ] [2022-08-30T16:26:51.351Z] [info]: Plausible Main Contract ABI Exec method result = 107325874
+[PLAUSIBLE: ] [2022-08-30T16:26:51.786Z] [info]: ------------------------------
+[PLAUSIBLE: ] [2022-08-30T16:26:51.786Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'activate',
-  description: 'Activates an AlgoPOAP item smart contract and returns string',
+  description: 'Activates an Plausible item smart contract and returns string',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:26:59.712Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_activate
-[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:27:00.134Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
+[PLAUSIBLE: ] [2022-08-30T16:26:59.712Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_activate
+[PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
+[PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'release',
-  description: "Releases AlgoPOAP and allows all AlgoPOAP claimers to start claiming",
+  description: "Releases Plausible and allows all Plausible claimers to start claiming",
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:27:07.941Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_released
-[ALGOPOAP: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
-[ALGOPOAP: ] [2022-08-30T16:27:08.291Z] [info]: AlgoPOAP Item Contract ABI Exec method = ABIMethod {
+[PLAUSIBLE: ] [2022-08-30T16:27:07.941Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_released
+[PLAUSIBLE: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
+[PLAUSIBLE: ] [2022-08-30T16:27:08.291Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'claim',
-  description: 'Claims an AlgoPOAP for a claimer and returns NFT sending inner-transaction hash',
+  description: 'Claims an Plausible for a claimer and returns NFT sending inner-transaction hash',
   args: [Array],
   returns: [Object]
 }
-[ALGOPOAP: ] [2022-08-30T16:27:16.355Z] [info]: AlgoPOAP Main Contract ABI Exec method result = algopoap_item_claimed
+[PLAUSIBLE: ] [2022-08-30T16:27:16.355Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_claimed
 
 
 ```
