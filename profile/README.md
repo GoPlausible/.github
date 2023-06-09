@@ -130,26 +130,26 @@ Note: QRCode feature is still under heavy re-ideation, re-design and re-everythi
 sequenceDiagram 
 actor Author
 participant Plausible
-participant AlgoPoaP_ASC
-participant AlgoPoaP_Item_ASC
+participant Plausible_ASC
+participant Plausible_Item_ASC
 Author ->> Plausible: Connect wallet
 Author ->> Plausible: Sign Optin Call
-Plausible ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> Plausible: Return
+Plausible ->> Plausible_ASC: Optin Call
+Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
-Author ->> Plausible: Sign `create_algopoap` Method TXN
-Plausible ->> AlgoPoaP_ASC:  `create_algopoap` Method Call
-AlgoPoaP_ASC -->> Plausible: Return
-Note left of AlgoPoaP_ASC: Create Plausible Venue
-Author ->> Plausible: Sign `activate_algopoap` Method TXN
-Plausible ->> AlgoPoaP_Item_ASC: `activate_algopoap` Method Call (creates NFT as well)
-AlgoPoaP_Item_ASC -->> Plausible: Return
-Note right of AlgoPoaP_ASC: Activate Plausible Venue
-Author ->> Plausible: Sign `sig_algopoap` Method TXN
-Plausible ->> AlgoPoaP_ASC: `sig_algopoap` Method Call 
-AlgoPoaP_ASC -->> Plausible: Return
-Note right of AlgoPoaP_ASC: Release SIG Plausible
-Note right of AlgoPoaP_ASC: Only when SIG option is enabled on Plausible
+Author ->> Plausible: Sign `create_poap` Method TXN
+Plausible ->> Plausible_ASC:  `create_poap` Method Call
+Plausible_ASC -->> Plausible: Return
+Note left of Plausible_ASC: Create Plausible Venue
+Author ->> Plausible: Sign `activate_poap` Method TXN
+Plausible ->> Plausible_Item_ASC: `activate_poap` Method Call (creates NFT as well)
+Plausible_Item_ASC -->> Plausible: Return
+Note right of Plausible_ASC: Activate Plausible Venue
+Author ->> Plausible: Sign `sig_poap` Method TXN
+Plausible ->> Plausible_ASC: `sig_poap` Method Call 
+Plausible_ASC -->> Plausible: Return
+Note right of Plausible_ASC: Release SIG Plausible
+Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
 
 
 
@@ -170,27 +170,27 @@ Note : If SIG is not enabled for Plausible Venue, Claim approval will send Plaus
 sequenceDiagram 
 actor Claimer
 participant Plausible
-participant AlgoPoaP_ASC
-participant AlgoPoaP_Item_ASC
+participant Plausible_ASC
+participant Plausible_Item_ASC
 Claimer ->> Plausible: Connect wallet
 Claimer ->> Plausible: Sign Optin Call
-Plausible ->> AlgoPoaP_ASC: Optin Call
-AlgoPoaP_ASC -->> Plausible: Return
+Plausible ->> Plausible_ASC: Optin Call
+Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
 
-Claimer ->> Plausible: Sign `apply_algopoap` Method TXN
-Plausible ->> AlgoPoaP_Item_ASC:  `apply_algopoap` Method Call
-AlgoPoaP_Item_ASC -->> Plausible: Return
-Note right of AlgoPoaP_ASC: Apply for Plausible Venue
+Claimer ->> Plausible: Sign `apply_poap` Method TXN
+Plausible ->> Plausible_Item_ASC:  `apply_poap` Method Call
+Plausible_Item_ASC -->> Plausible: Return
+Note right of Plausible_ASC: Apply for Plausible Venue
 
 
-Claimer ->> Plausible: Sign `claim_algopoap` Method TXN
-Plausible ->> AlgoPoaP_Item_ASC: `claim_algopoap` Method Call ( plus optin TXN to Plausible NFT, if required)
-Note right of AlgoPoaP_ASC: Claim Plausible
-Note right of AlgoPoaP_ASC: Needs providing required options if configured (Geo, Time, QR)
-AlgoPoaP_Item_ASC -->> Claimer: Send NFT
-Note right of AlgoPoaP_ASC: Requires existence of signed release by author in global state
-AlgoPoaP_Item_ASC -->> Plausible: Return
+Claimer ->> Plausible: Sign `claim_poap` Method TXN
+Plausible ->> Plausible_Item_ASC: `claim_poap` Method Call ( plus optin TXN to Plausible NFT, if required)
+Note right of Plausible_ASC: Claim Plausible
+Note right of Plausible_ASC: Needs providing required options if configured (Geo, Time, QR)
+Plausible_Item_ASC -->> Claimer: Send NFT
+Note right of Plausible_ASC: Requires existence of signed release by author in global state
+Plausible_Item_ASC -->> Plausible: Return
 
 ```
 
@@ -221,12 +221,12 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 
 ```mermaid
   graph TD;
-      AlgoPoaP_Service== manages ==>Parent_AlgoPoaP_ASC;
-      Parent_AlgoPoaP_ASC== manages ==>AlgoPoaP_item_ASC;
+      Plausible_Service== manages ==>Parent_Plausible_ASC;
+      Parent_Plausible_ASC== manages ==>Plausible_item_ASC;
       
-      AlgoPoaP_Claimer== interacts ==>AlgoPoaP_item_ASC;
-      AlgoPoaP_Author== interacts ==>Parent_AlgoPoaP_ASC;
-      AlgoPoaP_Author== interacts ==>AlgoPoaP_item_ASC;
+      Plausible_Claimer== interacts ==>Plausible_item_ASC;
+      Plausible_Author== interacts ==>Parent_Plausible_ASC;
+      Plausible_Author== interacts ==>Plausible_item_ASC;
 ```
 
 ----
@@ -235,11 +235,11 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 
 ```mermaid
   stateDiagram-v2
-    [*] --> AlgoPoaP_Service
-    AlgoPoaP_Service --> Parent_AlgoPoaP_ASC
-    Parent_AlgoPoaP_ASC --> AlgoPoaP_item_ASC
-    AlgoPoaP_item_ASC --> close
-    Parent_AlgoPoaP_ASC --> eol
+    [*] --> Plausible_Service
+    Plausible_Service --> Parent_Plausible_ASC
+    Parent_Plausible_ASC --> Plausible_item_ASC
+    Plausible_item_ASC --> close
+    Parent_Plausible_ASC --> eol
     close --> archive
     eol --> archive
     archive --> [*]
@@ -323,19 +323,19 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 
 ```mermaid
   classDiagram
-    class AlgoPoaP_ASC
-    AlgoPoaP_ASC : +Uint64 algopoap_onboard_count
-    AlgoPoaP_ASC : +Uint64 algopoap_count
-    AlgoPoaP_ASC : +Byte algopoap_last_appid
-    AlgoPoaP_ASC : +Byte algopoap_last_author
-    AlgoPoaP_ASC : +setup(string)string
-    AlgoPoaP_ASC : +item_create(pay,byte[],byte[])string
-    AlgoPoaP_ASC : +item_update(application,byte[],byte[])string
-    AlgoPoaP_ASC : +item_delete(application)void
+    class Plausible_ASC
+    Plausible_ASC : +Uint64 poap_onboard_count
+    Plausible_ASC : +Uint64 poap_count
+    Plausible_ASC : +Byte poap_last_appid
+    Plausible_ASC : +Byte poap_last_author
+    Plausible_ASC : +setup(string)string
+    Plausible_ASC : +item_create(pay,byte[],byte[])string
+    Plausible_ASC : +item_update(application,byte[],byte[])string
+    Plausible_ASC : +item_delete(application)void
 
     
 ```
-Note 3: Author user has all metrics in localState of Plausible Item smart contract and all Authored AlgoPoaPs (upt to 16 item) in localState of Plausible smart contract (parent) 
+Note 3: Author user has all metrics in localState of Plausible Item smart contract and all Authored Plausibles (upt to 16 item) in localState of Plausible smart contract (parent) 
 
 ----
 
@@ -442,56 +442,56 @@ Note 1: Data fields are global states of Plausible item smart contract.
 
 ```mermaid
   classDiagram
-    class AlgoPoaP_ASC_ITEM
+    class Plausible_ASC_ITEM
 
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_onboard_count
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_txn_count
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_item_claim_count
+    Plausible_ASC_ITEM : +Uint64 poap_item_onboard_count
+    Plausible_ASC_ITEM : +Uint64 poap_item_txn_count
+    Plausible_ASC_ITEM : +Uint64 poap_item_claim_count
 
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_start_timestamp
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_end_timestamp
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_name
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_logo
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_timezone
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_desc
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_address
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_url
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_web2
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_nft_media
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_geo
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_release
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_has_shared_secret
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_claimer_qty
-    AlgoPoaP_ASC_ITEM : +Byte author_pays_fee
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_qr_secret
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_hash
-
-
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_parent_id
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_parent_address
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_author_address
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_asa_id
-
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_setup_time
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_activate_time
-    AlgoPoaP_ASC_ITEM : +Uint64 algopoap_release_time
+    Plausible_ASC_ITEM : +Uint64 poap_start_timestamp
+    Plausible_ASC_ITEM : +Uint64 poap_end_timestamp
+    Plausible_ASC_ITEM : +Byte poap_name
+    Plausible_ASC_ITEM : +Byte poap_logo
+    Plausible_ASC_ITEM : +Byte poap_timezone
+    Plausible_ASC_ITEM : +Byte poap_desc
+    Plausible_ASC_ITEM : +Byte poap_address
+    Plausible_ASC_ITEM : +Byte poap_url
+    Plausible_ASC_ITEM : +Byte poap_web2
+    Plausible_ASC_ITEM : +Byte poap_nft_media
+    Plausible_ASC_ITEM : +Byte poap_has_geo
+    Plausible_ASC_ITEM : +Byte poap_has_release
+    Plausible_ASC_ITEM : +Byte poap_has_shared_secret
+    Plausible_ASC_ITEM : +Byte poap_claimer_qty
+    Plausible_ASC_ITEM : +Byte author_pays_fee
+    Plausible_ASC_ITEM : +Byte poap_qr_secret
+    Plausible_ASC_ITEM : +Byte poap_hash
 
 
-     AlgoPoaP_ASC_ITEM : +Byte algopoap_is_activated
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_is_setup
-    AlgoPoaP_ASC_ITEM : +Byte algopoap_is_released
+    Plausible_ASC_ITEM : +Uint64 poap_parent_id
+    Plausible_ASC_ITEM : +Byte poap_parent_address
+    Plausible_ASC_ITEM : +Byte poap_author_address
+    Plausible_ASC_ITEM : +Uint64 poap_asa_id
+
+    Plausible_ASC_ITEM : +Uint64 poap_setup_time
+    Plausible_ASC_ITEM : +Uint64 poap_activate_time
+    Plausible_ASC_ITEM : +Uint64 poap_release_time
+
+
+     Plausible_ASC_ITEM : +Byte poap_is_activated
+    Plausible_ASC_ITEM : +Byte poap_is_setup
+    Plausible_ASC_ITEM : +Byte poap_is_released
 
 
 
  
 
-    AlgoPoaP_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
-    AlgoPoaP_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
-    AlgoPoaP_ASC_ITEM : +activate(pay,axfer,application,asset)string
-    AlgoPoaP_ASC_ITEM : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
-    AlgoPoaP_ASC_ITEM : +release(application)string
-    AlgoPoaP_ASC_ITEM : +get_metric(string)string
-    AlgoPoaP_ASC_ITEM : +get_metrics()string
+    Plausible_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    Plausible_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    Plausible_ASC_ITEM : +activate(pay,axfer,application,asset)string
+    Plausible_ASC_ITEM : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
+    Plausible_ASC_ITEM : +release(application)string
+    Plausible_ASC_ITEM : +get_metric(string)string
+    Plausible_ASC_ITEM : +get_metrics()string
     
   
     
@@ -536,35 +536,35 @@ Note 1: Data fields are global states of Plausible item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_name"
+                    "name": "poap_name"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_logo"
+                    "name": "poap_logo"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_desc"
+                    "name": "poap_desc"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_timezone"
+                    "name": "poap_timezone"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_address"
+                    "name": "poap_address"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_url"
+                    "name": "poap_url"
                 },
                 {
                     "type": "string",
-                    "name": "algopoap_web2"
+                    "name": "poap_web2"
                 },
                 {
                     "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
-                    "name": "algopoap_uint64_tuple"
+                    "name": "poap_uint64_tuple"
                 }
             ],
             "returns": {
@@ -581,7 +581,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
                 },
                 {
                     "type": "axfer",
-                    "name": "optin_algopoap_nft"
+                    "name": "optin_poap_nft"
                 },
                 {
                     "type": "application",
@@ -651,7 +651,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
 
 Since Plausible is totally decentralized, trustless and permission-less: Every Plausible item author has full authority of the created PoaPs (Plausible-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
-The algopoap_contract.json contains the ABI Schema for parent Plausible contract and algopoap_item_contract.json is the full ABI Schema of Plausible item contract which will be created via an inner transaction.
+The poap_contract.json contains the ABI Schema for parent Plausible contract and poap_item_contract.json is the full ABI Schema of Plausible item contract which will be created via an inner transaction.
 
 
 ### Simple basic deployment and unit tests included
@@ -683,7 +683,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:26:59.712Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_activate
+[PLAUSIBLE: ] [2022-08-30T16:26:59.712Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_activate
 [PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
 [PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'release',
@@ -691,7 +691,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:27:07.941Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_released
+[PLAUSIBLE: ] [2022-08-30T16:27:07.941Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_released
 [PLAUSIBLE: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
 [PLAUSIBLE: ] [2022-08-30T16:27:08.291Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'claim',
@@ -699,7 +699,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:27:16.355Z] [info]: Plausible Main Contract ABI Exec method result = algopoap_item_claimed
+[PLAUSIBLE: ] [2022-08-30T16:27:16.355Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_claimed
 
 
 ```
