@@ -31,11 +31,6 @@
  
 - [Algorand NFDomain (plausible.algo)](https://app.nf.domains/name/plausible.algo)
 
-## Plausible public code repositories:
-[top↑](#plausible)
-
-- [Plausible's Smart Contracts Repository](https://github.com/Plausible/plausible-smartcontracts)
-
 
 ## Plausible concept:
 [top↑](#plausible)
@@ -45,7 +40,7 @@ Plausible dApp is consisted of a frontend calling an Algorand ASC system in whic
 
 Plausible complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![Plausible Concept Diagram](https://raw.githubusercontent.com/Plausible/.github/main/profile/Plausible_Poster.jpeg)
+![Plausible Concept Diagram](https://raw.githubusercontent.com/Plausible/.github/main/profile/Plausible Concept Diagram.jpeg)
 
 
 
