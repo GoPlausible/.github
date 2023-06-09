@@ -1,16 +1,16 @@
 # .github
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
-# AlgoPOAP
-### **AlgoPOAP** is the Proof of Attendance Protocol built on Algorand (AVM8) which aims to be elevated into a Proof Of Anything Protocol in future (with use of coming state proofs feature on Algorand).
-This is just AlgoPOAP's .github public repository. Use these instead:
+# Plausible (Formerly AlgoPOAP)
+### **Plausible** is the Proof of Anything Protocol built on Algorand (AVM8) which aims to be elevated into a multichain Protocol in future (with use of state proofs feature on Algorand).
+This is just Plausible's .github public repository. Use these instead:
 
-- [AlgoPOAP Github Repos & Documentation](https://github.com/AlgoPOAP)
+- [Plausible Github Repos & Documentation](https://github.com/GoPlausible)
 
-- [AlgoPOAP Website (algopoap.com)](https://algopoap.com)
+- [Plausible Website (algopoap.com)](https://goplausible.com)
 
-- [AlgoPOAP dApp (algopoap.xyz)](https://algopoap.xyz)
+- [Plausible dApp (algopoap.xyz)](https://goplausible.xyz)
  
-- [Algorand NFDomain (algopoap.algo)](https://algopoap.algo.xyz)
+- [Algorand NFDomain (plausible.algo)](https://plausible.algo.xyz)
 
 
 
