@@ -12,7 +12,7 @@ This is just Plausible's .github public repository. Use these instead:
  
 - [Algorand NFDomain (goplausible.algo)](https://goplausible.algo.xyz)
 
-- - [Algorand NFDomain (plausible.algo)](https://plausible.algo.xyz)
+- [Algorand NFDomain (plausible.algo)](https://plausible.algo.xyz)
 
 
 
