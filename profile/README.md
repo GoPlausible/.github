@@ -1,5 +1,5 @@
 # Plausible
-### Formerly AlgoPOAP
+### Proof Of Anything Protocol
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
 ### This documentation is subject to update for newer updates please refer to [Plausible FAQ](https://goplausible.gitbook.io/goplausible/)
