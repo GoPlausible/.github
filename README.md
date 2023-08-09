@@ -6,11 +6,13 @@ This is just Plausible's .github public repository. Use these instead:
 
 - [Plausible Github Repos & Documentation](https://github.com/GoPlausible)
 
-- [Plausible Website (algopoap.com)](https://goplausible.com)
+- [Plausible Website (GoPlausible.com)](https://goplausible.com)
 
-- [Plausible dApp (algopoap.xyz)](https://goplausible.xyz)
+- [Plausible dApp (GoPlausible.xyz)](https://goplausible.xyz)
  
-- [Algorand NFDomain (plausible.algo)](https://plausible.algo.xyz)
+- [Algorand NFDomain (goplausible.algo)](https://goplausible.algo.xyz)
+
+- - [Algorand NFDomain (plausible.algo)](https://plausible.algo.xyz)
 
 
 
