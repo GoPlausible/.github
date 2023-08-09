@@ -47,9 +47,7 @@ Plausible complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/mai
 ## Plausible Gratitudes
 [top↑](#plausible)
 
-@emg110 and @sheghzo are grateful to Algorand Inc, Algorand Foundation, Algorand Ecosystem and AXL Ventures!
-
-And special thanks to all Plausible Slack channel distinguished members for great ideas and comments which we used in Plausible.
+@emg110 and @sheghzo are grateful to Algorand Inc, Algorand Foundation, Algorand Ecosystem, AXL Ventures and AlgoFam!
 
 
 # Plausible technical design:
