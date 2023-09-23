@@ -135,16 +135,16 @@ Author ->> Plausible: Sign Optin Call
 Plausible ->> Plausible_ASC: Optin Call
 Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
-Author ->> Plausible: Sign `create_poap` Method TXN
-Plausible ->> Plausible_ASC:  `create_poap` Method Call
+Author ->> Plausible: Sign `create_plaus` Method TXN
+Plausible ->> Plausible_ASC:  `create_plaus` Method Call
 Plausible_ASC -->> Plausible: Return
 Note left of Plausible_ASC: Create Plausible Venue
-Author ->> Plausible: Sign `activate_poap` Method TXN
-Plausible ->> Plausible_Item_ASC: `activate_poap` Method Call (creates NFT as well)
+Author ->> Plausible: Sign `activate_plaus` Method TXN
+Plausible ->> Plausible_Item_ASC: `activate_plaus` Method Call (creates NFT as well)
 Plausible_Item_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Activate Plausible Venue
-Author ->> Plausible: Sign `sig_poap` Method TXN
-Plausible ->> Plausible_ASC: `sig_poap` Method Call 
+Author ->> Plausible: Sign `sig_plaus` Method TXN
+Plausible ->> Plausible_ASC: `sig_plaus` Method Call 
 Plausible_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Release SIG Plausible
 Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
@@ -176,14 +176,14 @@ Plausible ->> Plausible_ASC: Optin Call
 Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
 
-Claimer ->> Plausible: Sign `apply_poap` Method TXN
-Plausible ->> Plausible_Item_ASC:  `apply_poap` Method Call
+Claimer ->> Plausible: Sign `apply_plaus` Method TXN
+Plausible ->> Plausible_Item_ASC:  `apply_plaus` Method Call
 Plausible_Item_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Apply for Plausible Venue
 
 
-Claimer ->> Plausible: Sign `claim_poap` Method TXN
-Plausible ->> Plausible_Item_ASC: `claim_poap` Method Call ( plus optin TXN to Plausible NFT, if required)
+Claimer ->> Plausible: Sign `claim_plaus` Method TXN
+Plausible ->> Plausible_Item_ASC: `claim_plaus` Method Call ( plus optin TXN to Plausible NFT, if required)
 Note right of Plausible_ASC: Claim Plausible
 Note right of Plausible_ASC: Needs providing required options if configured (Geo, Time, QR)
 Plausible_Item_ASC -->> Claimer: Send NFT
@@ -322,10 +322,10 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 ```mermaid
   classDiagram
     class Plausible_ASC
-    Plausible_ASC : +Uint64 poap_onboard_count
-    Plausible_ASC : +Uint64 poap_count
-    Plausible_ASC : +Byte poap_last_appid
-    Plausible_ASC : +Byte poap_last_author
+    Plausible_ASC : +Uint64 plaus_onboard_count
+    Plausible_ASC : +Uint64 plaus_count
+    Plausible_ASC : +Byte plaus_last_appid
+    Plausible_ASC : +Byte plaus_last_author
     Plausible_ASC : +setup(string)string
     Plausible_ASC : +item_create(pay,byte[],byte[])string
     Plausible_ASC : +item_update(application,byte[],byte[])string
@@ -442,42 +442,42 @@ Note 1: Data fields are global states of Plausible item smart contract.
   classDiagram
     class Plausible_ASC_ITEM
 
-    Plausible_ASC_ITEM : +Uint64 poap_item_onboard_count
-    Plausible_ASC_ITEM : +Uint64 poap_item_txn_count
-    Plausible_ASC_ITEM : +Uint64 poap_item_claim_count
+    Plausible_ASC_ITEM : +Uint64 plaus_item_onboard_count
+    Plausible_ASC_ITEM : +Uint64 plaus_item_txn_count
+    Plausible_ASC_ITEM : +Uint64 plaus_item_claim_count
 
-    Plausible_ASC_ITEM : +Uint64 poap_start_timestamp
-    Plausible_ASC_ITEM : +Uint64 poap_end_timestamp
-    Plausible_ASC_ITEM : +Byte poap_name
-    Plausible_ASC_ITEM : +Byte poap_logo
-    Plausible_ASC_ITEM : +Byte poap_timezone
-    Plausible_ASC_ITEM : +Byte poap_desc
-    Plausible_ASC_ITEM : +Byte poap_address
-    Plausible_ASC_ITEM : +Byte poap_url
-    Plausible_ASC_ITEM : +Byte poap_web2
-    Plausible_ASC_ITEM : +Byte poap_nft_media
-    Plausible_ASC_ITEM : +Byte poap_has_geo
-    Plausible_ASC_ITEM : +Byte poap_has_release
-    Plausible_ASC_ITEM : +Byte poap_has_shared_secret
-    Plausible_ASC_ITEM : +Byte poap_claimer_qty
+    Plausible_ASC_ITEM : +Uint64 plaus_start_timestamp
+    Plausible_ASC_ITEM : +Uint64 plaus_end_timestamp
+    Plausible_ASC_ITEM : +Byte plaus_name
+    Plausible_ASC_ITEM : +Byte plaus_logo
+    Plausible_ASC_ITEM : +Byte plaus_timezone
+    Plausible_ASC_ITEM : +Byte plaus_desc
+    Plausible_ASC_ITEM : +Byte plaus_address
+    Plausible_ASC_ITEM : +Byte plaus_url
+    Plausible_ASC_ITEM : +Byte plaus_web2
+    Plausible_ASC_ITEM : +Byte plaus_nft_media
+    Plausible_ASC_ITEM : +Byte plaus_has_geo
+    Plausible_ASC_ITEM : +Byte plaus_has_release
+    Plausible_ASC_ITEM : +Byte plaus_has_shared_secret
+    Plausible_ASC_ITEM : +Byte plaus_claimer_qty
     Plausible_ASC_ITEM : +Byte author_pays_fee
-    Plausible_ASC_ITEM : +Byte poap_qr_secret
-    Plausible_ASC_ITEM : +Byte poap_hash
+    Plausible_ASC_ITEM : +Byte plaus_qr_secret
+    Plausible_ASC_ITEM : +Byte plaus_hash
 
 
-    Plausible_ASC_ITEM : +Uint64 poap_parent_id
-    Plausible_ASC_ITEM : +Byte poap_parent_address
-    Plausible_ASC_ITEM : +Byte poap_author_address
-    Plausible_ASC_ITEM : +Uint64 poap_asa_id
+    Plausible_ASC_ITEM : +Uint64 plaus_parent_id
+    Plausible_ASC_ITEM : +Byte plaus_parent_address
+    Plausible_ASC_ITEM : +Byte plaus_author_address
+    Plausible_ASC_ITEM : +Uint64 plaus_asa_id
 
-    Plausible_ASC_ITEM : +Uint64 poap_setup_time
-    Plausible_ASC_ITEM : +Uint64 poap_activate_time
-    Plausible_ASC_ITEM : +Uint64 poap_release_time
+    Plausible_ASC_ITEM : +Uint64 plaus_setup_time
+    Plausible_ASC_ITEM : +Uint64 plaus_activate_time
+    Plausible_ASC_ITEM : +Uint64 plaus_release_time
 
 
-     Plausible_ASC_ITEM : +Byte poap_is_activated
-    Plausible_ASC_ITEM : +Byte poap_is_setup
-    Plausible_ASC_ITEM : +Byte poap_is_released
+     Plausible_ASC_ITEM : +Byte plaus_is_activated
+    Plausible_ASC_ITEM : +Byte plaus_is_setup
+    Plausible_ASC_ITEM : +Byte plaus_is_released
 
 
 
@@ -534,35 +534,35 @@ Note 1: Data fields are global states of Plausible item smart contract.
                 },
                 {
                     "type": "string",
-                    "name": "poap_name"
+                    "name": "plaus_name"
                 },
                 {
                     "type": "string",
-                    "name": "poap_logo"
+                    "name": "plaus_logo"
                 },
                 {
                     "type": "string",
-                    "name": "poap_desc"
+                    "name": "plaus_desc"
                 },
                 {
                     "type": "string",
-                    "name": "poap_timezone"
+                    "name": "plaus_timezone"
                 },
                 {
                     "type": "string",
-                    "name": "poap_address"
+                    "name": "plaus_address"
                 },
                 {
                     "type": "string",
-                    "name": "poap_url"
+                    "name": "plaus_url"
                 },
                 {
                     "type": "string",
-                    "name": "poap_web2"
+                    "name": "plaus_web2"
                 },
                 {
                     "type": "(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64)",
-                    "name": "poap_uint64_tuple"
+                    "name": "plaus_uint64_tuple"
                 }
             ],
             "returns": {
@@ -579,7 +579,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
                 },
                 {
                     "type": "axfer",
-                    "name": "optin_poap_nft"
+                    "name": "optin_plaus_nft"
                 },
                 {
                     "type": "application",
@@ -647,9 +647,9 @@ Note 1: Data fields are global states of Plausible item smart contract.
 ```
 ----
 
-Since Plausible is totally decentralized, trustless and permission-less: Every Plausible item author has full authority of the created PoaPs (Plausible-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
+Since Plausible is totally decentralized, trustless and permission-less: Every Plausible item author has full authority of the created PLAUS items (Plausible-DAO is coming with dao, voting and governance features in near future, after startup formation. Preferably I will use integration to an already working service with ABI)!
 
-The poap_contract.json contains the ABI Schema for parent Plausible contract and poap_item_contract.json is the full ABI Schema of Plausible item contract which will be created via an inner transaction.
+The plaus_contract.json contains the ABI Schema for parent Plausible contract and plaus_item_contract.json is the full ABI Schema of Plausible item contract which will be created via an inner transaction.
 
 
 ### Simple basic deployment and unit tests included
@@ -681,7 +681,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:26:59.712Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_activate
+[PLAUSIBLE: ] [2022-08-30T16:26:59.712Z] [info]: Plausible Main Contract ABI Exec method result = plaus_item_activate
 [PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: ------------------------------
 [PLAUSIBLE: ] [2022-08-30T16:27:00.134Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'release',
@@ -689,7 +689,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:27:07.941Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_released
+[PLAUSIBLE: ] [2022-08-30T16:27:07.941Z] [info]: Plausible Main Contract ABI Exec method result = plaus_item_released
 [PLAUSIBLE: ] [2022-08-30T16:27:08.290Z] [info]: ------------------------------
 [PLAUSIBLE: ] [2022-08-30T16:27:08.291Z] [info]: Plausible Item Contract ABI Exec method = ABIMethod {
   name: 'claim',
@@ -697,7 +697,7 @@ Note: These are available under [Plausible's Smart Contracts Repository](https:/
   args: [Array],
   returns: [Object]
 }
-[PLAUSIBLE: ] [2022-08-30T16:27:16.355Z] [info]: Plausible Main Contract ABI Exec method result = poap_item_claimed
+[PLAUSIBLE: ] [2022-08-30T16:27:16.355Z] [info]: Plausible Main Contract ABI Exec method result = plaus_item_claimed
 
 
 ```
