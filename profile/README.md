@@ -1,4 +1,4 @@
-# Plausible
+# PLAUSIBLE Protocol
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
