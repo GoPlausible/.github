@@ -661,6 +661,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 ---
 
 ## REGISTRAR
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/registrar`
 
@@ -756,6 +757,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## IDENTIFIERS
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/identifiers`
 
@@ -837,6 +839,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## CREDENTIALS
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/credentials`
 
@@ -928,6 +931,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## SSI
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/ssi`
 
@@ -989,6 +993,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## ISSUANCE
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/issuance`
 
@@ -1077,6 +1082,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## VERIFICATION
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/verification`
 
@@ -1143,6 +1149,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## AUTH
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/auth`
 
@@ -1209,6 +1216,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## REVOKE
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/revoke`
 
@@ -1273,6 +1281,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## ROTATE
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/rotate`
 
@@ -1337,6 +1346,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## RESOLVE
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/resolve`
 
@@ -1365,6 +1375,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## IPFS
+[top↑](#goplausible-service-integration-api)
 
 ### GET `/ipfs`
 
@@ -1418,6 +1429,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
         
 ## RENEW-AUTH
+[top↑](#goplausible-service-integration-api)
 
 ### POST `/renew-auth`
 
@@ -1457,6 +1469,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
         ```
 
 ## DID-LINKED-RESOURCE (DLR)
+[top↑](#goplausible-service-integration-api)
 
 ### POST `/dlr`
 
@@ -1494,10 +1507,13 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 
 
 ## Contributing
+[top↑](#plausible-protocol)
+
 
 We welcome contributions and suggestions. Please open a pull request or an issue on our GitHub repository if you have any questions or ideas.
 
 ## License
+[top↑](#plausible-protocol)
 
 This API and its documentation are provided for informational and integration purposes. For licensing information, consult the official GoPlausible or contact the team members on socials.
 
