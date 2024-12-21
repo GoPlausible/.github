@@ -21,7 +21,9 @@
 ## GoPlausible links
 [top↑](#plausible_protocol)
 
-- [GoPlausible Github Repos & Documentation](https://github.com/GoPlausible)
+- [GoPlausible Github Technical Documentation](https://github.com/GoPlausible)
+  
+- [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible)
 
 - [GoPlausible Website (plausible.com)](https://goplausible.com)
 
