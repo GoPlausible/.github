@@ -2,7 +2,7 @@
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### This documentation is subject to update for newer updates please refer to [GoPlausible FAQ](https://goplausible.gitbook.io/goplausible/)
+### This documentation is subject to update for newer updates please refer to [GoPlausible Documentation](https://goplausible.gitbook.io/goplausible/)
 ### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.co).
 
 - [PLAUSIBLE protocol Concept](#plausible-protocol-concept)
