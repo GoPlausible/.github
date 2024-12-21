@@ -40,7 +40,7 @@
 
 GoPlausible dApp consists of a frontend calling a PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contract (C2C) calls are made by PLAUSIBLE parent contracts to PLAUS contracts.
 
-PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
+PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) standards on Algorand.
 
 ![Plausible Concept Diagram ](https://github.com/user-attachments/assets/8e4c3510-1850-4096-84ef-b90ef7d09c84)
 
