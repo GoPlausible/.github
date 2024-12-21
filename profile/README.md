@@ -198,7 +198,7 @@ Plaus_ASC -->> Plausible: Return
 ## Plausible Smart Contracts 
 [top↑](#plausible)
 
-Plausible ASC System is designed on basis of newest TEAL features came with TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
+Plausible smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
