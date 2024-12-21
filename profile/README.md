@@ -630,8 +630,10 @@ Note 1: Data fields are global states and boxes of PLAUS smart contract.
 
 ***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
-## GoPlausible API
+## GoPlausible Service integration API
 [top↑](#plausible_protocol)
+
+***This API spec and schema are just designed for GoPlausible service level integration projects***
 
 - **OpenAPI Version**: 3.1.0  
 - **Base URL**: [https://api.goplausible.xyz](https://api.goplausible.xyz)  
