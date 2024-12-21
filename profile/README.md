@@ -75,8 +75,8 @@ Plausible is consisted of a frontend and smart contracts on Algorand chain:
 
 Plausible frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
-- Author UI
-- Claim UI
+- Issuer UI
+- Claimer UI
 
 Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
 
@@ -87,17 +87,17 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
     direction TB
     subgraph Frontend
         direction RL
-        Author_UI
-        Claim_UI
+        Issuer_UI
+        Claimer_UI
     end
     subgraph ASC
         direction TB
-        Parent_ASC
-        Item_ASC
+        Plausible_ASC
+        Plaus_ASC
         
     end
   end
-  Author --> Plausible
+  Issuer --> Plausible
   Claimer --> Plausible
   Frontend --> ASC
   
@@ -105,10 +105,10 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 
 ----
 
-### Author's Journey:
+### PLAUS Issuer's Journey:
 [top↑](#plausible)
 
-1- Author easily gets onboard to GoPlausible by opting into Plausible protocol's parent Algorand smart contract.
+1- Issuer easily gets onboard to GoPlausible by opting into Plausible protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
 
 2- Then can Issue new PLAUS (W3C DID based verifiable credentials with NFTs in background).
 
@@ -119,7 +119,7 @@ Options available for PLAUS creation:
 
 - Time (default enabled): Start time check (compared to LatestTimestamp)
 - Geo: Country allow and ban lists.
-- Signature: Author's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed Plausible (in NFT or TXN depending on Plausible config) only after Author's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- Signature: Issuer's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed Plausible (in NFT or TXN depending on Plausible config) only after Issuer's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
 - QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Claimer scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
@@ -128,24 +128,24 @@ Note: QRCode feature is still under heavy re-ideation, re-design and re-everythi
 
 ```mermaid
 sequenceDiagram 
-actor Author
+actor Issuer
 participant Plausible
 participant Plausible_ASC
-participant Plausible_Item_ASC
-Author ->> Plausible: Connect wallet
-Author ->> Plausible: Sign Optin Call
+participant Plaus_ASC
+Issuer ->> Plausible: Connect wallet
+Issuer ->> Plausible: Sign Optin Call
 Plausible ->> Plausible_ASC: Optin Call
 Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
-Author ->> Plausible: Sign `create_plaus` Method TXN
+Issuer ->> Plausible: Sign `create_plaus` Method TXN
 Plausible ->> Plausible_ASC:  `create_plaus` Method Call
 Plausible_ASC -->> Plausible: Return
 Note left of Plausible_ASC: Create Plausible Venue
-Author ->> Plausible: Sign `activate_plaus` Method TXN
-Plausible ->> Plausible_Item_ASC: `activate_plaus` Method Call (creates NFT as well)
-Plausible_Item_ASC -->> Plausible: Return
+Issuer ->> Plausible: Sign `activate_plaus` Method TXN
+Plausible ->> Plaus_ASC: `activate_plaus` Method Call (creates NFT as well)
+Plaus_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Activate Plausible Venue
-Author ->> Plausible: Sign `sig_plaus` Method TXN
+Issuer ->> Plausible: Sign `sig_plaus` Method TXN
 Plausible ->> Plausible_ASC: `sig_plaus` Method Call 
 Plausible_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Release SIG Plausible
@@ -158,13 +158,12 @@ Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
 ### Claimer's Journey:
 [top↑](#plausible)
 
-1- Claimer simply gets onboard by opting into parent ASC.
+1- After PLAUS activation (by Issuer) and by satisfying what PLAUS configuration mandates from claimers, eligible users can claim the PLAUS and get NFT and attached Verifiable Credential if approved by PLAUS smart contract.
 
-2- Then get a searchable list of Plausible venues and applys to one by opting into it.
+2- Claimer simply gets onboard by opting into parent ASC from UI (one button click).
 
-3- Then after general venue activation (by author) and by satisfying what Plausible venue options require, claim the Plausible and get Plausible NFT if approved.
+3-  Then get a searchable list of claimed PLAUS so far and can activate the creator mode to Issue new PLAUS at any time given there is enough balance in the account.
 
-Note : If SIG is not enabled for Plausible Venue, Claim approval will send Plausible NFT to Claimer's wallet but if SIG is enabled then after signing of Author, it'l be sent automatically to Claimer's wallet.
 
 ```mermaid
 sequenceDiagram 
