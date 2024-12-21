@@ -14,7 +14,7 @@
 - [Plausible gratitudes](#plausible-credits)
 
 - [Plausible Technical Design](#plausible-technical-design)
-  - [Author's Journey](#authors-journey)
+  - [Issuer's Journey](#issuers-journey)
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-smart-contracts)
 
@@ -63,7 +63,7 @@ Plausible protocol features :
   
 - Double pinning of all IPFS content (media and metadata) into Pinata and CrustNetwork (the best centralized and the best decentralized networks for IPFS pinning).
   
-- Dynamic NFTs per PLAUS (Plausible is 100% token-less and NFTs are generated and owned by PLAUS contract which belongs to PLAUS author).
+- Dynamic NFTs per PLAUS (Plausible is 100% token-less and NFTs are generated and owned by PLAUS contract which belongs to PLAUS issuer).
   
 
 
@@ -170,7 +170,7 @@ sequenceDiagram
 actor Claimer
 participant Plausible
 participant Plausible_ASC
-participant Plausible_Item_ASC
+participant Plaus_ASC
 Claimer ->> Plausible: Connect wallet
 Claimer ->> Plausible: Sign Optin Call
 Plausible ->> Plausible_ASC: Optin Call
@@ -178,18 +178,18 @@ Plausible_ASC -->> Plausible: Return
 Note left of Plausible: Onboarding
 
 Claimer ->> Plausible: Sign `apply_plaus` Method TXN
-Plausible ->> Plausible_Item_ASC:  `apply_plaus` Method Call
-Plausible_Item_ASC -->> Plausible: Return
+Plausible ->> Plaus_ASC:  `apply_plaus` Method Call
+Plaus_ASC -->> Plausible: Return
 Note right of Plausible_ASC: Apply for Plausible Venue
 
 
 Claimer ->> Plausible: Sign `claim_plaus` Method TXN
-Plausible ->> Plausible_Item_ASC: `claim_plaus` Method Call ( plus optin TXN to Plausible NFT, if required)
+Plausible ->> Plaus_ASC: `claim_plaus` Method Call ( plus optin TXN to Plausible NFT, if required)
 Note right of Plausible_ASC: Claim Plausible
 Note right of Plausible_ASC: Needs providing required options if configured (Geo, Time, QR)
-Plausible_Item_ASC -->> Claimer: Send NFT
-Note right of Plausible_ASC: Requires existence of signed release by author in global state
-Plausible_Item_ASC -->> Plausible: Return
+Plaus_ASC -->> Claimer: Send NFT
+Note right of Plausible_ASC: Requires existence of signed release by issuer in global state
+Plaus_ASC -->> Plausible: Return
 
 ```
 
@@ -208,10 +208,10 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 | ------------- |:-------------:| -----:|
 | New Plausible                     | 1 MinFee      |   2 MinFee |
 | Setup Plausible                   | 1 MinFee      |   1 MinFee |
-| Activate Plausible(Author pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
+| Activate Plausible(Issuer pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
 | Activate Plausible(Claimer pays) | 3 MinFee      |   1 MinFee |
 | Release Plausible| 1 MinFee       | 1 MinFee      |   0  |
-| Claim Plausible(Author pays)      | 1 MinFee      |   0  |
+| Claim Plausible(Issuer pays)      | 1 MinFee      |   0  |
 | Claim Plausible(Claimer pays)    | 4 MinFee      |   0  |
 
 ----
@@ -221,11 +221,11 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ```mermaid
   graph TD;
       Plausible_Service== manages ==>Parent_Plausible_ASC;
-      Parent_Plausible_ASC== manages ==>Plausible_item_ASC;
+      Parent_Plausible_ASC== manages ==>Plaus_ASC;
       
-      Plausible_Claimer== interacts ==>Plausible_item_ASC;
-      Plausible_Author== interacts ==>Parent_Plausible_ASC;
-      Plausible_Author== interacts ==>Plausible_item_ASC;
+      Plausible_Claimer== interacts ==>Plaus_ASC;
+      Plausible_Issuer== interacts ==>Parent_Plausible_ASC;
+      Plausible_Issuer== interacts ==>Plaus_ASC;
 ```
 
 ----
@@ -236,8 +236,8 @@ Note: This section (Fees) is subject to further updates and changes and is work 
   stateDiagram-v2
     [*] --> Plausible_Service
     Plausible_Service --> Parent_Plausible_ASC
-    Parent_Plausible_ASC --> Plausible_item_ASC
-    Plausible_item_ASC --> close
+    Parent_Plausible_ASC --> Plaus_ASC
+    Plaus_ASC --> close
     Parent_Plausible_ASC --> eol
     close --> archive
     eol --> archive
@@ -253,9 +253,9 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ```mermaid
   flowchart TB
 
-    id1([Author]) --uses--> parentMethodCalls
-    id1([Author]) --uses--> parentAppCalls
-    id1([Author]) --uses--> itemMethodCalls
+    id1([Issuer]) --uses--> parentMethodCalls
+    id1([Issuer]) --uses--> parentAppCalls
+    id1([Issuer]) --uses--> itemMethodCalls
     
 
     id2([Claimer]) --uses--> parentAppCalls 
@@ -334,7 +334,6 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 
     
 ```
-Note 3: Author user has all metrics in localState of Plausible Item smart contract and all Authored Plausibles (upt to 16 item) in localState of Plausible smart contract (parent) 
 
 ----
 
@@ -648,7 +647,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
 ```
 ----
 
-***Since Plausible is totally decentralized, trustless and permission-less: Every author has full authority of the created PLAUS, enforced by PLAUS smart contract.***
+***Since Plausible is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
 ## GoPlausible API
 
