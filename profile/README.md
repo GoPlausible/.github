@@ -38,11 +38,11 @@
 [top↑](#plausible_protocol)
 
 
-GoPlausible dApp is consisted of a frontend calling an PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contarct (C2C) calls are made by PLAUSIBLE parent contract to PLAUS contracts.
+GoPlausible dApp consists of a frontend calling a PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contract (C2C) calls are made by PLAUSIBLE parent contracts to PLAUS contracts.
 
 PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![PLAUSIBLE protocol Concept Diagram](https://github.com/GoPlausible/.github/blob/main/profile/Plausible%20Concept%20Diagram.jpeg)
+![Plausible Concept Diagram ](https://github.com/user-attachments/assets/8e4c3510-1850-4096-84ef-b90ef7d09c84)
 
 
 
@@ -57,13 +57,13 @@ PLAUSIBLE protocol features :
   
 - WebAuthn, Oauth 2.2, OIDC, OIDC-VC integration.
   
-- Double pinning of all IPFS content (media and metadata) into Pinata and CrustNetwork (the best centralized and the best decentralized networks for IPFS pinning).
+- Double pinning of all IPFS content (media and metadata) into Pinata and CrustNetwork (the best centralized and the best-decentralized networks for IPFS pinning).
   
 - Dynamic NFTs per PLAUS (PLAUSIBLE protocol is 100% token-less and NFTs are generated and owned by PLAUS contract which belongs to PLAUS issuer).
   
 
 
-PLAUSIBLE protocol is consisted of a frontend and smart contracts on Algorand chain:
+PLAUSIBLE protocol consists of a frontend and smart contracts on the Algorand chain:
 - Frontend (Cloudflare Pages React SPA/PWA )
 - Edge workers (Cloudflare Workers for GoPlausible public and private APIs)
 - Smart Contracts (Algorand smart contracts and GoPlausible ABIs)
