@@ -16,7 +16,7 @@
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-smart-contracts)
 
-- [GoPlausible API](#goplausible-api)
+- [GoPlausible Service Integration API](#goplausible-service-integration-api)
 
 ## GoPlausible links
 [top↑](#plausible_protocol)
