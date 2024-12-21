@@ -201,12 +201,12 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
 
 ```mermaid
   graph TD;
-      Plausible_Service== manages ==>Parent_Plausible_ASC;
-      Parent_Plausible_ASC== manages ==>Plaus_ASC;
+      GoPlausible_Service== manages ==>Parent_PLAUSIBLE_ASC;
+      Parent_PLAUSIBLE_ASC== manages ==>PLAUS_ASC;
       
-      Plausible_Claimer== interacts ==>Plaus_ASC;
-      Plausible_Issuer== interacts ==>Parent_Plausible_ASC;
-      Plausible_Issuer== interacts ==>Plaus_ASC;
+      PLAUS_Claimer== interacts ==>PLAUS_ASC;
+      PLAUS_Issuer== interacts ==>Parent_PLAUSIBLE_ASC;
+      PLAUS_Issuer== interacts ==>PLAUS_ASC;
 ```
 
 ----
@@ -215,11 +215,11 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
 
 ```mermaid
   stateDiagram-v2
-    [*] --> Plausible_Service
-    Plausible_Service --> Parent_Plausible_ASC
-    Parent_Plausible_ASC --> Plaus_ASC
-    Plaus_ASC --> close
-    Parent_Plausible_ASC --> eol
+    [*] --> GoPlausible_Service
+    GoPlausible_Service --> Parent_PLAUSIBLE_ASC
+    Parent_PLAUSIBLE_ASC --> PLAUS_ASC
+    PLAUS_ASC --> close
+    Parent_PLAUSIBLE_ASC --> eol
     close --> archive
     eol --> archive
     archive --> [*]
@@ -236,14 +236,14 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
 
     id1([Issuer]) --uses--> parentMethodCalls
     id1([Issuer]) --uses--> parentAppCalls
-    id1([Issuer]) --uses--> itemMethodCalls
+    id1([Issuer]) --uses--> plausMethodCalls
     
 
     id2([Claimer]) --uses--> parentAppCalls 
-    id2([Claimer]) --uses--> itemMethodCalls 
+    id2([Claimer]) --uses--> plausMethodCalls 
   
 
-    subgraph Plausible
+    subgraph PLAUSIBLE
       
       subgraph parentASC
         subgraph parentAppCalls
@@ -261,17 +261,16 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
  
         end
       end
-      subgraph itemASC
+      subgraph plausASC
         
         
-        subgraph itemAppCalls
-        id12([optin])
+        subgraph plausAppCalls
         id13([create]) 
         id14([update]) 
         id15([delete]) 
         id17([closeout]) 
         end
-        subgraph itemMethodCalls
+        subgraph plausMethodCalls
         id18([setup]) 
         id18([activate]) 
         id19([claim]) 
@@ -287,38 +286,37 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
 ```
 ----
 
-### Plausible ASC TEAL Graph:
+### PLAUSIBLE prtocol contract TEAL Graph:
 [top↑](#plausible_protocol)
 
-![Plausible Item ASC TEAL Graph](./main_contract.svg)
+![PLAUSIBLE protocol ASC TEAL Graph](./main_contract.svg)
 
 ----
 
-### Plausible ASC ABI :
+### PLAUSIBLE protocol ASC ABI :
 [top↑](#plausible_protocol)
 
-Note 1: Data fields are global states of Plausible parent smart contract.
+Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contract.
 
-Note 2: Fee collection is not included anywhere at this phase of Plausible MVP development but certainly is a priority prior to public TESTNET deployment. It happens on parent smart contract.
 
 ```mermaid
   classDiagram
-    class Plausible_ASC
-    Plausible_ASC : +Uint64 plaus_onboard_count
-    Plausible_ASC : +Uint64 plaus_count
-    Plausible_ASC : +Byte plaus_last_appid
-    Plausible_ASC : +Byte plaus_last_author
-    Plausible_ASC : +setup(string)string
-    Plausible_ASC : +item_create(pay,byte[],byte[])string
-    Plausible_ASC : +item_update(application,byte[],byte[])string
-    Plausible_ASC : +item_delete(application)void
+    class PLAUSIBLE_ASC
+    PLAUSIBLE_ASC : +Uint64 plaus_onboard_count
+    PLAUSIBLE_ASC : +Uint64 plaus_count
+    PLAUSIBLE_ASC : +Byte plaus_last_appid
+    PLAUSIBLE_ASC : +Byte plaus_last_author
+    PLAUSIBLE_ASC : +setup(string)string
+    PLAUSIBLE_ASC : +item_create(pay,byte[],byte[])string
+    PLAUSIBLE_ASC : +item_update(application,byte[],byte[])string
+    PLAUSIBLE_ASC : +item_delete(application)void
 
     
 ```
 
 ----
 
-### Plausible ASC ABI Schema :
+### PLAUSIBLE ASC ABI Schema :
 [top↑](#plausible_protocol)
 
 ```javascript
@@ -408,69 +406,69 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 ```
 ----
 
-### Plausible Item ASC TEAL Graph:
+### PLAUS ASC TEAL Graph:
 [top↑](#plausible_protocol)
 
-![Plausible Item ASC TEAL Graph](./item_contract.svg)
+![PLAUS ASC TEAL Graph](./item_contract.svg)
 ----
 
-### Plausible ASC ITEM ABI :
+### PLAUS ASC ABI :
 [top↑](#plausible_protocol)
 
-Note 1: Data fields are global states of Plausible item smart contract.
+Note 1: Data fields are global states and boxes of PLAUS smart contract.
 
 ```mermaid
   classDiagram
-    class Plausible_ASC_ITEM
+    class PLAUS_ASC
 
-    Plausible_ASC_ITEM : +Uint64 plaus_item_onboard_count
-    Plausible_ASC_ITEM : +Uint64 plaus_item_txn_count
-    Plausible_ASC_ITEM : +Uint64 plaus_item_claim_count
+    PLAUS_ASC : +Uint64 plaus_item_onboard_count
+    PLAUS_ASC : +Uint64 plaus_item_txn_count
+    PLAUS_ASC : +Uint64 plaus_item_claim_count
 
-    Plausible_ASC_ITEM : +Uint64 plaus_start_timestamp
-    Plausible_ASC_ITEM : +Uint64 plaus_end_timestamp
-    Plausible_ASC_ITEM : +Byte plaus_name
-    Plausible_ASC_ITEM : +Byte plaus_logo
-    Plausible_ASC_ITEM : +Byte plaus_timezone
-    Plausible_ASC_ITEM : +Byte plaus_desc
-    Plausible_ASC_ITEM : +Byte plaus_address
-    Plausible_ASC_ITEM : +Byte plaus_url
-    Plausible_ASC_ITEM : +Byte plaus_web2
-    Plausible_ASC_ITEM : +Byte plaus_nft_media
-    Plausible_ASC_ITEM : +Byte plaus_has_geo
-    Plausible_ASC_ITEM : +Byte plaus_has_release
-    Plausible_ASC_ITEM : +Byte plaus_has_shared_secret
-    Plausible_ASC_ITEM : +Byte plaus_claimer_qty
-    Plausible_ASC_ITEM : +Byte author_pays_fee
-    Plausible_ASC_ITEM : +Byte plaus_qr_secret
-    Plausible_ASC_ITEM : +Byte plaus_hash
-
-
-    Plausible_ASC_ITEM : +Uint64 plaus_parent_id
-    Plausible_ASC_ITEM : +Byte plaus_parent_address
-    Plausible_ASC_ITEM : +Byte plaus_author_address
-    Plausible_ASC_ITEM : +Uint64 plaus_asa_id
-
-    Plausible_ASC_ITEM : +Uint64 plaus_setup_time
-    Plausible_ASC_ITEM : +Uint64 plaus_activate_time
-    Plausible_ASC_ITEM : +Uint64 plaus_release_time
+    PLAUS_ASC : +Uint64 plaus_start_timestamp
+    PLAUS_ASC : +Uint64 plaus_end_timestamp
+    PLAUS_ASC : +Byte plaus_name
+    PLAUS_ASC : +Byte plaus_logo
+    PLAUS_ASC : +Byte plaus_timezone
+    PLAUS_ASC : +Byte plaus_desc
+    PLAUS_ASC : +Byte plaus_address
+    PLAUS_ASC : +Byte plaus_url
+    PLAUS_ASC : +Byte plaus_web2
+    PLAUS_ASC : +Byte plaus_nft_media
+    PLAUS_ASC : +Byte plaus_has_geo
+    PLAUS_ASC : +Byte plaus_has_release
+    PLAUS_ASC : +Byte plaus_has_shared_secret
+    PLAUS_ASC : +Byte plaus_claimer_qty
+    PLAUS_ASC : +Byte author_pays_fee
+    PLAUS_ASC : +Byte plaus_qr_secret
+    PLAUS_ASC : +Byte plaus_hash
 
 
-     Plausible_ASC_ITEM : +Byte plaus_is_activated
-    Plausible_ASC_ITEM : +Byte plaus_is_setup
-    Plausible_ASC_ITEM : +Byte plaus_is_released
+    PLAUS_ASC : +Uint64 plaus_parent_id
+    PLAUS_ASC : +Byte plaus_parent_address
+    PLAUS_ASC : +Byte plaus_author_address
+    PLAUS_ASC : +Uint64 plaus_asa_id
+
+    PLAUS_ASC : +Uint64 plaus_setup_time
+    PLAUS_ASC : +Uint64 plaus_activate_time
+    PLAUS_ASC : +Uint64 plaus_release_time
+
+
+     PLAUS_ASC : +Byte plaus_is_activated
+    PLAUS_ASC : +Byte plaus_is_setup
+    PLAUS_ASC : +Byte plaus_is_released
 
 
 
  
 
-    Plausible_ASC_ITEM : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
-    Plausible_ASC_ITEM : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
-    Plausible_ASC_ITEM : +activate(pay,axfer,application,asset)string
-    Plausible_ASC_ITEM : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
-    Plausible_ASC_ITEM : +release(application)string
-    Plausible_ASC_ITEM : +get_metric(string)string
-    Plausible_ASC_ITEM : +get_metrics()string
+    PLAUS_ASC : +setup(pay,account,application,string,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    PLAUS_ASC : +re_setup(pay,account,application,asset,string,string,string,string,string,string,string,(uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64,uint64))string
+    PLAUS_ASC : +activate(pay,axfer,application,asset)string
+    PLAUS_ASC : +claim(asset,application,pay,axfer,string,(uint64,uint64,uint64,uint64,uint64))string
+    PLAUS_ASC : +release(application)string
+    PLAUS_ASC : +get_metric(string)string
+    PLAUS_ASC : +get_metrics()string
     
   
     
@@ -478,13 +476,13 @@ Note 1: Data fields are global states of Plausible item smart contract.
 
 ----
 
-### Plausible ASC ITEM ABI Schema :
+### PLAUS ASC ABI Schema :
 [top↑](#plausible_protocol)
 
 ```javascript
 {
-    "name": "plausible-item-contract",
-    "desc": "Plausible Item smart contract",
+    "name": "plaus-contract",
+    "desc": "PLAUS smart contract",
     "networks": {
         "MainNet": {
             "appID": 0
@@ -549,7 +547,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Sets up an Plausible smart contract item for the first time"
+            "desc": "Sets up an PLAUS contract"
         },
         {
             "name": "activate",
@@ -574,7 +572,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Activates an Plausible item smart contract and returns string"
+            "desc": "Activates an PLAUS smart contract and returns string"
         },
         {
             "name": "claim",
@@ -607,7 +605,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Claims an Plausible for a claimer and returns NFT sending inner-transaction hash"
+            "desc": "Claims a PLAUS for a claimer and returns NFT sending inner-transaction hash"
         },
         {
             "name": "release",
@@ -620,7 +618,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
             "returns": {
                 "type": "string"
             },
-            "desc": "Releases Plausible and allows all Plausible claimer's to start claiming"
+            "desc": "Releases PLAUS and allows all PLAUS claimer's to start claiming"
         }
     ]
 }
@@ -628,7 +626,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
 ```
 ----
 
-***Since Plausible is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
+***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
 ## GoPlausible API
 
