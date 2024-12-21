@@ -642,7 +642,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 ---
 
 ## Table of Contents
-[top↑](#plausible-api)
+[top↑](#goplausible-service-integration-api)
 
 1. [REGISTRAR](#registrar)
 2. [IDENTIFIERS](#identifiers)
