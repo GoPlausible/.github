@@ -32,10 +32,6 @@
 - [GoPlausible Universal DID/URL Resolver (ThisDID.com)](https://thisdid.com)
 
 - [GoPlausible TESTNET dApp (testnet.plausible.xyz)](https://testnet.goplausible.xyz)
- 
-- [PLAUSIBLE protocol verified NFD (plausible.algo)](https://app.nf.domains/name/plausible.algo)
-  
-- [GoPLAUSIBLE account verified NFD (goplausible.algo)](https://app.nf.domains/name/goplausible.algo)
 
 
 ## PLAUSIBLE protocol concept:
