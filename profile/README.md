@@ -59,7 +59,7 @@ PLAUSIBLE protocol features :
   
 - Double pinning of all IPFS content (media and metadata) into Pinata and CrustNetwork (the best centralized and the best decentralized networks for IPFS pinning).
   
-- Dynamic NFTs per PLAUS (Plausible is 100% token-less and NFTs are generated and owned by PLAUS contract which belongs to PLAUS issuer).
+- Dynamic NFTs per PLAUS (PLAUSIBLE protocol is 100% token-less and NFTs are generated and owned by PLAUS contract which belongs to PLAUS issuer).
   
 
 
@@ -191,7 +191,7 @@ PLAUS_ASC -->> PLAUSIBLE: Return
 
 ----
 
-## Plausible Smart Contracts 
+## PLAUSIBLE protocol Smart Contracts 
 [top↑](#plausible_protocol)
 
 PLAUSIBLE protocol smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. PLAUSIBLE Parent contract generates and configures and controls only the lifecycles step of each PLAUS. The PLAUS internals and operations are solely controlled by PLAUS issuer.
@@ -322,7 +322,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
 ```javascript
 {
   "name":"plausible-contract",
-  "desc": "Plausible Parent smart contract",
+  "desc": "PLAUSIBLE Parent smart contract",
   "networks":{
       "MainNet":{
           "appID": 0
@@ -343,7 +343,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
           "returns": {
             "type": "string"
           },
-          "desc": "Sets up the Plausible main contract, sets and logs the version and returns"
+          "desc": "Sets up the PLAUSIBLE main contract, sets and logs the version and returns"
         },
       {
           "name": "item_create",
@@ -364,7 +364,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
           "returns": {
             "type": "string"
           },
-          "desc": "Creates a new Plausible item smart contract and returns the app id"
+          "desc": "Creates a new PLAUS smart contract and returns the app id"
         },
         {
           "name": "item_update",
@@ -385,7 +385,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
           "returns": {
             "type": "string"
           },
-          "desc": "Updates an Plausible item smart contract and returns item application ID"
+          "desc": "Updates an PLAUS smart contract and returns item application ID"
         },
         {
           "name": "item_delete",
@@ -398,7 +398,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
           "returns": {
             "type": "void"
           },
-          "desc": "Deletes an Plausible item smart contract and returns void (approve only)"
+          "desc": "Deletes an PLAUS smart contract and returns void (approve only)"
         }
   ]
 }
