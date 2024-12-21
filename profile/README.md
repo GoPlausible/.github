@@ -19,7 +19,7 @@
 - [GoPlausible Service Integration API](#goplausible-service-integration-api)
 
 ## GoPlausible links
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 - [GoPlausible Github Technical Documentation](https://github.com/GoPlausible)
   
@@ -35,7 +35,7 @@
 
 
 ## PLAUSIBLE protocol concept:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 
 GoPlausible dApp consists of a frontend calling a PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contract (C2C) calls are made by PLAUSIBLE parent contracts to PLAUS contracts.
@@ -47,7 +47,7 @@ PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs
 
 
 # PLAUSIBLE protocol technical design:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 PLAUSIBLE protocol features :
 
@@ -102,7 +102,7 @@ Note: Frontend is accessible through cloudflare pages and page workers (heavily 
 ----
 
 ### PLAUS Issuer's Journey:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 1- Issuer easily gets onboard to GoPlausible by opting into PLAUSIBLE protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
 
@@ -152,7 +152,7 @@ Note right of PLAUSIBLE_ASC: Only when SIG option is enabled on PLAUSIBLE
 ```
 ----
 ### Claimer's Journey:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 1- After PLAUS activation (by Issuer) and by satisfying what PLAUS configuration mandates from claimers, eligible users can claim the PLAUS and get NFT and attached Verifiable Credential if approved by PLAUS smart contract.
 
@@ -192,7 +192,7 @@ PLAUS_ASC -->> PLAUSIBLE: Return
 ----
 
 ## PLAUSIBLE protocol Smart Contracts 
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 PLAUSIBLE protocol smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. PLAUSIBLE Parent contract generates and configures and controls only the lifecycles step of each PLAUS. The PLAUS internals and operations are solely controlled by PLAUS issuer.
 
@@ -287,14 +287,14 @@ PLAUSIBLE protocol smart contract system is designed on basis of features & opco
 ----
 
 ### PLAUSIBLE prtocol contract TEAL Graph:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 ![PLAUSIBLE protocol ASC TEAL Graph](./main_contract.svg)
 
 ----
 
 ### PLAUSIBLE protocol ASC ABI :
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contract.
 
@@ -317,7 +317,7 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
 ----
 
 ### PLAUSIBLE ASC ABI Schema :
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 ```javascript
 {
@@ -407,13 +407,13 @@ Note 1: Data fields are global states and boxes of PLAUSIBLE parent smart contra
 ----
 
 ### PLAUS ASC TEAL Graph:
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 ![PLAUS ASC TEAL Graph](./item_contract.svg)
 ----
 
 ### PLAUS ASC ABI :
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 Note 1: Data fields are global states and boxes of PLAUS smart contract.
 
@@ -477,7 +477,7 @@ Note 1: Data fields are global states and boxes of PLAUS smart contract.
 ----
 
 ### PLAUS ASC ABI Schema :
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 ```javascript
 {
@@ -629,7 +629,7 @@ Note 1: Data fields are global states and boxes of PLAUS smart contract.
 ***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
 ## GoPlausible Service integration API
-[top↑](#plausible_protocol)
+[top↑](#plausible-protocol)
 
 ***This API spec and schema are just designed for GoPlausible service level integration projects***
 
