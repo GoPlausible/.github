@@ -5,13 +5,13 @@
 ### This documentation is subject to update for newer updates please refer to [GoPlausible FAQ](https://goplausible.gitbook.io/goplausible/)
 ### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.com).
 
-- [PLAUSIBLE protocol Concept](#plausible-concept)
+- [PLAUSIBLE protocol Concept](#plausible-protocol-concept)
 
-- [GoPlausible Links](#plausible-links)
+- [GoPlausible Links](#goplausible-links)
 
-- [GoPlausible Repositories](#plausible-code-repositories)
+- [GoPlausible Repositories](#goplausible-code-repositories)
 
-- [PLAUSIBLE protocol Technical Design](#plausible-technical-design)
+- [PLAUSIBLE protocol Technical Design](#plausible-protocol-technical-design)
   - [Issuer's Journey](#issuers-journey)
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-smart-contracts)
@@ -46,10 +46,10 @@ PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs
 
 
 
-# Plausible technical design:
+# PLAUSIBLE protocol technical design:
 [top↑](#plausible_protocol)
 
-Plausible protocol features :
+PLAUSIBLE protocol features :
 
 - All operations are in full compliance and conformance to W3C DID, VC, VP , DRL and other standards.
 
@@ -63,23 +63,23 @@ Plausible protocol features :
   
 
 
-Plausible is consisted of a frontend and smart contracts on Algorand chain:
+PLAUSIBLE protocol is consisted of a frontend and smart contracts on Algorand chain:
 - Frontend (Cloudflare Pages React SPA/PWA )
 - Edge workers (Cloudflare Workers for GoPlausible public and private APIs)
 - Smart Contracts (Algorand smart contracts and GoPlausible ABIs)
 
 
-Plausible frontend has 3 major functions (all in a single view for simplicity):
+PLAUSIBLE protocol's frontend has 3 major functions (all in a single view for simplicity):
 - Wallet Session
 - Issuer UI
 - Claimer UI
 
-Note: Frontend will be available through both cloudflare (heavily distributed on edge) and IPFS to ensure decentralization (with transparent routing for best UX).
+Note: Frontend is accessible through cloudflare pages and page workers (heavily distributed globally on edge).
 
 
 ```mermaid
   flowchart LR
-  subgraph Plausible
+  subgraph PLAUSIBLE
     direction TB
     subgraph Frontend
         direction RL
@@ -88,13 +88,13 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
     end
     subgraph ASC
         direction TB
-        Plausible_ASC
-        Plaus_ASC
+        PLAUSIBLE_ASC
+        PLAUS_ASC
         
     end
   end
-  Issuer --> Plausible
-  Claimer --> Plausible
+  Issuer --> PLAUSIBLE
+  Claimer --> PLAUSIBLE
   Frontend --> ASC
   
 ```
@@ -104,18 +104,18 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 ### PLAUS Issuer's Journey:
 [top↑](#plausible_protocol)
 
-1- Issuer easily gets onboard to GoPlausible by opting into Plausible protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
+1- Issuer easily gets onboard to GoPlausible by opting into PLAUSIBLE protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
 
 2- Then can Issue new PLAUS (W3C DID based verifiable credentials with NFTs in background).
 
-3- Then activate the venue to let claims begin (This differs than start time option of Plausible).
+3- Then activate the PLAUS to let claims begin (This differs than start time option).
 
 
 Options available for PLAUS creation:
 
 - Time (default enabled): Start time check (compared to LatestTimestamp)
 - Geo: Country allow and ban lists.
-- Signature: Issuer's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed PLAUS (in NFT or TXN depending on Plausible config) only after Issuer's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- Signature: Issuer's signature is needed to make PLAUS claimable for every Claimer, individually. Each and every Claimer can receive their single claimed PLAUS (in NFT or TXN depending on PLAUS configuration) only after Issuer's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
 - QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Claimer scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
@@ -125,27 +125,27 @@ Note: QRCode feature is still under heavy re-ideation, re-design and re-everythi
 ```mermaid
 sequenceDiagram 
 actor Issuer
-participant Plausible
-participant Plausible_ASC
+participant PLAUSIBLE
+participant PLAUSIBLE_ASC
 participant Plaus_ASC
-Issuer ->> Plausible: Connect wallet
-Issuer ->> Plausible: Sign Optin Call
-Plausible ->> Plausible_ASC: Optin Call
-Plausible_ASC -->> Plausible: Return
-Note left of Plausible: Onboarding
-Issuer ->> Plausible: Sign `create_plaus` Method TXN
-Plausible ->> Plausible_ASC:  `create_plaus` Method Call
-Plausible_ASC -->> Plausible: Return
-Note left of Plausible_ASC: Create Plausible Venue
-Issuer ->> Plausible: Sign `activate_plaus` Method TXN
-Plausible ->> Plaus_ASC: `activate_plaus` Method Call (creates NFT as well)
-Plaus_ASC -->> Plausible: Return
-Note right of Plausible_ASC: Activate Plausible Venue
-Issuer ->> Plausible: Sign `sig_plaus` Method TXN
-Plausible ->> Plausible_ASC: `sig_plaus` Method Call 
-Plausible_ASC -->> Plausible: Return
-Note right of Plausible_ASC: Release SIG Plausible
-Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
+Issuer ->> PLAUSIBLE: Connect wallet
+Issuer ->> PLAUSIBLE: Sign Optin Call
+PLAUSIBLE ->> PLAUSIBLE_ASC: Optin Call
+PLAUSIBLE_ASC -->> PLAUSIBLE: Return
+Note left of PLAUSIBLE: Onboarding
+Issuer ->> PLAUSIBLE: Sign `create_plaus` Method TXN
+PLAUSIBLE ->> PLAUSIBLE_ASC:  `create_plaus` Method Call
+PLAUSIBLE_ASC -->> PLAUSIBLE: Return
+Note left of PLAUSIBLE_ASC: Create PLAUS
+Issuer ->> PLAUSIBLE: Sign `activate_plaus` Method TXN
+PLAUSIBLE ->> Plaus_ASC: `activate_plaus` Method Call (creates NFT as well)
+Plaus_ASC -->> PLAUSIBLE: Return
+Note right of PLAUSIBLE_ASC: Activate PLAUS
+Issuer ->> PLAUSIBLE: Sign `sig_plaus` Method TXN
+PLAUSIBLE ->> PLAUSIBLE_ASC: `sig_plaus` Method Call 
+PLAUSIBLE_ASC -->> PLAUSIBLE: Return
+Note right of PLAUSIBLE_ASC: Release SIG PLAUS
+Note right of PLAUSIBLE_ASC: Only when SIG option is enabled on PLAUSIBLE
 
 
 
@@ -164,28 +164,28 @@ Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
 ```mermaid
 sequenceDiagram 
 actor Claimer
-participant Plausible
-participant Plausible_ASC
-participant Plaus_ASC
-Claimer ->> Plausible: Connect wallet
-Claimer ->> Plausible: Sign Optin Call
-Plausible ->> Plausible_ASC: Optin Call
-Plausible_ASC -->> Plausible: Return
-Note left of Plausible: Onboarding
+participant PLAUSIBLE
+participant PLAUSIBLE_ASC
+participant PLAUS_ASC
+Claimer ->> PLAUSIBLE: Connect wallet
+Claimer ->> PLAUSIBLE: Sign Optin Call
+PLAUSIBLE ->> PLAUSIBLE_ASC: Optin Call
+PLAUSIBLE_ASC -->> PLAUSIBLE: Return
+Note left of PLAUSIBLE: Onboarding
 
-Claimer ->> Plausible: Sign `apply_plaus` Method TXN
-Plausible ->> Plaus_ASC:  `apply_plaus` Method Call
-Plaus_ASC -->> Plausible: Return
-Note right of Plausible_ASC: Apply for Plausible Venue
+Claimer ->> PLAUSIBLE: Sign `apply_plaus` Method TXN
+PLAUSIBLE ->> PLAUS_ASC:  `apply_plaus` Method Call
+PLAUS_ASC -->> PLAUSIBLE: Return
+Note right of PLAUSIBLE_ASC: Apply for PLAUS
 
 
-Claimer ->> Plausible: Sign `claim_plaus` Method TXN
-Plausible ->> Plaus_ASC: `claim_plaus` Method Call ( plus optin TXN to Plausible NFT, if required)
-Note right of Plausible_ASC: Claim Plausible
-Note right of Plausible_ASC: Needs providing required options if configured (Geo, Time, QR)
-Plaus_ASC -->> Claimer: Send NFT
-Note right of Plausible_ASC: Requires existence of signed release by issuer in global state
-Plaus_ASC -->> Plausible: Return
+Claimer ->> PLAUSIBLE: Sign `claim_plaus` Method TXN
+PLAUSIBLE ->> PLAUS_ASC: `claim_plaus` Method Call ( plus optin TXN to PLAUS NFT, if required)
+Note right of PLAUSIBLE_ASC: Claim PLAUS
+Note right of PLAUSIBLE_ASC: Needs providing required options if configured (Geo, Time, QR)
+PLAUS_ASC -->> Claimer: Send NFT
+Note right of PLAUSIBLE_ASC: Requires existence of signed release by issuer in global state
+PLAUS_ASC -->> PLAUSIBLE: Return
 
 ```
 
@@ -194,23 +194,8 @@ Plaus_ASC -->> Plausible: Return
 ## Plausible Smart Contracts 
 [top↑](#plausible_protocol)
 
-Plausible protocol smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
+PLAUSIBLE protocol smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. PLAUSIBLE Parent contract generates and configures and controls only the lifecycles step of each PLAUS. The PLAUS internals and operations are solely controlled by PLAUS issuer.
 
-All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
-
-Note: This section (Fees) is subject to further updates and changes and is work in progress!
-
-| Method | Fee           | Amount|
-| ------------- |:-------------:| -----:|
-| New Plausible                     | 1 MinFee      |   2 MinFee |
-| Setup Plausible                   | 1 MinFee      |   1 MinFee |
-| Activate Plausible(Issuer pays)   | 3 MinFee      |   Claimer_Qty * 4 * MinFee |
-| Activate Plausible(Claimer pays) | 3 MinFee      |   1 MinFee |
-| Release Plausible| 1 MinFee       | 1 MinFee      |   0  |
-| Claim Plausible(Issuer pays)      | 1 MinFee      |   0  |
-| Claim Plausible(Claimer pays)    | 4 MinFee      |   0  |
-
-----
 
 ### Entities Relations:
 
