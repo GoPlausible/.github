@@ -16,6 +16,8 @@
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-smart-contracts)
 
+- [GoPlausible API](#goplausible-api)
+
 ## GoPlausible links
 [top↑](#plausible_protocol)
 
@@ -629,6 +631,7 @@ Note 1: Data fields are global states and boxes of PLAUS smart contract.
 ***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
 ## GoPlausible API
+[top↑](#plausible_protocol)
 
 - **OpenAPI Version**: 3.1.0  
 - **Base URL**: [https://api.goplausible.xyz](https://api.goplausible.xyz)  
@@ -639,6 +642,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 ---
 
 ## Table of Contents
+[top↑](#plausible-api)
 
 1. [REGISTRAR](#registrar)
 2. [IDENTIFIERS](#identifiers)
