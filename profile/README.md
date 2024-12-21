@@ -2,56 +2,52 @@
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### This documentation is subject to update for newer updates please refer to [Plausible FAQ](https://goplausible.gitbook.io/goplausible/)
-### Plausible is W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.com).
+### This documentation is subject to update for newer updates please refer to [GoPlausible FAQ](https://goplausible.gitbook.io/goplausible/)
+### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.com).
 
-- [Plausible Concept](#plausible-concept)
+- [PLAUSIBLE protocol Concept](#plausible-concept)
 
-- [Plausible Links](#plausible-links)
+- [GoPlausible Links](#plausible-links)
 
-- [Plausible Repos](#plausible-code-repositories)
-  
-- [Plausible gratitudes](#plausible-credits)
+- [GoPlausible Repositories](#plausible-code-repositories)
 
-- [Plausible Technical Design](#plausible-technical-design)
+- [PLAUSIBLE protocol Technical Design](#plausible-technical-design)
   - [Issuer's Journey](#issuers-journey)
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-smart-contracts)
 
-## Plausible links
-[top↑](#plausible)
+## GoPlausible links
+[top↑](#plausible_protocol)
 
-- [Plausible Github Repos & Documentation](https://github.com/GoPlausible)
+- [GoPlausible Github Repos & Documentation](https://github.com/GoPlausible)
 
-- [Plausible Website (plausible.com)](https://goplausible.com)
+- [GoPlausible Website (plausible.com)](https://goplausible.com)
 
-- [Plausible dApp (plausible.xyz)](https://goplausible.xyz)
+- [GoPlausible dApp (plausible.xyz)](https://goplausible.xyz)
+  
+- [GoPlausible Universal DID/URL Resolver (ThisDID.com)](https://thisdid.com)
 
-- [Plausible TESTNET dApp (testnet.plausible.xyz)](https://testnet.goplausible.xyz)
+- [GoPlausible TESTNET dApp (testnet.plausible.xyz)](https://testnet.goplausible.xyz)
  
-- [Algorand NFDomain (plausible.algo)](https://app.nf.domains/name/plausible.algo)
+- [PLAUSIBLE protocol verified NFD (plausible.algo)](https://app.nf.domains/name/plausible.algo)
+  
+- [GoPLAUSIBLE account verified NFD (goplausible.algo)](https://app.nf.domains/name/goplausible.algo)
 
 
-## Plausible concept:
-[top↑](#plausible)
+## PLAUSIBLE protocol concept:
+[top↑](#plausible_protocol)
 
 
-Plausible dApp is consisted of a frontend calling an Algorand ASC system in which ASCs use each other via inner transactions and C2C calls.
+GoPlausible dApp is consisted of a frontend calling an PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contarct (C2C) calls are made by PLAUSIBLE parent contract to PLAUS contracts.
 
-Plausible complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
+PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) living standards on Algorand.
 
-![Plausible Concept Diagram](https://github.com/GoPlausible/.github/blob/main/profile/Plausible%20Concept%20Diagram.jpeg)
+![PLAUSIBLE protocol Concept Diagram](https://github.com/GoPlausible/.github/blob/main/profile/Plausible%20Concept%20Diagram.jpeg)
 
-
-
-## Plausible Gratitudes
-[top↑](#plausible)
-
-@emg110 and @sheghzo are grateful to Algorand, Algorand Foundation, Algorand Ecosystem, AXL Ventures and AlgoFam!
 
 
 # Plausible technical design:
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 Plausible protocol features :
 
@@ -106,7 +102,7 @@ Note: Frontend will be available through both cloudflare (heavily distributed on
 ----
 
 ### PLAUS Issuer's Journey:
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 1- Issuer easily gets onboard to GoPlausible by opting into Plausible protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
 
@@ -119,7 +115,7 @@ Options available for PLAUS creation:
 
 - Time (default enabled): Start time check (compared to LatestTimestamp)
 - Geo: Country allow and ban lists.
-- Signature: Issuer's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed Plausible (in NFT or TXN depending on Plausible config) only after Issuer's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
+- Signature: Issuer's signature is needed to make Plausible claimable for every Claimer, individually. Each and every Claimer can receive their single claimed PLAUS (in NFT or TXN depending on Plausible config) only after Issuer's authorization via a successful method call (which obviously should happen after both venue activation and venue start time). 
 - QRCode: Upon activation a secret key will be generated and included in a transaction as a method input parameter and this TXN is then communicated by a QRCode in venue location and Claimer scans this QRCode during physical presence and claims (other arguments will be added to this raw transaction object after scan and when claiming).
 
 Note: QRCode feature is still under heavy re-ideation, re-design and re-everything! So please, kindly consider it WIP and FUTURE release functionality!
@@ -156,7 +152,7 @@ Note right of Plausible_ASC: Only when SIG option is enabled on Plausible
 ```
 ----
 ### Claimer's Journey:
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 1- After PLAUS activation (by Issuer) and by satisfying what PLAUS configuration mandates from claimers, eligible users can claim the PLAUS and get NFT and attached Verifiable Credential if approved by PLAUS smart contract.
 
@@ -196,9 +192,9 @@ Plaus_ASC -->> Plausible: Return
 ----
 
 ## Plausible Smart Contracts 
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
-Plausible smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
+Plausible protocol smart contract system is designed on basis of features & opcodes in TEAL v 8.0 on AVM8. Plausible Parent contract is created and thereafter every Plausible item is created by this parent contract based on configurations needed.
 
 All methods expenses and fee details are in following table (those not in this table have just normal 1 MinFee):
 
@@ -307,14 +303,14 @@ Note: This section (Fees) is subject to further updates and changes and is work 
 ----
 
 ### Plausible ASC TEAL Graph:
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 ![Plausible Item ASC TEAL Graph](./main_contract.svg)
 
 ----
 
 ### Plausible ASC ABI :
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 Note 1: Data fields are global states of Plausible parent smart contract.
 
@@ -338,7 +334,7 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 ----
 
 ### Plausible ASC ABI Schema :
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 ```javascript
 {
@@ -428,13 +424,13 @@ Note 2: Fee collection is not included anywhere at this phase of Plausible MVP d
 ----
 
 ### Plausible Item ASC TEAL Graph:
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 ![Plausible Item ASC TEAL Graph](./item_contract.svg)
 ----
 
 ### Plausible ASC ITEM ABI :
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 Note 1: Data fields are global states of Plausible item smart contract.
 
@@ -498,7 +494,7 @@ Note 1: Data fields are global states of Plausible item smart contract.
 ----
 
 ### Plausible ASC ITEM ABI Schema :
-[top↑](#plausible)
+[top↑](#plausible_protocol)
 
 ```javascript
 {
