@@ -1,5 +1,5 @@
-# algorand-developers-retreat-report
- Analytical Report on Algorand Developers Retreat
+# algorand-developers-retreat-code-report
+ Analytical Report on Algorand Developers Retreat Code
 
 ## Total code stats
 
@@ -622,14 +622,14 @@ flowchart TB
 
 #### Production-Ready Infrastructure Projects
 
-*   **zapier-algorand:** Strategic integration enabler (4.3k JavaScript lines) providing no-code automation capabilities to connect Algorand with thousands of applications and services. Production-grade implementation with extensive documentation and robust error handling makes it a critical bridge for ecosystem growth.
 *   **xgov-explorer:** Production-ready governance platform with the largest TypeScript/TSX codebase (26.6k lines) demonstrating comprehensive feature implementation for community engagement and transparency in the Algorand ecosystem.
+*   **zapier-algorand:** Strategic integration enabler (4.3k JavaScript lines) providing no-code automation capabilities to connect Algorand with thousands of applications and services. Production-grade implementation with extensive documentation and robust error handling makes it a critical bridge for ecosystem growth.
+*   **folks-contracts:** Production-grade DeFi lending implementation with robust Python smart contracts (418 lines) and strong testing focus.
 *   **embedded-algo-wallet:** Production-ready embedded wallet solution (180 TypeScript lines) optimized for resource-constrained environments with strong security focus.
 
 #### Financial & Social Infrastructure
 
 *   **weDAO:** Production-ready DAO platform (6.1k TypeScript/TSX lines) with comprehensive governance features and strong documentation (2.5k comments).
-*   **folks-contracts:** Production-grade DeFi lending implementation with robust Python smart contracts (418 lines) and strong testing focus.
 *   **AuctionX:** Full-featured auction platform combining Python smart contracts (1.5k lines) with TypeScript frontend (3.6k lines).
 *   **WeTrust:** Decentralized trust scoring system (658 TypeScript lines) with strong documentation (538 comments).
 *   **poa:** Digital proof of attendance system (568 TypeScript/TSX lines) for verifiable event participation.
@@ -655,7 +655,7 @@ flowchart TB
 *   **rev-cli:** Focused CLI tool (87 Ruby lines) for contract management operations.
 
 
-This diverse range of projects showcases the maturity of the Algorand development ecosystem, with zapier-algorand standing out as a particularly strategic project that enables broad integration capabilities. The prevalence of TypeScript/TSX across projects (149,116 lines total) demonstrates a strong focus on type safety and modern development practices, while extensive documentation (over 33k comments total) indicates a commitment to maintainability and developer experience.
+This diverse range of projects showcases the maturity of the Algorand development ecosystem. The prevalence of TypeScript/TSX across projects (149,116 lines total) demonstrates a strong focus on type safety and modern development practices, while extensive documentation (over 33k comments total) indicates a commitment to maintainability and developer experience.
 
 This analysis provides a high-level overview of the *programming code* structure and language usage within the `projects` directory, acknowledging that non-code files like JSON and YAML significantly impact overall line counts.
 
@@ -1629,55 +1629,6 @@ This analysis provides a high-level overview of the *programming code* structure
         *   Extended examples
         *   Performance metrics
 
-### Project: zapier-algorand
-
-*   **Subject:** A professional Zapier integration enabling automated workflows with Algorand blockchain through standardized actions and triggers.
-*   **Effectiveness & Value:**
-    *   **Integration Focus:** Comprehensive Zapier integration (4.3k JavaScript lines)
-    *   **Documentation Quality:** Extensive documentation with high comment ratio (94 comments)
-    *   **Workflow Automation:** Enables no-code blockchain interactions
-*   **Code Quality:**
-    *   **JavaScript Implementation:**
-        *   Professional codebase (4,295 lines)
-        *   Well-documented functions
-        *   Clean integration patterns
-    *   **Integration Design:**
-        *   Modular action structure
-        *   Robust error handling
-        *   Clear API interfaces
-    *   **Documentation:**
-        *   Comprehensive guides
-        *   API documentation
-        *   Usage examples
-*   **Operational Capabilities:**
-    *   **Core Features:**
-        *   Blockchain triggers
-        *   Action automation
-        *   Data transformation
-    *   **Technical Stack:**
-        *   JavaScript foundation
-        *   Zapier platform
-        *   Algorand APIs
-*   **Technical Foundation:**
-    *   **Implementation:**
-        *   Integration patterns
-        *   Event handling
-        *   Data validation
-    *   **Architecture:**
-        *   Service separation
-        *   Action modularity
-        *   Error management
-*   **Project Potential:**
-    *   **Current Status:** Production-ready Zapier integration
-    *   **Strengths:**
-        *   Professional implementation
-        *   Comprehensive documentation
-        *   Workflow automation
-    *   **Growth Areas:**
-        *   Additional triggers
-        *   Enhanced actions
-        *   Advanced workflows
-
 ### Project: WeTrust
 
 *   **Subject:** A TypeScript-based trust and reputation system on Algorand, enabling decentralized trust scoring and verification.
@@ -2020,3 +1971,53 @@ This analysis provides a high-level overview of the *programming code* structure
         *   Additional metrics
         *   Enhanced dashboards
         *   Custom integrations
+        
+### Project: zapier-algorand
+
+*   **Subject:** A professional Zapier integration enabling automated workflows with Algorand blockchain through standardized actions and triggers.
+*   **Effectiveness & Value:**
+    *   **Integration Focus:** Comprehensive Zapier integration (4.3k JavaScript lines)
+    *   **Documentation Quality:** Extensive documentation with high comment ratio (94 comments)
+    *   **Workflow Automation:** Enables no-code blockchain interactions
+*   **Code Quality:**
+    *   **JavaScript Implementation:**
+        *   Professional codebase (4,295 lines)
+        *   Well-documented functions
+        *   Clean integration patterns
+    *   **Integration Design:**
+        *   Modular action structure
+        *   Robust error handling
+        *   Clear API interfaces
+    *   **Documentation:**
+        *   Comprehensive guides
+        *   API documentation
+        *   Usage examples
+*   **Operational Capabilities:**
+    *   **Core Features:**
+        *   Blockchain triggers
+        *   Action automation
+        *   Data transformation
+    *   **Technical Stack:**
+        *   JavaScript foundation
+        *   Zapier platform
+        *   Algorand APIs
+*   **Technical Foundation:**
+    *   **Implementation:**
+        *   Integration patterns
+        *   Event handling
+        *   Data validation
+    *   **Architecture:**
+        *   Service separation
+        *   Action modularity
+        *   Error management
+*   **Project Potential:**
+    *   **Current Status:** Production-ready Zapier integration
+    *   **Strengths:**
+        *   Professional implementation
+        *   Comprehensive documentation
+        *   Workflow automation
+    *   **Growth Areas:**
+        *   Additional triggers
+        *   Enhanced actions
+        *   Advanced workflows
+
