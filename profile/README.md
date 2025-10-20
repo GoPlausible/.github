@@ -31,8 +31,8 @@ Since 2020, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 [top↑](#goplausible)
 
-- X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-guide/scheme_exact_avm.md)
-- X402 Protocol + AVM : [X402](./algorand-guide/README.md)
+- X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-x402-guide/scheme_exact_avm.md)
+- X402 Protocol + AVM : [X402](./algorand-x402-guide/README.md)
 - X402 Protocol + AVM Demo : [X402 Demo](https://x402-avm.vercel.app/protected)
 
 ## PLAUSIBLE Protocol

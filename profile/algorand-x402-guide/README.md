@@ -25,7 +25,7 @@ This guide provides comprehensive documentation and examples for using the x402 
 - [x402-axios Examples](./x402-axios-examples.md)
 
 ## Table of Contents
-- [X402 Protocol Algorand (AVM) Specification](./algorand-guide/scheme_exact_avm.md)
+- [X402 Protocol Algorand (AVM) Specification](./algorand-x402-guide/scheme_exact_avm.md)
 - [Introduction](#introduction)
 - [Algorand Implementation Details](#algorand-implementation-details)
 - [Payment Flow](#payment-flow)
