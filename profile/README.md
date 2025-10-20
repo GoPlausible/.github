@@ -3,7 +3,7 @@
 # GoPlausible
 [GoPlausible](https://goplausible.com) is a technology startup building identifiable, verifiable and provenant services and AI toolings for Algorand blockchain.
 
-Since 2020, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol powered by Algorand blockchain (PLAUSIBLE protocol). Since 2024, GoPlausible has been building AI toolings and services for Algorand ecosystem, powered by PLAUSIBLE protocol.
+2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol powered by Algorand blockchain (PLAUSIBLE protocol). Since 2024, GoPlausible has been building AI toolings and services for Algorand ecosystem, powered by PLAUSIBLE protocol.
 
 [GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402 and more. 
 
