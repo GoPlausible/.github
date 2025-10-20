@@ -4,13 +4,21 @@
 
 This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
 
+## Package-Specific Examples
+
+- [x402 Core Package Examples](./x402-core-examples.md)
+- [x402-express Examples](./x402-express-examples.md)
+- [x402-hono Examples](./x402-hono-examples.md)
+- [x402-next Examples](./x402-next-examples.md)
+- [x402-fetch Examples](./x402-fetch-examples.md)
+- [x402-axios Examples](./x402-axios-examples.md)
+
 ## Table of Contents
 - [X402 Protocol Algorand (AVM) Specification](./algorand-guide/scheme_exact_avm.md)
 - [Introduction](#introduction)
 - [Algorand Implementation Details](#algorand-implementation-details)
 - [Payment Flow](#payment-flow)
 - [Schema and Types](#schema-and-types)
-- [Package-Specific Examples](#package-specific-examples)
 - [Environment Setup](#environment-setup)
 - [Demo and Screenshots](#demo-and-screenshots)
 
@@ -121,29 +129,9 @@ const paymentHeader = {
   },
 }
 ```
-### ENV Variables for refrence implementation site on AVM:
 
-```bash
-NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
-RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
-NETWORK=algorand-testnet # or algorand for mainnet
-PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS
-ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use 0 or leave undefined for ALGO
-PRICE=0.01
-ALGOD_SERVER=https://testnet-api.algonode.cloud
-ALGOD_TOKEN=
-ALGOD_PORT=
-FEE_PAYER=YOUR_FEE_PAYER_ALGORAND_ADDRESS
-```
 
-## Package-Specific Examples
 
-- [x402 Core Package Examples](./x402-core-examples.md)
-- [x402-express Examples](./x402-express-examples.md)
-- [x402-hono Examples](./x402-hono-examples.md)
-- [x402-next Examples](./x402-next-examples.md)
-- [x402-fetch Examples](./x402-fetch-examples.md)
-- [x402-axios Examples](./x402-axios-examples.md)
 
 ## Environment Setup
 
@@ -151,15 +139,30 @@ FEE_PAYER=YOUR_FEE_PAYER_ALGORAND_ADDRESS
 
 ```bash
 # Resource server configuration
-NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
+FACILITATOR_URL=http://localhost:3000/facilitator
 RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
+PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
 NETWORK=algorand-testnet  # or algorand for mainnet
-ASSET=0  # 0 for ALGO or ASA ID for Algorand Standard Asset
+ASSET=10458941  # USDC, use  0 or leave undefined for ALGO or use ASA ID for Algorand Standard Asset
 PRICE=0.01  # Price in ALGO or ASA units
 ALGOD_SERVER=https://testnet-api.algonode.cloud  # or mainnet
 ALGOD_TOKEN=
 ALGOD_PORT=
-ALGORAND_FEE_PAYER=YOUR_FEE_PAYER_ADDRESS  # Optional
+FEE_PAYER=YOUR_FEE_PAYER_ADDRESS  # Optional
+```
+### ENV Variables for refrence implementation site (NextJS) package on AVM:
+
+```bash
+NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
+RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
+NETWORK=algorand-testnet # or algorand for mainnet
+PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
+ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use 0 or leave undefined for ALGO
+PRICE=0.01
+ALGOD_SERVER=https://testnet-api.algonode.cloud
+ALGOD_TOKEN=
+ALGOD_PORT=
+FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
 ```
 
 ### Package Installation

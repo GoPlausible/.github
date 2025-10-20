@@ -14,7 +14,7 @@ This document provides examples of how to use the x402-hono package with Algoran
 First, you need to install the required packages:
 
 ```bash
-npm install x402 x402-hono hono @algorand/algosdk
+npm install x402-avm x402-avm-hono hono @algorand/algosdk
 ```
 
 ## Resource Server Implementation
@@ -23,7 +23,7 @@ npm install x402 x402-hono hono @algorand/algosdk
 
 ```typescript
 import { Hono } from 'hono'
-import { createX402Middleware } from 'x402-hono'
+import { createX402Middleware } from 'x402-avm-hono'
 
 // Create a new Hono app
 const app = new Hono()
@@ -42,7 +42,7 @@ const paymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6,
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -84,7 +84,7 @@ You can also create dynamic payment requirements based on the request:
 
 ```typescript
 import { Hono } from 'hono'
-import { createDynamicX402Middleware } from 'x402-hono'
+import { createDynamicX402Middleware } from 'x402-avm-hono'
 
 // Create a new Hono app
 const app = new Hono()
@@ -127,7 +127,7 @@ const dynamicX402Middleware = createDynamicX402Middleware(
       outputSchema: null,
       extra: {
         decimals: 6,
-        feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+        feePayer: process.env.FEE_PAYER, // Optional
       },
     }
   },
@@ -158,7 +158,7 @@ Here's how to set up Hono middleware to accept payments in an Algorand Standard 
 
 ```typescript
 import { Hono } from 'hono'
-import { createX402Middleware } from 'x402-hono'
+import { createX402Middleware } from 'x402-avm-hono'
 
 // Create a new Hono app
 const app = new Hono()
@@ -177,7 +177,7 @@ const asaPaymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6, // ASA decimal places (varies by asset)
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -209,7 +209,7 @@ export default {
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import algosdk from '@algorand/algosdk'
-import { createX402FacilitatorRoutes } from 'x402-hono'
+import { createX402FacilitatorRoutes } from 'x402-avm-hono'
 import { sha256 } from 'js-sha256'
 
 // Create a new Hono app
@@ -226,8 +226,8 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 
 // Configure fee payer if available
 let feePayerPrivateKey: Uint8Array | undefined
-if (process.env.ALGORAND_MNEMONIC) {
-  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC).sk
+if (process.env.PRIVATE_KEY) {
+  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.PRIVATE_KEY).sk
 }
 
 // Custom verification function for Algorand payments
@@ -442,7 +442,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serve } from '@hono/node-server'
 import algosdk from '@algorand/algosdk'
-import { createX402Middleware, createX402FacilitatorRoutes } from 'x402-hono'
+import { createX402Middleware, createX402FacilitatorRoutes } from 'x402-avm-hono'
 import { sha256 } from 'js-sha256'
 import dotenv from 'dotenv'
 
@@ -463,7 +463,7 @@ const price = process.env.PRICE || '0.01'
 const algodServer = process.env.ALGOD_SERVER || 'https://testnet-api.algonode.cloud'
 const algodToken = process.env.ALGOD_TOKEN || ''
 const algodPort = process.env.ALGOD_PORT || ''
-const feePayer = process.env.ALGORAND_FEE_PAYER || resourceWalletAddress
+const feePayer = process.env.FEE_PAYER || resourceWalletAddress
 const network = process.env.NETWORK || 'algorand-testnet'
 
 // Initialize Algorand client
@@ -471,8 +471,8 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 
 // Configure fee payer if available
 let feePayerPrivateKey: Uint8Array | undefined
-if (process.env.ALGORAND_MNEMONIC) {
-  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC).sk
+if (process.env.PRIVATE_KEY) {
+  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.PRIVATE_KEY).sk
 }
 
 // Define payment requirements for Algorand
@@ -623,6 +623,6 @@ ALGOD_TOKEN=
 ALGOD_PORT=
 
 # Fee payer configuration (optional)
-ALGORAND_FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
-ALGORAND_MNEMONIC=your mnemonic phrase for fee payer wallet
+FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
+PRIVATE_KEY=your mnemonic phrase for fee payer wallet
 ```

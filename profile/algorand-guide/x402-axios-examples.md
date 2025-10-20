@@ -13,7 +13,7 @@ This document provides examples of how to use the x402-axios package with Algora
 First, you need to install the required packages:
 
 ```bash
-npm install x402 x402-axios @algorand/algosdk
+npm install x402-avm x402-avm-axios @algorand/algosdk
 ```
 
 ## Client-Side Implementation
@@ -22,7 +22,7 @@ npm install x402 x402-axios @algorand/algosdk
 
 ```typescript
 import axios from 'axios'
-import { createX402Axios } from 'x402-axios'
+import { createX402Axios } from 'x402-avm-axios'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 import { PeraWalletConnect } from '@perawallet/connect'
@@ -181,7 +181,7 @@ async function fetchProtectedResource() {
 
 ```typescript
 import axios from 'axios'
-import { createX402Axios } from 'x402-axios'
+import { createX402Axios } from 'x402-avm-axios'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 import { PeraWalletConnect } from '@perawallet/connect'
@@ -337,7 +337,7 @@ export { x402Axios }
 ```tsx
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { createX402Axios } from 'x402-axios'
+import { createX402Axios } from 'x402-avm-axios'
 import { PeraWalletConnect } from '@perawallet/connect'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
@@ -584,7 +584,7 @@ export function AlgorandAxiosComponent() {
 // utils/algorandX402.ts
 
 import axios, { AxiosRequestConfig } from 'axios'
-import { createX402Axios } from 'x402-axios'
+import { createX402Axios } from 'x402-avm-axios'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 import { PeraWalletConnect } from '@perawallet/connect'

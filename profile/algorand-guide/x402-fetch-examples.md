@@ -13,7 +13,7 @@ This document provides examples of how to use the x402-fetch package with Algora
 First, you need to install the required packages:
 
 ```bash
-npm install x402 x402-fetch @algorand/algosdk
+npm install x402-avm x402-avm-fetch @algorand/algosdk
 ```
 
 ## Client-Side Implementation
@@ -21,7 +21,7 @@ npm install x402 x402-fetch @algorand/algosdk
 ### Basic Usage
 
 ```typescript
-import { createX402Fetch } from 'x402-fetch'
+import { createX402Fetch } from 'x402-avm-fetch'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 
@@ -197,7 +197,7 @@ async function fetchProtectedResource() {
 // components/AlgorandFetch.tsx
 
 import { useState, useEffect } from 'react'
-import { createX402Fetch } from 'x402-fetch'
+import { createX402Fetch } from 'x402-avm-fetch'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 
@@ -534,7 +534,7 @@ export default function FetchExample() {
 ```typescript
 // index.ts
 
-import { createX402Fetch } from 'x402-fetch'
+import { createX402Fetch } from 'x402-avm-fetch'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
 import { PeraWalletConnect } from '@perawallet/connect'

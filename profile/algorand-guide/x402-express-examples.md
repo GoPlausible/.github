@@ -14,7 +14,7 @@ This document provides examples of how to use the x402-express package with Algo
 First, you need to install the required packages:
 
 ```bash
-npm install x402 x402-express @algorand/algosdk
+npm install x402-avm x402-avm-express @algorand/algosdk
 ```
 
 ## Resource Server Implementation
@@ -23,7 +23,7 @@ npm install x402 x402-express @algorand/algosdk
 
 ```typescript
 import express from 'express'
-import { createX402Middleware } from 'x402-express'
+import { createX402Middleware } from 'x402-avm-express'
 
 const app = express()
 const port = 3000
@@ -42,7 +42,7 @@ const paymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6,
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -78,7 +78,7 @@ You can also create dynamic payment requirements based on the request:
 
 ```typescript
 import express from 'express'
-import { createDynamicX402Middleware } from 'x402-express'
+import { createDynamicX402Middleware } from 'x402-avm-express'
 
 const app = express()
 const port = 3000
@@ -121,7 +121,7 @@ const dynamicX402Middleware = createDynamicX402Middleware(
       outputSchema: null,
       extra: {
         decimals: 6,
-        feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+        feePayer: process.env.FEE_PAYER, // Optional
       },
     }
   },
@@ -150,7 +150,7 @@ Here's how to set up Express middleware to accept payments in an Algorand Standa
 
 ```typescript
 import express from 'express'
-import { createX402Middleware } from 'x402-express'
+import { createX402Middleware } from 'x402-avm-express'
 
 const app = express()
 const port = 3000
@@ -169,7 +169,7 @@ const asaPaymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6, // ASA decimal places (varies by asset)
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -199,7 +199,7 @@ app.listen(port, () => {
 ```typescript
 import express from 'express'
 import algosdk from '@algorand/algosdk'
-import { createX402FacilitatorRoutes } from 'x402-express'
+import { createX402FacilitatorRoutes } from 'x402-avm-express'
 import { sha256 } from 'js-sha256'
 
 const app = express()
@@ -214,8 +214,8 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 
 // Configure fee payer if available
 let feePayerPrivateKey: Uint8Array | undefined
-if (process.env.ALGORAND_MNEMONIC) {
-  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC).sk
+if (process.env.PRIVATE_KEY) {
+  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.PRIVATE_KEY).sk
 }
 
 // Custom verification function for Algorand payments
@@ -427,7 +427,7 @@ app.listen(port, () => {
 ```typescript
 import express from 'express'
 import algosdk from '@algorand/algosdk'
-import { createX402Middleware, createX402FacilitatorRoutes } from 'x402-express'
+import { createX402Middleware, createX402FacilitatorRoutes } from 'x402-avm-express'
 import { sha256 } from 'js-sha256'
 import dotenv from 'dotenv'
 
@@ -445,7 +445,7 @@ const price = process.env.PRICE || '0.01'
 const algodServer = process.env.ALGOD_SERVER || 'https://testnet-api.algonode.cloud'
 const algodToken = process.env.ALGOD_TOKEN || ''
 const algodPort = process.env.ALGOD_PORT || ''
-const feePayer = process.env.ALGORAND_FEE_PAYER || resourceWalletAddress
+const feePayer = process.env.FEE_PAYER || resourceWalletAddress
 const network = process.env.NETWORK || 'algorand-testnet'
 
 // Initialize Algorand client
@@ -453,8 +453,8 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 
 // Configure fee payer if available
 let feePayerPrivateKey: Uint8Array | undefined
-if (process.env.ALGORAND_MNEMONIC) {
-  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC).sk
+if (process.env.PRIVATE_KEY) {
+  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.PRIVATE_KEY).sk
 }
 
 // Define payment requirements for Algorand
@@ -593,6 +593,6 @@ ALGOD_TOKEN=
 ALGOD_PORT=
 
 # Fee payer configuration (optional)
-ALGORAND_FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
-ALGORAND_MNEMONIC=your mnemonic phrase for fee payer wallet
+FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
+PRIVATE_KEY=your mnemonic phrase for fee payer wallet
 ```

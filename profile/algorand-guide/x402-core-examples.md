@@ -45,7 +45,7 @@ export type ExactAvmPayload = z.infer<typeof ExactAvmPayloadSchema>
 ### Payment Requirements
 
 ```typescript
-import { PaymentRequirements } from 'x402'
+import { PaymentRequirements } from 'x402-avm'
 
 // For ALGO payments
 const algoPaymentRequirements: PaymentRequirements = {
@@ -91,7 +91,7 @@ const asaPaymentRequirements: PaymentRequirements = {
 ```typescript
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { encodePaymentHeader } from 'x402'
+import { encodePaymentHeader } from 'x402-avm'
 import { WalletManager } from './walletManager' // See wallet-implementation-guide.md
 
 // Initialize Algorand client
@@ -235,7 +235,7 @@ async function fetchProtectedResource(url, paymentRequirements) {
 ```typescript
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { X402Error, ErrorCodes } from 'x402'
+import { X402Error, ErrorCodes } from 'x402-avm'
 
 // Initialize Algorand client
 const algodClient = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '')
@@ -408,7 +408,7 @@ async function settleAlgorandPayment(payload, paymentRequirements) {
 ```typescript
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { encodePaymentHeader } from 'x402'
+import { encodePaymentHeader } from 'x402-avm'
 import { WalletManager } from './walletManager'
 
 export async function createAlgorandPayment(paymentRequirements) {
@@ -532,7 +532,7 @@ async function main() {
 ```typescript
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { X402Error, ErrorCodes } from 'x402'
+import { X402Error, ErrorCodes } from 'x402-avm'
 
 class AlgorandFacilitator {
   private algodClient: algosdk.Algodv2
@@ -748,7 +748,7 @@ async function main() {
     'https://testnet-api.algonode.cloud',
     '',
     '',
-    process.env.ALGORAND_MNEMONIC
+    process.env.PRIVATE_KEY
   )
 
   const paymentRequirements = {

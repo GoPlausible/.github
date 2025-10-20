@@ -14,7 +14,7 @@ This document provides examples of how to use the x402-next package with Algoran
 First, you need to install the required packages:
 
 ```bash
-npm install x402 x402-next @algorand/algosdk @txnlab/use-wallet
+npm install x402-avm x402-avm-next @algorand/algosdk @txnlab/use-wallet
 ```
 
 ## Server-Side Integration
@@ -25,7 +25,7 @@ npm install x402 x402-next @algorand/algosdk @txnlab/use-wallet
 // pages/api/protected.ts
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withX402 } from 'x402-next'
+import { withX402 } from 'x402-avm-next'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Your protected resource logic
@@ -49,7 +49,7 @@ const paymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6,
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -65,7 +65,7 @@ export default withX402(handler, {
 ```typescript
 // pages/api/edge-protected.ts
 
-import { withX402Edge } from 'x402-next'
+import { withX402Edge } from 'x402-avm-next'
 import type { NextRequest } from 'next/server'
 
 // Define payment requirements for Algorand
@@ -82,7 +82,7 @@ const paymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6,
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -119,7 +119,7 @@ export const config = {
 // pages/api/dynamic-protected.ts
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withDynamicX402 } from 'x402-next'
+import { withDynamicX402 } from 'x402-avm-next'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const tier = req.query.tier as string
@@ -169,7 +169,7 @@ export default withDynamicX402(
       outputSchema: null,
       extra: {
         decimals: 6,
-        feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+        feePayer: process.env.FEE_PAYER, // Optional
       },
     }
   },
@@ -185,7 +185,7 @@ export default withDynamicX402(
 // pages/api/premium-content.ts
 
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { withX402 } from 'x402-next'
+import { withX402 } from 'x402-avm-next'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).json({
@@ -208,7 +208,7 @@ const asaPaymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6, // ASA decimal places (varies by asset)
-    feePayer: process.env.ALGORAND_FEE_PAYER, // Optional
+    feePayer: process.env.FEE_PAYER, // Optional
   },
 }
 
@@ -306,7 +306,7 @@ export default AlgorandWalletConnector
 
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { encodePaymentHeader } from 'x402'
+import { encodePaymentHeader } from 'x402-avm'
 import { PeraWalletConnect } from '@perawallet/connect'
 
 const peraWallet = new PeraWalletConnect()
@@ -652,7 +652,7 @@ export default function Home() {
 import type { NextApiRequest, NextApiResponse } from 'next'
 import algosdk from '@algorand/algosdk'
 import { sha256 } from 'js-sha256'
-import { createX402FacilitatorRouter } from 'x402-next'
+import { createX402FacilitatorRouter } from 'x402-avm-next'
 
 // Initialize Algorand client
 const algodServer = process.env.ALGOD_SERVER || 'https://testnet-api.algonode.cloud'
@@ -662,8 +662,8 @@ const algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort)
 
 // Configure fee payer if available
 let feePayerPrivateKey: Uint8Array | undefined
-if (process.env.ALGORAND_MNEMONIC) {
-  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC).sk
+if (process.env.PRIVATE_KEY) {
+  feePayerPrivateKey = algosdk.mnemonicToSecretKey(process.env.PRIVATE_KEY).sk
 }
 
 // Custom verification function for Algorand payments
@@ -756,8 +756,8 @@ ALGOD_TOKEN=
 ALGOD_PORT=
 
 # Fee payer configuration (optional)
-ALGORAND_FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
-ALGORAND_MNEMONIC=your mnemonic phrase for fee payer wallet
+FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
+PRIVATE_KEY=your mnemonic phrase for fee payer wallet
 
 # ASA configuration (optional)
 ASA_ID=31566704
