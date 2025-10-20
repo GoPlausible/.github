@@ -2,6 +2,17 @@
 
 # x402 Protocol with Algorand (AVM) Guide
 
+GoPlausible has made the full core, tooling, and package support for Algorand (AVM) available as open source and made the PR to Coinbase's x402 protocol repo: [CoinBse x402 PR #401](https://github.com/coinbase/x402/pull/401)
+
+## NPM Packages
+
+- [x402 Core Package](https://www.npmjs.com/package/x402-avm)
+- [x402-express Package](https://www.npmjs.com/package/x402-avm-express)
+- [x402-hono Package](https://www.npmjs.com/package/x402-avm-hono)
+- [x402-next Package](https://www.npmjs.com/package/x402-avm-next)
+- [x402-fetch Package](https://www.npmjs.com/package/x402-avm-fetch)
+- [x402-axios Package](https://www.npmjs.com/package/x402-avm-axios)
+
 This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
 
 ## Package-Specific Examples
