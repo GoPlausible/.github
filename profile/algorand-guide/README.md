@@ -62,8 +62,8 @@ The implementation supports both native ALGO payments and transfers of Algorand 
    - **Payment Transaction** from step 2 with fee=0.
    - **Fee Transaction** from `feePayer` to `feePayer` with amount=0, fee covering both transactions (2 x minimum fee)
 3. **Client** signs the transaction and includes it in the `X-PAYMENT` header
-4. **Resource Server** verifies the payment via the **Facilitator**
-5. **Facilitator** submits the transaction (possibly as part of an atomic group for fee abstraction)
+4. **Resource Server** verifies and settles the payment via the **Facilitator**
+5. **Facilitator** verifies and submits the transaction (possibly as part of an atomic group for fee abstraction) and creates settlement response (Failed or fulfilled).
 6. **Resource Server** grants access to the resource once the payment is settled
 
 ## Schema and Types
@@ -120,6 +120,20 @@ const paymentHeader = {
     feeTransaction: 'BBBBBBBBBBBBB...BBBBBBBBBBBBB=', // Optional, only if feePayer is used
   },
 }
+```
+### ENV Variables for refrence implementation site on AVM:
+
+```bash
+NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
+RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
+NETWORK=algorand-testnet # or algorand for mainnet
+PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS
+ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use 0 or leave undefined for ALGO
+PRICE=0.01
+ALGOD_SERVER=https://testnet-api.algonode.cloud
+ALGOD_TOKEN=
+ALGOD_PORT=
+FEE_PAYER=YOUR_FEE_PAYER_ALGORAND_ADDRESS
 ```
 
 ## Package-Specific Examples
