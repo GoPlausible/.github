@@ -32,7 +32,7 @@ The Algorand implementation of x402 utilizes several unique features of the Algo
 
 ### Lease Field for Replay Protection
 
-The implementation uses Algorand's `lease` field to prevent replay attacks and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that:
+The implementation uses Algorand's `lease` field for PaymetRequirement attestation and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that:
 
 1. Each transaction is uniquely tied to a specific payment request
 2. The transaction cannot be reused for a different payment request
