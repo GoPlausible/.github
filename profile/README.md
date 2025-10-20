@@ -1,4 +1,41 @@
-# PLAUSIBLE Protocol
+<img src="https://github.com/user-attachments/assets/e5256b28-db76-44f7-9fbf-da4057bc0448" alt="GoPlausible" width="200" />
+
+# GoPlausible
+[GoPlausible](https://goplausible.com) is a technology startup building identifiable, verifiable and provenant services and AI toolings for Algorand blockchain.
+
+Since 2020, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol powered by Algorand blockchain (PLAUSIBLE protocol). Since 2024, GoPlausible has been building AI toolings and services for Algorand ecosystem, powered by PLAUSIBLE protocol.
+
+[GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402 and more. 
+
+- [PLAUSIBLE protocol](#plausible-protocol)
+- [PLAUSIBLE protocol dApp](https://goplausible.xyz)
+- [GoPlausible Documentation](https://docs.goplausible.xyz)
+- [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
+- [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
+- [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
+- [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
+- [Algorand MCP](https://github.com/GoPlausible/algorand-mcp)
+- [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp)
+- [Ultrade MCP](https://github.com/ultrade-org/ultrade-mcp)
+- [TinyMan MCP](https://github.com/GoPlausible/tinyman-mcp)
+- [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
+- [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
+- [Algorand X402](https://www.npmjs.com/package/x402-avm)
+- [Algorand X402 ExpressJS](https://www.npmjs.com/package/x402-avm-express)
+- [Algorand X402 Hono](https://www.npmjs.com/package/x402-avm-hono)
+- [Algorand X402 NextJS](https://www.npmjs.com/package/x402-avm-next)
+- [Algorand X402 Fetch API](https://www.npmjs.com/package/x402-avm-fetch)
+- [Algorand X402 Axios API](https://www.npmjs.com/package/x402-avm-axios)
+
+## X402 Protocol guide and links with Algorand (AVM)
+
+[top↑](#goplausible)
+
+- X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-guide/scheme_exact_avm.md)
+- X402 Protocol + AVM : [X402](./algorand-guide/README.md)
+- X402 Protocol + AVM Demo : [X402 Demo](https://x402-avm.vercel.app/protected)
+
+## PLAUSIBLE Protocol
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
