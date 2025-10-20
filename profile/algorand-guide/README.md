@@ -20,7 +20,7 @@ The x402 protocol has been extended to support Algorand Virtual Machine (AVM), e
 
 Key features of the Algorand implementation:
 
-- **Native Protocol Features**: Leverages Algorand's lease field for replay protection and binding transactions to payment requirements
+- **Native Protocol Features**: Leverages Algorand's lease field for PaymentRequirements attestation and binding transactions to payment requirements
 - **Fee Abstraction**: Supports fee delegation through atomic transaction groups
 - **Asset Support**: Handles both ALGO and Algorand Standard Assets (ASAs)
 - **Fast Finality**: Benefits from Algorand's sub-5 second transaction finality
@@ -30,7 +30,7 @@ Key features of the Algorand implementation:
 
 The Algorand implementation of x402 utilizes several unique features of the Algorand blockchain:
 
-### Lease Field for Replay Protection
+### Lease Field for PaymentRequirements attestation
 
 The implementation uses Algorand's `lease` field for PaymetRequirement attestation and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that:
 
