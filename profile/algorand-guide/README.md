@@ -32,11 +32,7 @@ The Algorand implementation of x402 utilizes several unique features of the Algo
 
 ### Lease Field for PaymentRequirements attestation
 
-The implementation uses Algorand's `lease` field for PaymetRequirement attestation and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that:
-
-1. Each transaction is uniquely tied to a specific payment request
-2. The transaction cannot be reused for a different payment request
-3. If the same client attempts to pay for the same resource multiple times, each payment requires a new transaction
+The implementation uses Algorand's `lease` field for PaymetRequirement attestation and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that each transaction is uniquely tied to a specific payment request.
 
 ### Atomic Transaction Groups for Fee Abstraction
 
@@ -48,20 +44,23 @@ When a fee payer is specified, the implementation uses Algorand's atomic transac
 
 ### ASA Support
 
-The implementation supports both native ALGO payments and transfers of Algorand Standard Assets (ASAs), with special handling for:
+The implementation supports both native ALGO payments and transfers of Algorand Standard Assets (ASAs) e.g. USDC, with special handling for:
 
 1. ASA opt-in verification
 2. Asset ID validation
-3. Decimal place conversion
+3. Decimal place conversions on asset units and amounts
 
 ## Payment Flow
 
 1. **Client** requests a resource and receives a 402 Payment Required response with `paymentRequirements`
-2. **Client** creates an Algorand transaction with:
+2. If **feePayer** is not present **Client** creates an Algorand asset transfer (In case Asset is present, e.g. pay with USDC) or pay (if no asset is present) transaction with minimum fee (0.001 Algo) and:
    - Payment amount matching `paymentRequirements.maxAmountRequired`
    - Recipient matching `paymentRequirements.payTo`
    - Asset ID matching `paymentRequirements.asset` (0 for ALGO)
    - Lease field set to SHA-256 hash of `paymentRequirements`
+3. If **feePayer** is present **Client** creates two grouped Algorand transactions:
+   - **Payment Transaction** from step 2 with fee=0.
+   - **Fee Transaction** from `feePayer` to `feePayer` with amount=0, fee covering both transactions (2 x minimum fee)
 3. **Client** signs the transaction and includes it in the `X-PAYMENT` header
 4. **Resource Server** verifies the payment via the **Facilitator**
 5. **Facilitator** submits the transaction (possibly as part of an atomic group for fee abstraction)
