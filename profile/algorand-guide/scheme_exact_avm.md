@@ -39,7 +39,7 @@ In addition to the standard x402 `PaymentRequirements` fields, the `exact` schem
 {
   "scheme": "exact",
   "network": "algorand",
-  "maxAmountRequired": "1000",
+  "maxAmountRequired": "10000",
   "asset": "31566704",
   "payTo": "PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "resource": "https://example.com/weather",

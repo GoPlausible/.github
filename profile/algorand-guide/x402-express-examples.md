@@ -32,7 +32,7 @@ const port = 3000
 const paymentRequirements = {
   scheme: 'exact',
   network: 'algorand-testnet',
-  maxAmountRequired: '1000000', // 1 ALGO
+  maxAmountRequired: '1000000', // 1 ALGO = 1,000,000 microAlgos
   asset: '0',
   payTo: process.env.RESOURCE_WALLET_ADDRESS as string,
   resource: 'https://example.com/api/protected-resource',
@@ -159,8 +159,8 @@ const port = 3000
 const asaPaymentRequirements = {
   scheme: 'exact',
   network: 'algorand-testnet',
-  maxAmountRequired: '10000', // 10 units of the ASA
-  asset: process.env.ASA_ID as string, // ASA ID from environment variable
+  maxAmountRequired: '10000',
+  asset: process.env.ASSET as string, // ASA ID from environment variable
   payTo: process.env.RESOURCE_WALLET_ADDRESS as string,
   resource: 'https://example.com/api/premium-content',
   description: 'Access to premium content',
@@ -240,7 +240,7 @@ async function verifyAlgorandPayment(payload, paymentRequirements) {
     }
 
     // 2. Verify transaction amount
-    const expectedAmount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const expectedAmount = Number(paymentRequirements.maxAmountRequired)
     const actualAmount = transaction.type === 'axfer' ? transaction.amount : transaction.amount
 
     if (actualAmount !== expectedAmount) {
@@ -579,12 +579,12 @@ app.listen(port, () => {
 
 Create a `.env` file with the following variables:
 
-```env
+```bash
 # Resource server configuration
 RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
 NETWORK=algorand-testnet
 ASSET=0
-PRICE=0.01
+PRICE=1000000 # Price in units (e.g. 1000000 for 1 ALGO with 6 decimal places)
 PORT=3000
 
 # Algorand node configuration
@@ -594,5 +594,5 @@ ALGOD_PORT=
 
 # Fee payer configuration (optional)
 FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
-PRIVATE_KEY=your mnemonic phrase for fee payer wallet
+PRIVATE_KEY=your provate key or mnemonic phrase for fee payer account
 ```

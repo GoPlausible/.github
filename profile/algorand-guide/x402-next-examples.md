@@ -199,7 +199,7 @@ const asaPaymentRequirements = {
   scheme: 'exact',
   network: 'algorand-testnet',
   maxAmountRequired: '10000', // 10 units of the ASA
-  asset: process.env.ASA_ID as string, // ASA ID from environment variable
+  asset: process.env.ASSET as string, // ASA ID from environment variable
   payTo: process.env.RESOURCE_WALLET_ADDRESS as string,
   resource: 'https://example.com/api/premium-content',
   description: 'Access to premium content',
@@ -341,7 +341,7 @@ export async function createAlgorandPayment(
     const isASA = paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -355,7 +355,7 @@ export async function createAlgorandPayment(
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })
@@ -529,7 +529,7 @@ const ProtectedContent: React.FC<ProtectedContentProps> = ({ resourceUrl }) => {
           <p>{paymentRequirements.description}</p>
           <p>
             Amount:{' '}
-            {parseInt(paymentRequirements.maxAmountRequired) /
+            {Number(paymentRequirements.maxAmountRequired) /
               Math.pow(10, paymentRequirements.extra?.decimals || 6)}{' '}
             {paymentRequirements.asset === '0' ? 'ALGO' : `ASA-${paymentRequirements.asset}`}
           </p>
@@ -741,12 +741,12 @@ export default facilitatorRouter
 
 Create a `.env.local` file with the following variables:
 
-```env
+```bash
 # Resource server configuration
 RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
 NETWORK=algorand-testnet
 ASSET=0
-PRICE=0.01
+PRICE=1000000 # Price in units (e.g. 1000000 microalgos for 1 ALGO with 6 decimal places)
 NEXT_PUBLIC_FACILITATOR_URL=/api/facilitator
 FACILITATOR_URL=/api/facilitator
 
@@ -760,5 +760,5 @@ FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
 PRIVATE_KEY=your mnemonic phrase for fee payer wallet
 
 # ASA configuration (optional)
-ASA_ID=31566704
+ASSET=31566704
 ```

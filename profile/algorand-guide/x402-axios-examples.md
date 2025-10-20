@@ -76,10 +76,10 @@ async function createAlgorandPayment(paymentRequirements) {
     const params = await algodClient.getTransactionParams().do()
 
     // Determine if this is an ALGO payment or ASA transfer
-    const isASA = paymentRequirements.asset !== '0'
+    const isASA = paymentRequirements.asset && paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -93,7 +93,7 @@ async function createAlgorandPayment(paymentRequirements) {
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })
@@ -223,10 +223,10 @@ async function createAlgorandPayment(paymentRequirements) {
     const params = await algodClient.getTransactionParams().do()
 
     // Determine if this is an ALGO payment or ASA transfer
-    const isASA = paymentRequirements.asset !== '0'
+    const isASA = paymentRequirements.asset && paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -240,7 +240,7 @@ async function createAlgorandPayment(paymentRequirements) {
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })
@@ -404,10 +404,10 @@ export function AlgorandAxiosComponent() {
       const params = await algodClient.getTransactionParams().do()
 
       // Determine if this is an ALGO payment or ASA transfer
-      const isASA = paymentRequirements.asset !== '0'
+      const isASA = paymentRequirements.asset && paymentRequirements.asset !== '0'
 
       // Parse amount
-      const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+      const amount = Number(paymentRequirements.maxAmountRequired)
 
       // Create transaction lease from payment requirements hash
       const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -421,7 +421,7 @@ export function AlgorandAxiosComponent() {
           from: accountAddress,
           to: paymentRequirements.payTo,
           amount,
-          assetIndex: parseInt(paymentRequirements.asset, 10),
+          assetIndex: Number(paymentRequirements.asset),
           suggestedParams: params,
           lease,
         })
@@ -649,10 +649,10 @@ async function createAlgorandPayment(paymentRequirements: any): Promise<any> {
     const params = await algodClient.getTransactionParams().do()
 
     // Determine if this is an ALGO payment or ASA transfer
-    const isASA = paymentRequirements.asset !== '0'
+    const isASA = paymentRequirements.asset && paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -666,7 +666,7 @@ async function createAlgorandPayment(paymentRequirements: any): Promise<any> {
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })

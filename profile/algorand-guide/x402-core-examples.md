@@ -52,7 +52,7 @@ const algoPaymentRequirements: PaymentRequirements = {
   scheme: 'exact',
   network: 'algorand-testnet',
   maxAmountRequired: '1000000', // 1 ALGO (6 decimal places)
-  asset: '0', // 0 for ALGO
+  asset: '0', // '0' or undefined for ALGO
   payTo: 'RESOURCE_WALLET_ADDRESS',
   resource: 'https://example.com/resource',
   description: 'Access to protected content',
@@ -61,7 +61,7 @@ const algoPaymentRequirements: PaymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6,
-    feePayer: 'OPTIONAL_FEE_PAYER_ADDRESS', // Optional
+    feePayer: 'FEE_PAYER_ADDRESS', // Optional
   },
 }
 
@@ -69,8 +69,8 @@ const algoPaymentRequirements: PaymentRequirements = {
 const asaPaymentRequirements: PaymentRequirements = {
   scheme: 'exact',
   network: 'algorand-testnet',
-  maxAmountRequired: '10000', // 10 units of the ASA
-  asset: '31566704', // ASA ID
+  maxAmountRequired: '10000', // 0.01 USDC (6 decimal places)
+  asset: '31566704', // E.g. USDC ASA ID 31566704
   payTo: 'RESOURCE_WALLET_ADDRESS',
   resource: 'https://example.com/resource',
   description: 'Access to protected content',
@@ -79,7 +79,7 @@ const asaPaymentRequirements: PaymentRequirements = {
   outputSchema: null,
   extra: {
     decimals: 6, // ASA decimal places (varies by asset)
-    feePayer: 'OPTIONAL_FEE_PAYER_ADDRESS', // Optional
+    feePayer: 'FEE_PAYER_ADDRESS', // Optional
   },
 }
 ```
@@ -113,10 +113,10 @@ async function createAlgorandPayment(paymentRequirements) {
   const params = await algodClient.getTransactionParams().do()
 
   // Determine if this is an ALGO payment or ASA transfer
-  const isASA = paymentRequirements.asset !== '0'
+  const isASA = paymentRequirements.asset && paymentRequirements.asset !== '0'
 
   // Parse amount from payment requirements
-  const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+  const amount = Number(paymentRequirements.maxAmountRequired)
 
   // Create transaction lease from payment requirements hash
   const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -130,7 +130,7 @@ async function createAlgorandPayment(paymentRequirements) {
       from: walletManager.activeAccount.address,
       to: paymentRequirements.payTo,
       amount,
-      assetIndex: parseInt(paymentRequirements.asset, 10),
+      assetIndex: Number(paymentRequirements.asset),
       suggestedParams: params,
       lease,
     })
@@ -160,6 +160,7 @@ async function createAlgorandPayment(paymentRequirements) {
       suggestedParams: {
         ...params,
         fee: 2000, // Cover fee for both transactions (2 * 1000 = 2000 microAlgos)
+        flatFee: true,
       },
     })
 
@@ -257,7 +258,7 @@ async function verifyAlgorandPayment(payload, paymentRequirements) {
     }
 
     // 2. Verify transaction amount
-    const expectedAmount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const expectedAmount = Number(paymentRequirements.maxAmountRequired)
 
     if (transaction.amount !== expectedAmount) {
       throw new X402Error(
@@ -275,7 +276,7 @@ async function verifyAlgorandPayment(payload, paymentRequirements) {
     }
 
     // 4. Verify asset ID for ASA transfers
-    if (paymentRequirements.asset !== '0') {
+    if (paymentRequirements.asset && paymentRequirements.asset !== '0') {
       if (
         !transaction.assetIndex ||
         transaction.assetIndex.toString() !== paymentRequirements.asset
@@ -424,12 +425,12 @@ export async function createAlgorandPayment(paymentRequirements) {
   }
 
   const params = await algodClient.getTransactionParams().do()
-  const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+  const amount = Number(paymentRequirements.maxAmountRequired)
   const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
   const lease = new Uint8Array(Buffer.from(paymentReqHash, 'hex'))
 
   let transaction
-  if (paymentRequirements.asset === '0') {
+  if (paymentRequirements.asset && paymentRequirements.asset === '0') {
     // ALGO payment
     transaction = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: walletManager.activeAccount.address,
@@ -444,7 +445,7 @@ export async function createAlgorandPayment(paymentRequirements) {
       from: walletManager.activeAccount.address,
       to: paymentRequirements.payTo,
       amount,
-      assetIndex: parseInt(paymentRequirements.asset, 10),
+      assetIndex: Number(paymentRequirements.asset),
       suggestedParams: params,
       lease,
     })
@@ -572,7 +573,7 @@ class AlgorandFacilitator {
       }
 
       // 2. Verify transaction amount
-      const expectedAmount = parseInt(paymentRequirements.maxAmountRequired, 10)
+      const expectedAmount = Number(paymentRequirements.maxAmountRequired)
       const actualAmount = transaction.type === 'axfer' ? transaction.amount : transaction.amount
 
       if (actualAmount !== expectedAmount) {
@@ -592,7 +593,7 @@ class AlgorandFacilitator {
       }
 
       // 4. Verify asset ID for ASA transfers
-      if (paymentRequirements.asset !== '0') {
+      if (paymentRequirements.asset && paymentRequirements.asset !== '0') {
         if (
           transaction.type !== 'axfer' ||
           transaction.assetIndex.toString() !== paymentRequirements.asset
@@ -657,7 +658,7 @@ class AlgorandFacilitator {
       }
 
       // 7. If ASA payment, verify recipient has opted in
-      if (paymentRequirements.asset !== '0') {
+      if (paymentRequirements.asset && paymentRequirements.asset !== '0') {
         const recipientInfo = await this.algodClient
           .accountInformation(paymentRequirements.payTo)
           .do()
@@ -754,7 +755,7 @@ async function main() {
   const paymentRequirements = {
     scheme: 'exact',
     network: 'algorand-testnet',
-    maxAmountRequired: '1000000',
+    maxAmountRequired: '1000000', // 1 ALGO = 1,000,000 microAlgos
     asset: '0',
     payTo: 'RESOURCE_WALLET_ADDRESS',
     resource: 'https://example.com/resource',

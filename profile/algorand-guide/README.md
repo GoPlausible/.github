@@ -101,7 +101,7 @@ export const NetworkSchema = z.enum([
 const paymentRequirements = {
   scheme: 'exact',
   network: 'algorand', // or "algorand-testnet"
-  maxAmountRequired: '1000', // amount in smallest unit (microAlgos for ALGO)
+  maxAmountRequired: '10000', // amount in smallest unit 0.01 USDC (6 decimal places)
   asset: '31566704', // ASA ID or "0" for ALGO
   payTo: 'PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
   resource: 'https://example.com/weather',
@@ -144,12 +144,14 @@ RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
 PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
 NETWORK=algorand-testnet  # or algorand for mainnet
 ASSET=10458941  # USDC, use  0 or leave undefined for ALGO or use ASA ID for Algorand Standard Asset
-PRICE=0.01  # Price in ALGO or ASA units
+PRICE=10000 # Price in units (e.g. 10000 for 0.01 USDC with 6 decimal places)
+
 ALGOD_SERVER=https://testnet-api.algonode.cloud  # or mainnet
 ALGOD_TOKEN=
 ALGOD_PORT=
 FEE_PAYER=YOUR_FEE_PAYER_ADDRESS  # Optional
 ```
+
 ### ENV Variables for refrence implementation site (NextJS) package on AVM:
 
 ```bash
@@ -157,8 +159,8 @@ NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
 RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
 NETWORK=algorand-testnet # or algorand for mainnet
 PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
-ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use 0 or leave undefined for ALGO
-PRICE=0.01
+ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use '0' or leave undefined for ALGO
+PRICE=10000 # Price in units (e.g. 10000 for 0.01 USDC with 6 decimal places)
 ALGOD_SERVER=https://testnet-api.algonode.cloud
 ALGOD_TOKEN=
 ALGOD_PORT=

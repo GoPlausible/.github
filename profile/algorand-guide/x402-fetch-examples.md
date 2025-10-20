@@ -87,7 +87,7 @@ async function createAlgorandPayment(paymentRequirements) {
     const isASA = paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -101,7 +101,7 @@ async function createAlgorandPayment(paymentRequirements) {
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })
@@ -295,7 +295,7 @@ export function useX402AlgorandFetch() {
       const isASA = paymentRequirements.asset !== '0'
 
       // Parse amount
-      const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+      const amount = Number(paymentRequirements.maxAmountRequired)
 
       // Create transaction lease from payment requirements hash
       const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -309,7 +309,7 @@ export function useX402AlgorandFetch() {
           from: senderAddress,
           to: paymentRequirements.payTo,
           amount,
-          assetIndex: parseInt(paymentRequirements.asset, 10),
+          assetIndex: Number(paymentRequirements.asset),
           suggestedParams: params,
           lease,
         })
@@ -425,7 +425,7 @@ export function useX402AlgorandFetch() {
               <p>{currentPaymentReqs.description}</p>
               <p>
                 Amount:{' '}
-                {parseInt(currentPaymentReqs.maxAmountRequired) /
+                {Number(currentPaymentReqs.maxAmountRequired) /
                   Math.pow(10, currentPaymentReqs.extra?.decimals || 6)}{' '}
                 {currentPaymentReqs.asset === '0' ? 'ALGO' : `ASA-${currentPaymentReqs.asset}`}
               </p>
@@ -604,7 +604,7 @@ const x402Fetch = createX402Fetch({
             <h3>Payment Required</h3>
             <p>${paymentRequirements.description}</p>
             <p>Amount: ${
-              parseInt(paymentRequirements.maxAmountRequired) /
+              Number(paymentRequirements.maxAmountRequired) /
               Math.pow(10, paymentRequirements.extra?.decimals || 6)
             } 
             ${paymentRequirements.asset === '0' ? 'ALGO' : `ASA-${paymentRequirements.asset}`}</p>
@@ -638,7 +638,7 @@ async function createAlgorandPayment(paymentRequirements, senderAddress) {
     const isASA = paymentRequirements.asset !== '0'
 
     // Parse amount
-    const amount = parseInt(paymentRequirements.maxAmountRequired, 10)
+    const amount = Number(paymentRequirements.maxAmountRequired)
 
     // Create transaction lease from payment requirements hash
     const paymentReqHash = sha256(JSON.stringify(paymentRequirements))
@@ -652,7 +652,7 @@ async function createAlgorandPayment(paymentRequirements, senderAddress) {
         from: senderAddress,
         to: paymentRequirements.payTo,
         amount,
-        assetIndex: parseInt(paymentRequirements.asset, 10),
+        assetIndex: Number(paymentRequirements.asset),
         suggestedParams: params,
         lease,
       })
