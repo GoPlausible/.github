@@ -35,11 +35,11 @@ This guide provides comprehensive documentation and examples for using the x402 
 
 ## Introduction
 
-The x402 protocol has been extended to support Algorand Virtual Machine (AVM), enabling payment verification and settlement on Algorand networks (both mainnet and testnet). This implementation follows the `exact` payment scheme pattern established for EVM and SVM networks, providing a consistent developer experience across all supported blockchains.
+By collaboration between Algorand Foundation and GoPlausible, The x402 protocol has been extended to support Algorand Virtual Machine (AVM), enabling payment verification and settlement on Algorand networks (both mainnet and testnet). This implementation follows the `exact` payment scheme pattern established for EVM and SVM networks, providing a consistent developer experience across all supported blockchains.
 
 Key features of the Algorand implementation:
 
-- **Native Protocol Features**: Leverages Algorand's lease field for PaymentRequirements attestation and binding transactions to payment requirements
+- **Native Protocol Features**: Uses Algorand's native transaction capabilities for flexible, secure and efficient payments.
 - **Fee Abstraction**: Supports fee delegation through atomic transaction groups
 - **Asset Support**: Handles both ALGO and Algorand Standard Assets (ASAs)
 - **Fast Finality**: Benefits from Algorand's sub-5 second transaction finality
@@ -49,17 +49,12 @@ Key features of the Algorand implementation:
 
 The Algorand implementation of x402 utilizes several unique features of the Algorand blockchain:
 
-### Lease Field for PaymentRequirements attestation
 
-The implementation uses Algorand's `lease` field for PaymetRequirement attestation and bind transactions to specific payment requests. The lease value is set to the SHA-256 hash of the `paymentRequirements`, ensuring that each transaction is uniquely tied to a specific payment request.
+### Atomic Transaction Groups for Fee Abstraction and beyond
 
-### Atomic Transaction Groups for Fee Abstraction
+Atomic transaction groups are used to enable fee abstraction, allowing a third-party fee payer to cover transaction fees on behalf of the resource requester. This is achieved by grouping the payment transaction with a fee transaction from the fee payer, ensuring both transactions are processed together.
 
-When a fee payer is specified, the implementation uses Algorand's atomic transaction groups to ensure that:
-
-1. The client's payment transaction (with fee=0) and the facilitator's fee-covering transaction are processed together
-2. Either both transactions succeed or both fail
-3. The fee payer only pays for the minimum Algorand network fee
+Same pattern can be used to bring much more complex payment scenarios to x402 on Algorand.
 
 ### ASA Support
 
@@ -77,10 +72,11 @@ The implementation supports both native ALGO payments and transfers of Algorand 
    - Recipient matching `paymentRequirements.payTo`
    - Asset ID matching `paymentRequirements.asset` (0 for ALGO)
    - Lease field set to SHA-256 hash of `paymentRequirements`
-3. If **feePayer** is present **Client** creates two grouped Algorand transactions:
+3. If **feePayer** is present **Client** creates two grouped Algorand transactions in `paymentGroup` field of payload:
    - **Payment Transaction** from step 2 with fee=0.
    - **Fee Transaction** from `feePayer` to `feePayer` with amount=0, fee covering both transactions (2 x minimum fee)
-3. **Client** signs the transaction and includes it in the `X-PAYMENT` header
+4. **Client** adds other transactions to group and specifies the payment transaction index as `paymentIndex` field of payload.
+3. **Client** signs the transaction and includes it in the `X-PAYMENT` header payload `paymentGroup` at `paymentIndex`.
 4. **Resource Server** verifies and settles the payment via the **Facilitator**
 5. **Facilitator** verifies and submits the transaction (possibly as part of an atomic group for fee abstraction) and creates settlement response (Failed or fulfilled).
 6. **Resource Server** grants access to the resource once the payment is settled
