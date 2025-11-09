@@ -2,7 +2,7 @@
 
 # x402 Protocol with Algorand (AVM) Guide
 
-GoPlausible has made the full core, tooling, and package support for Algorand (AVM) available as open source and made the PR to Coinbase's x402 protocol repo: [CoinBse x402 PR #401](https://github.com/coinbase/x402/pull/401)
+GoPlausible has made the full core, tooling, and package support for Algorand (AVM) available as open source and contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [CoinBse x402 PR #401](https://github.com/coinbase/x402/pull/361/)
 
 ## NPM Packages
 
