@@ -39,7 +39,7 @@ const x402Axios = createX402Axios(axios, {
   async createPayment(paymentRequirements, axiosInstance) {
     if (
       paymentRequirements.scheme === 'exact' &&
-      (paymentRequirements.network === 'algorand' ||
+      (paymentRequirements.network === 'algorand-mainnet' ||
         paymentRequirements.network === 'algorand-testnet')
     ) {
       // Create Algorand payment
@@ -146,7 +146,8 @@ async function createAlgorandPayment(paymentRequirements) {
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: [signedTxnBase64],
+        paymentIndex: 1,
       },
     }
 
@@ -154,7 +155,7 @@ async function createAlgorandPayment(paymentRequirements) {
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64);
     }
 
     return paymentHeader
@@ -293,7 +294,8 @@ async function createAlgorandPayment(paymentRequirements) {
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: [signedTxnBase64],
+        paymentIndex: 1,
       },
     }
 
@@ -301,7 +303,7 @@ async function createAlgorandPayment(paymentRequirements) {
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64);
     }
 
     return paymentHeader
@@ -316,7 +318,7 @@ const x402Axios = createX402Axios(baseAxios, {
   async createPayment(paymentRequirements, axiosInstance) {
     if (
       paymentRequirements.scheme === 'exact' &&
-      (paymentRequirements.network === 'algorand' ||
+      (paymentRequirements.network === 'algorand-mainnet' ||
         paymentRequirements.network === 'algorand-testnet')
     ) {
       return await createAlgorandPayment(paymentRequirements)
@@ -474,7 +476,8 @@ export function AlgorandAxiosComponent() {
         scheme: 'exact',
         network: paymentRequirements.network,
         payload: {
-          transaction: signedTxnBase64,
+          paymentGroup: [signedTxnBase64],
+          paymentIndex: 1,
         },
       }
 
@@ -482,7 +485,7 @@ export function AlgorandAxiosComponent() {
       if (feeTransaction) {
         const feeTxnBytes = feeTransaction.toByte()
         const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-        paymentHeader.payload.feeTransaction = feeTxnBase64
+        paymentHeader.payload.paymentGroup.push(feeTxnBase64);
       }
 
       return paymentHeader
@@ -497,7 +500,7 @@ export function AlgorandAxiosComponent() {
     async createPayment(paymentRequirements, axiosInstance) {
       if (
         paymentRequirements.scheme === 'exact' &&
-        (paymentRequirements.network === 'algorand' ||
+        (paymentRequirements.network === 'algorand-mainnet' ||
           paymentRequirements.network === 'algorand-testnet')
       ) {
         // If not connected, prompt to connect
@@ -719,7 +722,8 @@ async function createAlgorandPayment(paymentRequirements: any): Promise<any> {
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: signedTxnBase64,
+        paymentIndex: 1,
       },
     }
 
@@ -727,7 +731,7 @@ async function createAlgorandPayment(paymentRequirements: any): Promise<any> {
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64);
     }
 
     return paymentHeader
@@ -771,7 +775,7 @@ export function createConfiguredX402Axios(config?: AxiosRequestConfig) {
     async createPayment(paymentRequirements, axiosInstance) {
       if (
         paymentRequirements.scheme === 'exact' &&
-        (paymentRequirements.network === 'algorand' ||
+        (paymentRequirements.network === 'algorand-mainnet' ||
           paymentRequirements.network === 'algorand-testnet')
       ) {
         return await createAlgorandPayment(paymentRequirements)

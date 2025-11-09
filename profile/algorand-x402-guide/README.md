@@ -102,7 +102,7 @@ export const NetworkSchema = z.enum([
   'solana',
   // Algorand networks
   'algorand-testnet',
-  'algorand',
+  'algorand-mainnet',
 ])
 ```
 
@@ -133,10 +133,10 @@ const paymentRequirements = {
 const paymentHeader = {
   x402Version: 1,
   scheme: 'exact',
-  network: 'algorand', // or "algorand-testnet"
+  network: 'algorand-mainnet', // or "algorand-testnet"
   payload: {
-    transaction: 'AAAAAAAAAAAAA...AAAAAAAAAAAAA=', // Base64-encoded signed transaction
-    feeTransaction: 'BBBBBBBBBBBBB...BBBBBBBBBBBBB=', // Optional, only if feePayer is used
+    paymentGroup: ['AAAAAAAAAAAAA...AAAAAAAAAAAAA=','BBBBBBBBBBBBB...BBBBBBBBBBBBB='], 
+    paymentIndex: 1, 
   },
 }
 ```

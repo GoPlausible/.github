@@ -42,7 +42,7 @@ const x402Fetch = createX402Fetch({
   async createPayment(paymentRequirements, fetch) {
     if (
       paymentRequirements.scheme === 'exact' &&
-      (paymentRequirements.network === 'algorand' ||
+      (paymentRequirements.network === 'algorand-mainnet' ||
         paymentRequirements.network === 'algorand-testnet')
     ) {
       // Create Algorand payment
@@ -154,7 +154,8 @@ async function createAlgorandPayment(paymentRequirements) {
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: [signedTxnBase64],
+        paymentIndex: 1,
       },
     }
 
@@ -162,7 +163,7 @@ async function createAlgorandPayment(paymentRequirements) {
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64);
     }
 
     return paymentHeader
@@ -362,7 +363,8 @@ export function useX402AlgorandFetch() {
         scheme: 'exact',
         network: paymentRequirements.network,
         payload: {
-          transaction: signedTxnBase64,
+          paymentGroup: [signedTxnBase64],
+          paymentIndex: 1,
         },
       }
 
@@ -370,7 +372,7 @@ export function useX402AlgorandFetch() {
       if (feeTransaction) {
         const feeTxnBytes = feeTransaction.toByte()
         const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-        paymentHeader.payload.feeTransaction = feeTxnBase64
+        paymentHeader.payload.paymentGroup.push(feeTxnBase64);
       }
 
       return paymentHeader
@@ -385,7 +387,7 @@ export function useX402AlgorandFetch() {
     async createPayment(paymentRequirements, fetch) {
       if (
         paymentRequirements.scheme === 'exact' &&
-        (paymentRequirements.network === 'algorand' ||
+        (paymentRequirements.network === 'algorand-mainnet' ||
           paymentRequirements.network === 'algorand-testnet')
       ) {
         return await createAlgorandPayment(paymentRequirements)
@@ -708,7 +710,8 @@ async function createAlgorandPayment(paymentRequirements, senderAddress) {
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: [signedTxnBase64],
+        paymentIndex: 1,
       },
     }
 
@@ -716,7 +719,7 @@ async function createAlgorandPayment(paymentRequirements, senderAddress) {
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64);
     }
 
     statusDiv.textContent = 'Transaction signed, submitting payment...'

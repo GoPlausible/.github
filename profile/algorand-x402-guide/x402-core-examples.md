@@ -30,15 +30,15 @@ export const NetworkSchema = z.enum([
   'solana',
   // New Algorand networks
   'algorand-testnet',
-  'algorand',
+  'algorand-mainnet',
 ])
 export type Network = z.infer<typeof NetworkSchema>
 
 // Algorand-specific payload schema
 export const ExactAvmPayloadSchema = z.object({
-  transaction: z.string(),
-  feeTransaction: z.string().optional(),
-})
+  paymentGroup: z.array(z.string().regex(Base64EncodedRegex)),
+  paymentIndex: z.number(),
+});
 export type ExactAvmPayload = z.infer<typeof ExactAvmPayloadSchema>
 ```
 
@@ -182,7 +182,8 @@ async function createAlgorandPayment(paymentRequirements) {
     scheme: 'exact',
     network: paymentRequirements.network,
     payload: {
-      transaction: signedTxnBase64,
+      paymentGroup: [signedTxnBase64],
+      paymentIndex: 1,
     },
   }
 
@@ -190,7 +191,7 @@ async function createAlgorandPayment(paymentRequirements) {
   if (feeTransaction) {
     const feeTxnBytes = feeTransaction.toByte()
     const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-    paymentHeader.payload.feeTransaction = feeTxnBase64
+    paymentHeader.payload.paymentGroup.push(feeTxnBase64);
   }
 
   // Encode the payment header for HTTP header
@@ -244,7 +245,7 @@ const algodClient = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud'
 async function verifyAlgorandPayment(payload, paymentRequirements) {
   try {
     // Decode the base64 transaction
-    const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+    const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
     const transaction = algosdk.decodeSignedTransaction(transactionBuffer).txn
 
     // Verify the transaction
@@ -299,8 +300,8 @@ async function verifyAlgorandPayment(payload, paymentRequirements) {
     }
 
     // 6. If fee transaction is present, verify it
-    if (payload.feeTransaction && paymentRequirements.extra?.feePayer) {
-      const feeTxnBuffer = Buffer.from(payload.feeTransaction, 'base64')
+    if (payload.paymentGroup.length >= 2 && paymentRequirements.extra?.feePayer) {
+      const feeTxnBuffer = Buffer.from(payload.paymentGroup[1], 'base64')
       const feeTxn = algosdk.decodeUnsignedTransaction(feeTxnBuffer)
 
       // Verify fee payer address
@@ -353,13 +354,13 @@ async function verifyAlgorandPayment(payload, paymentRequirements) {
 async function settleAlgorandPayment(payload, paymentRequirements) {
   try {
     // Decode the base64 transaction
-    const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+    const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
     const signedTxn = new Uint8Array(transactionBuffer)
 
     // If fee transaction is present, create atomic transaction group
-    if (payload.feeTransaction && paymentRequirements.extra?.feePayer) {
+    if (payload.paymentGroup.length >= 2 && paymentRequirements.extra?.feePayer) {
       // Decode fee transaction
-      const feeTxnBuffer = Buffer.from(payload.feeTransaction, 'base64')
+      const feeTxnBuffer = Buffer.from(payload.paymentGroup[1], 'base64')
       const unsignedFeeTxn = new Uint8Array(feeTxnBuffer)
 
       // Sign fee transaction with facilitator private key
@@ -478,14 +479,15 @@ export async function createAlgorandPayment(paymentRequirements) {
     scheme: 'exact',
     network: paymentRequirements.network,
     payload: {
-      transaction: signedTxnBase64,
+      paymentGroup: [signedTxnBase64],
+      paymentIndex: 1,
     },
   }
 
   if (feeTransaction) {
     const feeTxnBytes = feeTransaction.toByte()
     const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-    paymentHeader.payload.feeTransaction = feeTxnBase64
+    paymentHeader.payload.paymentGroup.push(feeTxnBase64);
   }
 
   return encodePaymentHeader(paymentHeader)
@@ -555,7 +557,7 @@ class AlgorandFacilitator {
   async verify(payload: any, paymentRequirements: any): Promise<{ isValid: boolean }> {
     try {
       // Decode the base64 transaction
-      const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+      const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
       const decodedTxn = algosdk.decodeSignedTransaction(transactionBuffer)
       const transaction = decodedTxn.txn
 
@@ -616,8 +618,8 @@ class AlgorandFacilitator {
       }
 
       // 6. If fee transaction is present, verify it
-      if (payload.feeTransaction && paymentRequirements.extra?.feePayer) {
-        const feeTxnBuffer = Buffer.from(payload.feeTransaction, 'base64')
+      if (payload.paymentGroup.length >= 2 && paymentRequirements.extra?.feePayer) {
+        const feeTxnBuffer = Buffer.from(payload.paymentGroup[1], 'base64')
         const feeTxn = algosdk.decodeUnsignedTransaction(feeTxnBuffer)
 
         // Verify fee payer address
@@ -687,17 +689,17 @@ class AlgorandFacilitator {
   async settle(payload: any, paymentRequirements: any): Promise<any> {
     try {
       // Decode the base64 transaction
-      const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+      const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
       const signedTxn = new Uint8Array(transactionBuffer)
 
       // If fee transaction is present, create atomic transaction group
-      if (payload.feeTransaction && paymentRequirements.extra?.feePayer) {
+      if (payload.paymentGroup.length >= 2 && paymentRequirements.extra?.feePayer) {
         if (!this.feePayerPrivateKey) {
           throw new Error('Fee payer private key not configured')
         }
 
         // Decode fee transaction
-        const feeTxnBuffer = Buffer.from(payload.feeTransaction, 'base64')
+        const feeTxnBuffer = Buffer.from(payload.paymentGroup[1], 'base64')
         const unsignedFeeTxn = algosdk.decodeUnsignedTransaction(feeTxnBuffer)
 
         // Sign fee transaction with facilitator private key

@@ -408,7 +408,8 @@ export async function createAlgorandPayment(
       scheme: 'exact',
       network: paymentRequirements.network,
       payload: {
-        transaction: signedTxnBase64,
+        paymentGroup: [signedTxnBase64],
+        paymentIndex: 1,
       },
     }
 
@@ -416,7 +417,7 @@ export async function createAlgorandPayment(
     if (feeTransaction) {
       const feeTxnBytes = feeTransaction.toByte()
       const feeTxnBase64 = Buffer.from(feeTxnBytes).toString('base64')
-      paymentHeader.payload.feeTransaction = feeTxnBase64
+      paymentHeader.payload.paymentGroup.push(feeTxnBase64)
     }
 
     // Encode the payment header for HTTP header
@@ -670,7 +671,7 @@ if (process.env.PRIVATE_KEY) {
 async function verifyAlgorandPayment(payload: any, paymentRequirements: any) {
   try {
     // Implementation as shown in the core examples
-    const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+    const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
     const decodedTxn = algosdk.decodeSignedTransaction(transactionBuffer)
     const transaction = decodedTxn.txn
 
@@ -697,7 +698,7 @@ async function verifyAlgorandPayment(payload: any, paymentRequirements: any) {
 async function settleAlgorandPayment(payload: any, paymentRequirements: any) {
   try {
     // Implementation as shown in the core examples
-    const transactionBuffer = Buffer.from(payload.transaction, 'base64')
+    const transactionBuffer = Buffer.from(payload.paymentGroup[payload.paymentIndex], 'base64')
     const signedTxn = new Uint8Array(transactionBuffer)
 
     // Fee delegation handling and transaction submission...
