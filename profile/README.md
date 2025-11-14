@@ -22,12 +22,10 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 - [TinyMan MCP](https://github.com/GoPlausible/tinyman-mcp)
 - [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
 - [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
-- [Algorand X402](https://www.npmjs.com/package/x402-avm)
-- [Algorand X402 ExpressJS](https://www.npmjs.com/package/x402-avm-express)
-- [Algorand X402 Hono](https://www.npmjs.com/package/x402-avm-hono)
-- [Algorand X402 NextJS](https://www.npmjs.com/package/x402-avm-next)
-- [Algorand X402 Fetch API](https://www.npmjs.com/package/x402-avm-fetch)
-- [Algorand X402 Axios API](https://www.npmjs.com/package/x402-avm-axios)
+- [Algorand X402 Live](https://x402-avm.vercel.app/protected)
+- [Algorand X402 PR Spec](https://github.com/coinbase/x402/pull/361)
+- [Algorand X402 PR Implementations for PR 361](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
+
 
 ## X402 Protocol guide and links with Algorand (AVM)
 
