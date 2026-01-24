@@ -64,7 +64,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
 - [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
 
-<img width="617" height="312" alt="Screenshot 2026-01-24 at 15 23 19" src="https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4" />
+![12e89b603ca017a029aeebfd694dddsa01e2f1761572378789](https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4)
+<!-- <img width="617" height="312" alt="Screenshot 2026-01-24 at 15 23 19" src="https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4" /> -->
 
 ## Decentralized OAuth (doAuth) prtotocol for Agentic Algorand wallets:
 
@@ -74,7 +75,8 @@ With just a Web 2.0 login, own User/Agent, Web 3.0 Ⱥlgorand Wallet accounts bou
 
 - [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
 
-<img width="666" height="571" alt="Screenshot 2026-01-24 at 15 27 40" src="https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9" />
+<!-- <img width="666" height="571" alt="Screenshot 2026-01-24 at 15 27 40" src="https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9" /> -->
+![12e89b603ca017a029aeebfddsds694dddsa01e261572378789](https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9)
 
 ## Falcon keys WASM based TS implementation for NodeJS and Web
 [top↑](#goplausible)
