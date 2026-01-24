@@ -7,7 +7,7 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 <img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="200" />
 
-[GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402 and more. 
+[GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more. 
 
 - [PLAUSIBLE protocol](#plausible-protocol)
 - [PLAUSIBLE protocol dApp](https://goplausible.xyz)
@@ -32,14 +32,14 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 [top↑](#goplausible)
 
 - X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-x402-guide/scheme_exact_avm.md)
-- X402 Protocol + AVM : [X402](./algorand-x402-guide/README.md)
-- X402 Protocol + AVM Demo : [X402 Demo](https://x402-avm.vercel.app/protected)
+- X402 Protocol guide and examples on Algorand : [X402](./algorand-x402-guide/README.md)
+- X402 Protocol live instance for Algorand : [X402 Demo](https://x402-avm.vercel.app/protected)
 
 ## PLAUSIBLE Protocol
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 ![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
 
-### This documentation is subject to update for newer updates please refer to [GoPlausible Documentation](https://goplausible.gitbook.io/goplausible/)or send your questions to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
+### For user documentation please refer to [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible/) or send your questions to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
 ### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.co).
 
 - [PLAUSIBLE protocol Concept](#plausible-protocol-concept)
