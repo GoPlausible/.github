@@ -72,7 +72,7 @@ Note: Frontend is accessible through cloudflare pages and page workers (heavily 
 
 ----
 
-### Issuer's Journey:
+### Issuers Journey:
 [top↑](#plausible-protocol)
 
 1- Issuer easily gets onboard to GoPlausible by opting into PLAUSIBLE protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
@@ -122,7 +122,7 @@ Note right of PLAUSIBLE_ASC: Only when SIG option is enabled on PLAUSIBLE
 
 ```
 ----
-### Claimer's Journey:
+### Claimers Journey:
 [top↑](#plausible-protocol)
 
 1- After PLAUS activation (by Issuer) and by satisfying what PLAUS configuration mandates from claimers, eligible users can claim the PLAUS and get NFT and attached Verifiable Credential if approved by PLAUS smart contract.
