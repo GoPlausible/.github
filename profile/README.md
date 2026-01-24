@@ -65,8 +65,20 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
 - [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
 
+## Falcon keys WASM based TS implementation for NodeJS and Web
+[top↑](#goplausible)
+
+Falcon keys are [Algorand](https://algorand.co) innovation for Post Quantum Cryptography. GoPlausible has developed Falcon keys TS implementation for NodeJS and Web using WebAssembly (WASM).
+
+- [Falcon keys TS implementation repo](https://github.com/GoPlausible/falcon-signatures-js)
+- [Falcon keys TS implementation NPM Package](https://www.npmjs.com/package/falcon-signatures)
+- [Falcon keys TS implementation Live Playground](https://daoauth.org)
+
+<img width="500" height="1024" alt="ChatGPT Image Sep 26, 2025, 08_53_23 PM" src="https://github.com/user-attachments/assets/b6b50e1d-9df2-4f04-b3a4-6d578d9fdd77" />
+
 
 ## PLAUSIBLE Protocol
+[top↑](#goplausible)
 
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 
@@ -80,7 +92,7 @@ PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart
 
 
 ## PLAUSIBLE protocol concept:
-[top↑](#plausible-protocol)
+[top↑](#goplausible)
 
 
 GoPlausible dApp consists of a frontend calling a PLAUSIBLE protocol smart contract ABIs and APIS. Some contract to contract (C2C) calls are made by PLAUSIBLE parent contracts to PLAUS contracts.
@@ -109,12 +121,12 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 ---
 
 ## Contributing
-[top↑](#plausible-protocol)
+[top↑](#goplausible)
 
 We welcome contributions and suggestions. Please open a pull request or an issue on our GitHub repository if you have any questions or ideas.
 
 ## License
-[top↑](#plausible-protocol)
+[top↑](#goplausible)
 
 This API and its documentation are provided for informational and integration purposes. For licensing information, consult the official GoPlausible or contact the team members on socials.
 
