@@ -72,7 +72,7 @@ Note: Frontend is accessible through cloudflare pages and page workers (heavily 
 
 ----
 
-### PLAUS Issuer's Journey:
+### Issuer's Journey:
 [top↑](#plausible-protocol)
 
 1- Issuer easily gets onboard to GoPlausible by opting into PLAUSIBLE protocol's parent Algorand smart contract. This issues a DID and a Verifiable Credential by PLAUSIBLE protocol for the issuer and combined with account's NFD , creates a profile.
