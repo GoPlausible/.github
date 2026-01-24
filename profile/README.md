@@ -59,11 +59,15 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Algorand X402 Spec PR to coinbase](https://github.com/coinbase/x402/pull/361)
 - [Algorand X402 PR Implementations repo](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
 
-## Other infrastructure and services built by GoPlausible:
+## OpenAI GPTs and ChatGPT plugins for Algorand ecosystem:
 
-- [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
 - [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
+
+## Decentralized OAuth (doAuth) prtotocol for Agentic Algorand wallets:
+
+- [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
+
 
 ## Falcon keys WASM based TS implementation for NodeJS and Web
 [top↑](#goplausible)
