@@ -72,6 +72,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 - [PLAUSIBLE protocol](#plausible-protocol)
 - [PLAUSIBLE protocol dApp](https://goplausible.xyz)
+- [PLAUSIBLE Protocol API Docs guide](./README_API.md)
+- [PLAUSIBLE Protocol OpenAPI Docs](https://api.goplausible.xyz/docs#)
 - [GoPlausible User Documentation](https://docs.goplausible.xyz)
 - [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
