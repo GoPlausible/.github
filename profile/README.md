@@ -5,10 +5,9 @@
 
 Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol powered by Algorand blockchain (PLAUSIBLE protocol). Since 2024, GoPlausible has been building AI toolings, infrastructure, hosted services and extensions to protocols for Algorand ecosystem, powered by PLAUSIBLE protocol.
 
-<img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="200" />
-
 [GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more.
 
+<img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="480" />
 
 ## MCP Protocol guide and links for Algorand (AVM)
 
