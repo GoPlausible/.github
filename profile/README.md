@@ -74,6 +74,7 @@ With just a Web 2.0 login, own User/Agent, Web 3.0 Ⱥlgorand Wallet accounts bou
 
 - [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
 
+<img width="666" height="571" alt="Screenshot 2026-01-24 at 15 27 40" src="https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9" />
 
 ## Falcon keys WASM based TS implementation for NodeJS and Web
 [top↑](#goplausible)
