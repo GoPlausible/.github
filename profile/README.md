@@ -42,6 +42,7 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
 
 ## X402 Protocol guide and links for Algorand (AVM)
+![12e89b603ca017a029aeebfd69401e2f1761572378789](https://github.com/user-attachments/assets/cb177aa5-3be4-4dec-a8d3-7be7537f52bd)
 
 [top↑](#goplausible)
 
