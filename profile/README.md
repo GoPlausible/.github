@@ -63,6 +63,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
 - [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
+- 
+<img width="617" height="312" alt="Screenshot 2026-01-24 at 15 23 19" src="https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4" />
 
 ## Decentralized OAuth (doAuth) prtotocol for Agentic Algorand wallets:
 
