@@ -22,7 +22,7 @@ Note: Some Agentic LLMs and AI toolings have a low limit for number of tools on 
 
 ### Algorand Remote MCP Lite edition (Wallet Edition)
 
-- Algorand Remote MCP Lite Guide and repo : [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp-lite)
+- Algorand Remote MCP Lite Guide and repo : [Algorand Remote MCP Lite](https://github.com/GoPlausible/algorand-remote-mcp-lite)
 
 Algorand Remote MCP Lite is a lightweight version of Algorand Remote MCP with limited number of tools (40 tools) for developers who want to integrate their dApps with MCP protocol as an Agentic wallet without the need to host their own MCP node. It utilizes OAuth 2.2 and OIDC standards for authentication and authorization. All Agentic wallet functionalities are available in Lite edition.
 
