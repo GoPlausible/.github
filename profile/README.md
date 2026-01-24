@@ -9,18 +9,6 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 <img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="480" />
 
-## GoPlausible links
-[top↑](#plausible-protocol)
-
-- [GoPlausible Github Technical Documentation](https://github.com/GoPlausible)
-  
-- [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible)
-
-- [GoPlausible Website (plausible.com)](https://goplausible.com)
-
-- [GoPlausible dApp (plausible.xyz)](https://goplausible.xyz)
-  
-- [GoPlausible Universal DID/URL Resolver (ThisDID.com)](https://thisdid.com)
 
 ## MCP Protocol guide and links for Algorand (AVM)
 
@@ -77,7 +65,7 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 - [PLAUSIBLE protocol](#plausible-protocol)
 - [PLAUSIBLE protocol dApp](https://goplausible.xyz)
-- [GoPlausible Documentation](https://docs.goplausible.xyz)
+- [GoPlausible User Documentation](https://docs.goplausible.xyz)
 - [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
 ### For user documentation please refer to [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible/) or send your questions to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
