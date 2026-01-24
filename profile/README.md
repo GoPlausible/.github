@@ -13,12 +13,32 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 [top↑](#goplausible)
 
+### Algorand Remote MCP
+
 - Algorand Remote MCP Guide and repo : [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp)
+
+Algorand Remote MCP is the cloud hosted version of MCP protocol for Algorand, which allows developers to integrate their dApps with MCP protocol without the need to host their own MCP node. It utilizes OAuth 2.2 and OIDC standards for authentication and authorization. Algorand Remote MCP has a complete and comprehensive (1:1 coverage for SDK, Algod and Indexer) implementation of MCP protocol for Algorand with more than 75 tools and resources.
+Note: Some Agentic LLMs and AI toolings have a low limit for number of tools on MCP protocol instance! To remedy that use Algorand Remote MCP lite and Dev editions (each 40 tools, the number which is supported by all agentic LLMs).
+
+### Algorand Remote MCP Lite edition (Wallet Edition)
+
+- Algorand Remote MCP Lite Guide and repo : [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp-lite)
+
+Algorand Remote MCP Lite is a lightweight version of Algorand Remote MCP with limited number of tools (40 tools) for developers who want to integrate their dApps with MCP protocol as an Agentic wallet without the need to host their own MCP node. It utilizes OAuth 2.2 and OIDC standards for authentication and authorization. All Agentic wallet functionalities are available in Lite edition.
+
+### Algorand Local MCP
+
 - Algorand Local MCP Guide and repo : [Algorand MCP](https://github.com/GoPlausible/algorand-mcp)
+
+Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, which allows developers to integrate their dApps with MCP protocol by hosting their own MCP node. Algorand Local MCP has a complete and comprehensive (1:1 coverage for SDK, Algod and Indexer) implementation of MCP protocol for Algorand with more than 75 tools and resources.
+
+
+### Algorand Ecosystem Projects MCP implementations (by GoPlausible)
 
 - [Ultrade MCP](https://github.com/ultrade-org/ultrade-mcp)
 - [TinyMan MCP](https://github.com/GoPlausible/tinyman-mcp)
 - [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
+- [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
 
 ## X402 Protocol guide and links for Algorand (AVM)
 
@@ -32,10 +52,11 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 - [Algorand X402 PR Implementations repo](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
 
 ## Other infrastructure and services built by GoPlausible:
+
 - [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
 - [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
-- [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
+
 
 ## PLAUSIBLE Protocol
 
