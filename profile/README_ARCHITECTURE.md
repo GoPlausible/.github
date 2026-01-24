@@ -16,8 +16,6 @@ This document provides a technical overview and reference guide for the PLAUSIBL
   - [Issuer's Journey](#issuers-journey)
   - [Claimer's Journey](#claimers-journey)
   - [Smart Contracts](#plausible-protocol-smart-contracts)
-    - [PLAUS ASC ABI](#plaus-asc-abi)
-    - [PLAUS ASC ABI Schema](#plaus-asc-abi-schema)
 
 ### PLAUSIBLE protocol features :
 [top↑](#plausible-protocol)
