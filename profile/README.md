@@ -11,6 +11,8 @@ Send your questions, issues and comments to [GoPlausible Open Box](https://forms
 
 ![goplausible vision](https://github.com/user-attachments/assets/b89f461a-2d25-4929-907f-21306c191355)
 
+---
+
 ## MCP Protocol guide and links for Algorand (AVM)
 
 [GoPlausible](https://goplausible.com) has developed complete suite of cloud and local Model context protocols for Algorand Blockchain which are used as building block for many other projects and protocol integrations on Algorand.
@@ -47,6 +49,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
 - [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
 
+---
+
 ## X402 Protocol guide and links for Algorand (AVM)
 ![12e89b603ca017a029aeebfd69401e2f1761572378789](https://github.com/user-attachments/assets/cb177aa5-3be4-4dec-a8d3-7be7537f52bd)
 
@@ -59,6 +63,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [Algorand X402 Spec PR to coinbase](https://github.com/coinbase/x402/pull/361)
 - [Algorand X402 PR Implementations repo](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
 
+---
+
 ## OpenAI GPTs and ChatGPT plugins for Algorand ecosystem:
 
 - [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
@@ -66,6 +72,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 ![12e89b603ca017a029aeebfd694dddsa01e2f1761572378789](https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4)
 <!-- <img width="617" height="312" alt="Screenshot 2026-01-24 at 15 23 19" src="https://github.com/user-attachments/assets/9dc2d908-f257-4361-a670-c84bb39642c4" /> -->
+
+---
 
 ## Decentralized OAuth (doAuth) prtotocol for Agentic Algorand wallets:
 
@@ -78,6 +86,8 @@ With just a Web 2.0 login, own User/Agent, Web 3.0 Ⱥlgorand Wallet accounts bou
 <!-- <img width="666" height="571" alt="Screenshot 2026-01-24 at 15 27 40" src="https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9" /> -->
 ![12e89b603ca017a029aeebfddsds694dddsa01e261572378789](https://github.com/user-attachments/assets/497a6903-c42d-487c-a85f-ace1ca1b74f9)
 
+---
+
 ## Falcon keys WASM based TS implementation for NodeJS and Web
 [top↑](#goplausible)
 
@@ -89,6 +99,7 @@ Falcon keys are [Algorand](https://algorand.co) innovation for Post Quantum Cryp
 
 <img width="500" height="1024" alt="ChatGPT Image Sep 26, 2025, 08_53_23 PM" src="https://github.com/user-attachments/assets/b6b50e1d-9df2-4f04-b3a4-6d578d9fdd77" />
 
+---
 
 ## PLAUSIBLE Protocol
 [top↑](#goplausible)
