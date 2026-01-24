@@ -1,4 +1,4 @@
-<img src="https://github.com/user-attachments/assets/e5256b28-db76-44f7-9fbf-da4057bc0448" alt="GoPlausible" width="200" />
+<img src="https://github.com/user-attachments/assets/e5256b28-db76-44f7-9fbf-da4057bc0448" alt="GoPlausible" width="400" />
 
 # GoPlausible
 [GoPlausible](https://goplausible.com) is a technology startup building identifiable, verifiable and provenant services and AI toolings for Algorand blockchain.
