@@ -2,6 +2,8 @@
 
 This document provides a technical overview and reference guide for the GoPlausible API. The API follows an OpenAPI 3.1.0 specification. Below you will find details of each endpoint, including HTTP methods, parameters, request bodies, and response schemas.
 
+- [Back to GoPlausible](./README.md)
+- [PLAUSIBLE Protocol Architecture and technical design](./README_ARCHITECTURE.md)
 ---
 
 ## Overview
