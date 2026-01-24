@@ -11,7 +11,8 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 ![12e89b603ca017a029aeebfd69sdsa01e2f1761572378789](https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd)
 
 ## MCP Protocol guide and links for Algorand (AVM)
-<img width="1005" height="554" alt="1_heKuf7jrjc3-aAAbGVdgLw copy" src="https://github.com/user-attachments/assets/372ca9c6-8e05-465b-8298-e8ca382cb171" />
+![12e89b603ca4345017a029aeebfd69sdsa01e2f1761572378789](https://github.com/user-attachments/assets/372ca9c6-8e05-465b-8298-e8ca382cb171)
+<!-- <img width="1005" height="554" alt="1_heKuf7jrjc3-aAAbGVdgLw copy" src="https://github.com/user-attachments/assets/372ca9c6-8e05-465b-8298-e8ca382cb171" /> -->
 
 [top↑](#goplausible)
 
