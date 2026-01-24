@@ -78,22 +78,6 @@ PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart
 - [GoPlausible User Documentation](https://docs.goplausible.xyz)
 - [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
-### PLAUSIBLE Protocl Table of Contents:
-[top↑](#plausible-protocol)
-
-- [PLAUSIBLE protocol Concept](#plausible-protocol-concept)
-
-- [GoPlausible Links](#goplausible-links)
-
-- [GoPlausible Repositories](#goplausible-code-repositories)
-
-- [PLAUSIBLE protocol Technical Design](#plausible-protocol-technical-design)
-  - [Issuer's Journey](#issuers-journey)
-  - [Claimer's Journey](#claimers-journey)
-  - [Smart Contracts](#plausible-smart-contracts)
-
-- [GoPlausible Service Integration API](#goplausible-service-integration-api)
-
 
 ## PLAUSIBLE protocol concept:
 [top↑](#plausible-protocol)

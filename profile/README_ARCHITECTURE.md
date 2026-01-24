@@ -10,7 +10,17 @@ This document provides a technical overview and reference guide for the PLAUSIBL
 # PLAUSIBLE protocol technical design:
 [top↑](#plausible-protocol)
 
-PLAUSIBLE protocol features :
+### PLAUSIBLE Protocol Table of Contents:
+
+  - [Protocl features](#plausible-protocol-features)
+  - [Issuer's Journey](#issuers-journey)
+  - [Claimer's Journey](#claimers-journey)
+  - [Smart Contracts](#plausible-smart-contracts)
+
+- [GoPlausible Service Integration API](#goplausible-service-integration-api)
+
+### PLAUSIBLE protocol features :
+[top↑](#plausible-protocol)
 
 - All operations are in full compliance and conformance to W3C DID, VC, VP , DRL and other standards.
 
