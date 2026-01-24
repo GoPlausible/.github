@@ -15,7 +15,7 @@ This document provides a technical overview and reference guide for the PLAUSIBL
   - [Protocl features](#plausible-protocol-features)
   - [Issuer's Journey](#issuers-journey)
   - [Claimer's Journey](#claimers-journey)
-  - [Smart Contracts](#plausible-smart-contracts)
+  - [Smart Contracts](#plausible-protocol-smart-contracts)
 
 - [GoPlausible Service Integration API](#goplausible-service-integration-api)
 
