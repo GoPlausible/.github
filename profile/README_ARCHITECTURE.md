@@ -1,4 +1,4 @@
-# GoPlausible Architecture and technical design
+# PLAUSIBLE protocol:
 
 This document provides a technical overview and reference guide for the PLAUSIBLE protocol architecture, smart contracts, and design principles.
 
@@ -7,7 +7,7 @@ This document provides a technical overview and reference guide for the PLAUSIBL
 
 ---
 
-# PLAUSIBLE protocol technical design:
+
 [top↑](#plausible-protocol)
 
 ### PLAUSIBLE Protocol Table of Contents:
