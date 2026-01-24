@@ -7,37 +7,45 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 <img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="200" />
 
-[GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more. 
+[GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more.
 
-- [PLAUSIBLE protocol](#plausible-protocol)
-- [PLAUSIBLE protocol dApp](https://goplausible.xyz)
-- [GoPlausible Documentation](https://docs.goplausible.xyz)
-- [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
-- [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
-- [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
-- [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
-- [Algorand MCP](https://github.com/GoPlausible/algorand-mcp)
-- [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp)
+
+## MCP Protocol guide and links for Algorand (AVM)
+
+[top↑](#goplausible)
+
+- Algorand Remote MCP Guide and repo : [Algorand Remote MCP](https://github.com/GoPlausible/algorand-remote-mcp)
+- Algorand Local MCP Guide and repo : [Algorand MCP](https://github.com/GoPlausible/algorand-mcp)
+
 - [Ultrade MCP](https://github.com/ultrade-org/ultrade-mcp)
 - [TinyMan MCP](https://github.com/GoPlausible/tinyman-mcp)
 - [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
-- [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
-- [Algorand X402 Live](https://x402-avm.vercel.app/protected)
-- [Algorand X402 PR Spec](https://github.com/coinbase/x402/pull/361)
-- [Algorand X402 PR Implementations for PR 361](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
 
-
-## X402 Protocol guide and links with Algorand (AVM)
+## X402 Protocol guide and links for Algorand (AVM)
 
 [top↑](#goplausible)
 
 - X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-x402-guide/scheme_exact_avm.md)
 - X402 Protocol guide and examples on Algorand : [X402](./algorand-x402-guide/README.md)
-- X402 Protocol live instance for Algorand : [X402 Demo](https://x402-avm.vercel.app/protected)
+- X402 Protocol live instance for Algorand : [X402 Demo](https://x402.goplausible.xyz)
+
+- [Algorand X402 Spec PR to coinbase](https://github.com/coinbase/x402/pull/361)
+- [Algorand X402 PR Implementations repo](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
+
+## Other infrastructure and services built by GoPlausible:
+- [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
+- [Algorand GPT](https://chatgpt.com/g/g-izA6hnC93-algorand-gpt)
+- [DID GPT](https://chatgpt.com/g/g-rOCQculZQ-did-gpt)
+- [Zapier Algorand](https://github.com/GoPlausible/zapier-algorand)
 
 ## PLAUSIBLE Protocol
+
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
-![](https://avatars.githubusercontent.com/u/106061767?s=96&v=4)
+
+- [PLAUSIBLE protocol](#plausible-protocol)
+- [PLAUSIBLE protocol dApp](https://goplausible.xyz)
+- [GoPlausible Documentation](https://docs.goplausible.xyz)
+- [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
 ### For user documentation please refer to [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible/) or send your questions to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
 ### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.co).
