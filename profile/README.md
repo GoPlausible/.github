@@ -103,9 +103,9 @@ GoPlausible dApp consists of a frontend calling a PLAUSIBLE protocol smart contr
 
 PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0003.md) and [ARC4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md) standards on Algorand.
 
-***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
-
 - [PLAUSIBLE Protocol Architecture and technical design](./README_ARCHITECTURE.md)
+
+***Since PLAUSIBLE protocol is totally decentralized, trustless and permission-less: Every Issuer has full authority of the created PLAUS, enforced by PLAUS smart contract.***
 
 ![Plausible Concept Diagram ](https://github.com/user-attachments/assets/8e4c3510-1850-4096-84ef-b90ef7d09c84)
 
