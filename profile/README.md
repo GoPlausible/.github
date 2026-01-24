@@ -703,7 +703,7 @@ This API is designed to handle different aspects of W3C Decentralized Identifier
 
 ---
 
-## Table of Contents
+## PLAUSIBLE protocol endpoints:
 [top↑](#goplausible-service-integration-api)
 
 1. [REGISTRAR](#registrar)
