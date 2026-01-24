@@ -7,9 +7,9 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 [GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more.
 
+Send your questions, issues and comments to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
+
 ![goplausible vision](https://github.com/user-attachments/assets/b89f461a-2d25-4929-907f-21306c191355)
-
-
 
 ## MCP Protocol guide and links for Algorand (AVM)
 
@@ -70,6 +70,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 ### W3C Compliant DIDs, Verifiable Credentials and OpenBadges powered by Algorand Blockchain
 
+PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.co).
+
 - [PLAUSIBLE protocol](#plausible-protocol)
 - [PLAUSIBLE protocol dApp](https://goplausible.xyz)
 - [PLAUSIBLE Protocol API Docs guide](./README_API.md)
@@ -77,8 +79,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 - [GoPlausible User Documentation](https://docs.goplausible.xyz)
 - [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
-### For user documentation please refer to [GoPlausible User Documentation](https://goplausible.gitbook.io/goplausible/) or send your questions to [GoPlausible Open Box](https://forms.gle/tByShNbBSKbEaQv37)
-### PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart utility NFTs protocol built on [Algorand](https://algorand.co).
+### PLAUSIBLE Protocl Table of Contents:
+[top↑](#plausible-protocol)
 
 - [PLAUSIBLE protocol Concept](#plausible-protocol-concept)
 
