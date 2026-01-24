@@ -68,6 +68,10 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 ## Decentralized OAuth (doAuth) prtotocol for Agentic Algorand wallets:
 
+Decentralized OAuth is Web 2.5 account, identity, authentication and authorization protocol bound to OAuth Web 2.0 logins and wrapped in OIDC protocol to ensure identity, atop HashiCorp Vault OIDC access and Transit key engines, for Ⱥlgorand.
+
+With just a Web 2.0 login, own User/Agent, Web 3.0 Ⱥlgorand Wallet accounts bound and only accessible to your Web 2.0 identity.
+
 - [Decentralized OAuth dAoAuth protocol](https://daoauth.org)
 
 
