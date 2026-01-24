@@ -7,8 +7,8 @@ Since 2022, GoPlausible has been pioneering W3C compliant DIDs, Verifiable Crede
 
 [GoPlausible](https://goplausible.com) has developed and contributed cutting edge AI technologies and protocols integrations , extensions and implementations for Algorand ecosystem including GPT, MCP, A2A, AP2, X402, UCP and more.
 
-<!-- <img src="https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd" alt="GoPlausible Vision" width="480" /> -->
-![12e89b603ca017a029aeebfd69sdsa01e2f1761572378789](https://github.com/user-attachments/assets/8d2d32da-0176-451b-b67c-013bbe7869fd)
+![ChatGPT Image Jan 4, 2026, 06_39_36 PM](https://github.com/user-attachments/assets/c10c8a45-5ba2-4ad4-bc0d-baae21ad0c1b)
+
 
 ## MCP Protocol guide and links for Algorand (AVM)
 
