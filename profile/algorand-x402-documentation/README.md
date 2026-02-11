@@ -8,6 +8,8 @@
 - [Algorand Implementation Details](#algorand-implementation-details)
 - [x402 V2 Packages for Algorand (AVM) implementation](#x402-v2-packages-for-algorand-avm-implementation)
 - [x402 V2 Package-Specific Code examples](#x402-v2-package-specific-code-examples)
+  - [Typescript Examples](#typescript-examples)
+  - [Python Examples](#python-examples)
 - [Algorand x402 Screencast](./x402-screencast.md)
 - [Payment Flow](#payment-flow)
 - [Schema and Types](#schema-and-types)
@@ -90,24 +92,44 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 
 #### Core and Mechanism Examples:
 
-- x402 V2 Core Package Examples [x402-avm-core-examples](./x402-avm-core-examples.md)
-- x402 V2 AVM (Algorand) Mechanism Examples [x402-avm-avm-examples](./x402-avm-avm-examples.md)
+- x402 V2 Core Package Examples [x402-avm-core-examples](./typescript/x402-avm-core-examples.md)
+- x402 V2 AVM (Algorand) Mechanism Examples [x402-avm-avm-examples](./typescript/x402-avm-avm-examples.md)
 
 #### Extensions and Paywall Examples:
 
-- x402 V2 Extensions Examples [x402-avm-extensions-examples](./x402-avm-extensions-examples.md)
-- x402 V2 Paywall UI Examples [x402-avm-paywall-examples](./x402-avm-paywall-examples.md)
+- x402 V2 Extensions Examples [x402-avm-extensions-examples](./typescript/x402-avm-extensions-examples.md)
+- x402 V2 Paywall UI Examples [x402-avm-paywall-examples](./typescript/x402-avm-paywall-examples.md)
 
 #### Back end Framework-Specific Middleware and Client Examples:
 
-- x402 V2 Express Middleware Examples [x402-avm-express-examples](./x402-avm-express-examples.md)
-- x402 V2 Hono Middleware Examples [x402-avm-hono-examples](./x402-avm-hono-examples.md)
-- x402 V2 Next.js Middleware Examples [x402-avm-next-examples](./x402-avm-next-examples.md)
+- x402 V2 Express Middleware Examples [x402-avm-express-examples](./typescript/x402-avm-express-examples.md)
+- x402 V2 Hono Middleware Examples [x402-avm-hono-examples](./typescript/x402-avm-hono-examples.md)
+- x402 V2 Next.js Middleware Examples [x402-avm-next-examples](./typescript/x402-avm-next-examples.md)
 
 #### HTTP Client Examples:
 
-- x402 V2 Fetch Client Examples [x402-avm-fetch-examples](./x402-avm-fetch-examples.md)
-- x402 V2 Axios Client Examples [x402-avm-axios-examples](./x402-avm-axios-examples.md)
+- x402 V2 Fetch Client Examples [x402-avm-fetch-examples](./typescript/x402-avm-fetch-examples.md)
+- x402 V2 Axios Client Examples [x402-avm-axios-examples](./typescript/x402-avm-axios-examples.md)
+
+### Python Examples:
+
+#### Core and Mechanism Examples:
+
+- x402 V2 AVM (Algorand) Mechanism Examples (Python) [x402-avm-avm-examples-python](./python/x402-avm-avm-examples-python.md)
+
+#### Extensions Examples:
+
+- x402 V2 Extensions Examples (Python) [x402-avm-extensions-examples-python](./python/x402-avm-extensions-examples-python.md)
+
+#### Back end Framework-Specific Middleware Examples:
+
+- x402 V2 FastAPI Middleware Examples (Python) [x402-avm-fastapi-examples-python](./python/x402-avm-fastapi-examples-python.md)
+- x402 V2 Flask Middleware Examples (Python) [x402-avm-flask-examples-python](./python/x402-avm-flask-examples-python.md)
+
+#### HTTP Client Examples:
+
+- x402 V2 HTTPX Client Examples (Python) [x402-avm-httpx-examples-python](./python/x402-avm-httpx-examples-python.md)
+- x402 V2 Requests Client Examples (Python) [x402-avm-requests-examples-python](./python/x402-avm-requests-examples-python.md)
 
 ## Payment Flow
 
