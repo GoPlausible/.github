@@ -1,5 +1,7 @@
 # x402-avm V2: Fetch Client Examples
 
+> **Python examples**: See [x402-avm-httpx-examples-python](../python/x402-avm-httpx-examples-python.md) for the Python equivalent using `httpx` and `requests`.
+
 Comprehensive guide for using `@x402-avm/fetch` to make automatic payments over HTTP using the native `fetch` API with Algorand (AVM) support.
 
 ---
@@ -14,14 +16,12 @@ Comprehensive guide for using `@x402-avm/fetch` to make automatic payments over 
 6. [Implementing ClientAvmSigner for Node.js](#implementing-clientavmsigner-for-nodejs)
 7. [Payment Policies](#payment-policies)
 8. [Error Handling](#error-handling)
-9. [Python Equivalent with httpx](#python-equivalent-with-httpx)
-10. [Complete Examples](#complete-examples)
+9. [Complete Examples](#complete-examples)
+10. [API Reference Summary](#api-reference-summary)
 
 ---
 
 ## Installation
-
-### TypeScript / JavaScript
 
 ```bash
 npm install @x402-avm/fetch @x402-avm/avm algosdk
@@ -32,18 +32,6 @@ Or with other package managers:
 ```bash
 pnpm add @x402-avm/fetch @x402-avm/avm algosdk
 yarn add @x402-avm/fetch @x402-avm/avm algosdk
-```
-
-### Python
-
-```bash
-pip install "x402-avm[httpx,avm]"
-```
-
-Or with uv:
-
-```bash
-uv add "x402-avm[httpx,avm]"
 ```
 
 ---
@@ -681,132 +669,6 @@ if (paymentResponseHeader) {
 
 ---
 
-## Python Equivalent with httpx
-
-The Python `x402-avm` package provides equivalent functionality using `httpx` for async HTTP and `requests` for sync HTTP.
-
-### Installation
-
-```bash
-pip install "x402-avm[httpx,avm]"
-```
-
-### Async with httpx (x402AsyncTransport)
-
-```python
-import httpx
-from x402.client import x402Client
-from x402.http.clients import x402AsyncTransport
-from x402.mechanisms.avm.exact.register import register_exact_avm_client
-
-# Create signer (algosdk-based, implementation provided by integrator)
-import algosdk
-import base64
-
-secret_key = base64.b64decode(os.environ["AVM_PRIVATE_KEY"])
-address = algosdk.encoding.encode_address(secret_key[32:])
-
-
-class MyAvmSigner:
-    """Simple ClientAvmSigner implementation using algosdk."""
-
-    @property
-    def address(self) -> str:
-        return address
-
-    def sign_transactions(
-        self,
-        unsigned_txns: list[bytes],
-        indexes_to_sign: list[int],
-    ) -> list[bytes | None]:
-        result = []
-        for i, txn_bytes in enumerate(unsigned_txns):
-            if i not in indexes_to_sign:
-                result.append(None)
-                continue
-            txn = algosdk.encoding.msgpack_decode(
-                base64.b64encode(txn_bytes).decode()
-            )
-            signed = txn.sign(
-                base64.b64encode(secret_key).decode()
-            )
-            result.append(
-                base64.b64decode(algosdk.encoding.msgpack_encode(signed))
-            )
-        return result
-
-
-signer = MyAvmSigner()
-
-# Configure client
-client = x402Client()
-register_exact_avm_client(client, signer)
-
-# Create httpx client with payment transport
-async with httpx.AsyncClient(transport=x402AsyncTransport(client)) as http:
-    response = await http.get("https://api.example.com/paid-endpoint")
-    print(response.json())
-```
-
-### Wrapper Function Style
-
-```python
-from x402.client import x402Client
-from x402.http.clients import wrapHttpxWithPayment
-from x402.mechanisms.avm.exact.register import register_exact_avm_client
-
-client = x402Client()
-register_exact_avm_client(client, signer)
-
-# wrapHttpxWithPayment creates a new httpx.AsyncClient with payment transport
-async with wrapHttpxWithPayment(client) as http:
-    response = await http.get("https://api.example.com/paid-endpoint")
-    print(response.status_code, response.json())
-```
-
-### Convenience Class Style
-
-```python
-from x402.client import x402Client
-from x402.http.clients import x402HttpxClient
-from x402.mechanisms.avm.exact.register import register_exact_avm_client
-
-client = x402Client()
-register_exact_avm_client(client, signer)
-
-async with x402HttpxClient(client) as http:
-    response = await http.get("https://api.example.com/paid-endpoint")
-    print(response.json())
-```
-
-### Sync with requests (x402HTTPAdapter)
-
-```python
-import requests
-from x402.client import x402ClientSync
-from x402.http.clients import x402HTTPAdapter, wrapRequestsWithPayment
-from x402.mechanisms.avm.exact.register import register_exact_avm_client
-
-# Note: requests requires x402ClientSync (synchronous variant)
-client_sync = x402ClientSync()
-register_exact_avm_client(client_sync, signer)
-
-# Option 1: Manual adapter mounting
-session = requests.Session()
-adapter = x402HTTPAdapter(client_sync)
-session.mount("https://", adapter)
-session.mount("http://", adapter)
-
-response = session.get("https://api.example.com/paid-endpoint")
-print(response.json())
-
-# Option 2: Wrapper function
-session = wrapRequestsWithPayment(requests.Session(), client_sync)
-response = session.get("https://api.example.com/paid-endpoint")
-```
-
----
-
 ## Complete Examples
 
 ### Complete Browser Example (React + Pera Wallet)
@@ -998,98 +860,6 @@ Run with:
 
 ```bash
 AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.com/paid-endpoint
-```
-
-### Complete Python Example (Async Script)
-
-```python
-#!/usr/bin/env python3
-"""x402-avm async client example using httpx."""
-
-import asyncio
-import base64
-import os
-
-import algosdk
-import httpx
-
-from x402.client import x402Client
-from x402.http.clients import x402AsyncTransport
-from x402.mechanisms.avm.exact.register import register_exact_avm_client
-
-
-class AlgorandSigner:
-    """ClientAvmSigner implementation using algosdk."""
-
-    def __init__(self, private_key_b64: str):
-        self._secret_key = base64.b64decode(private_key_b64)
-        self._address = algosdk.encoding.encode_address(self._secret_key[32:])
-        # algosdk expects base64 private key for signing
-        self._signing_key = private_key_b64
-
-    @property
-    def address(self) -> str:
-        return self._address
-
-    def sign_transactions(
-        self,
-        unsigned_txns: list[bytes],
-        indexes_to_sign: list[int],
-    ) -> list[bytes | None]:
-        result: list[bytes | None] = []
-        for i, txn_bytes in enumerate(unsigned_txns):
-            if i not in indexes_to_sign:
-                result.append(None)
-                continue
-
-            # Decode unsigned transaction from raw msgpack bytes
-            txn = algosdk.encoding.msgpack_decode(
-                base64.b64encode(txn_bytes).decode()
-            )
-            # Sign the transaction
-            signed = txn.sign(self._signing_key)
-            # Encode back to raw msgpack bytes
-            signed_bytes = base64.b64decode(
-                algosdk.encoding.msgpack_encode(signed)
-            )
-            result.append(signed_bytes)
-
-        return result
-
-
-async def main():
-    # Load private key from environment
-    private_key = os.environ.get("AVM_PRIVATE_KEY")
-    if not private_key:
-        print("Error: AVM_PRIVATE_KEY environment variable required")
-        return
-
-    # Create signer
-    signer = AlgorandSigner(private_key)
-    print(f"Using address: {signer.address}")
-
-    # Configure x402 client
-    client = x402Client()
-    register_exact_avm_client(client, signer)
-
-    # Make paid API requests
-    async with httpx.AsyncClient(transport=x402AsyncTransport(client)) as http:
-        url = "https://api.example.com/paid-endpoint"
-        print(f"\nFetching: {url}")
-
-        response = await http.get(url)
-        print(f"Status: {response.status_code}")
-
-        # Check for payment response header
-        payment_response = response.headers.get("payment-response")
-        if payment_response:
-            print(f"Payment receipt: {payment_response}")
-
-        print(f"Body: {response.json()}")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
 ```
 
 ---

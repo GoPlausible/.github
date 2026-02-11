@@ -1,5 +1,7 @@
 # x402-avm V2 Core Package Examples
 
+> **Python examples**: See the dedicated Python example docs in the [python/](../python/) folder for equivalent Python SDK examples.
+
 Comprehensive examples for `@x402-avm/core` and `@x402-avm/avm` packages covering types, client, server, facilitator, and end-to-end usage.
 
 ## Table of Contents
@@ -13,47 +15,22 @@ Comprehensive examples for `@x402-avm/core` and `@x402-avm/avm` packages coverin
   - [PaymentRequired Response](#paymentrequired-response)
 - [Client Implementation](#client-implementation)
   - [TypeScript Client](#typescript-client)
-  - [Python Client (Async)](#python-client-async)
-  - [Python Client (Sync)](#python-client-sync)
   - [Payment Policies](#payment-policies)
 - [Resource Server Implementation](#resource-server-implementation)
   - [TypeScript Resource Server](#typescript-resource-server)
   - [TypeScript HTTP Resource Server](#typescript-http-resource-server)
-  - [Python Resource Server (Async)](#python-resource-server-async)
-  - [Python Resource Server (Sync)](#python-resource-server-sync)
 - [Facilitator Implementation](#facilitator-implementation)
   - [TypeScript Facilitator](#typescript-facilitator)
-  - [Python Facilitator (Async)](#python-facilitator-async)
-  - [Python Facilitator (Sync)](#python-facilitator-sync)
 - [HTTPFacilitatorClient](#httpfacilitatorclient)
 - [Complete End-to-End Examples](#complete-end-to-end-examples)
   - [TypeScript Full Stack](#typescript-full-stack)
-  - [Python Full Stack](#python-full-stack)
 
 ---
 
 ## Installation
 
-### TypeScript
-
 ```bash
 npm install @x402-avm/core @x402-avm/avm
-```
-
-### Python
-
-```bash
-pip install "x402-avm[avm]"
-```
-
-For server frameworks:
-
-```bash
-# FastAPI
-pip install "x402-avm[fastapi,avm]"
-
-# Flask
-pip install "x402-avm[flask,avm]"
 ```
 
 ---
@@ -63,8 +40,6 @@ pip install "x402-avm[flask,avm]"
 ### Network Identifiers
 
 x402-avm V2 uses CAIP-2 format for network identifiers. V1 name-based identifiers are supported for backward compatibility.
-
-#### TypeScript
 
 ```typescript
 import type { Network } from "@x402-avm/core/types";
@@ -96,37 +71,11 @@ const v1Name = CAIP2_TO_V1[ALGORAND_TESTNET_CAIP2];
 // => "algorand-testnet"
 ```
 
-#### Python
-
-```python
-from x402.mechanisms.avm import (
-    ALGORAND_TESTNET_CAIP2,
-    ALGORAND_MAINNET_CAIP2,
-)
-from x402.mechanisms.avm.constants import (
-    V1_TO_V2_NETWORK_MAP,
-    V2_TO_V1_NETWORK_MAP,
-)
-
-# V2 CAIP-2 format (preferred)
-testnet = ALGORAND_TESTNET_CAIP2
-# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-
-mainnet = ALGORAND_MAINNET_CAIP2
-# => "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
-
-# Convert between formats
-caip2 = V1_TO_V2_NETWORK_MAP["algorand-testnet"]
-v1_name = V2_TO_V1_NETWORK_MAP[ALGORAND_TESTNET_CAIP2]
-```
-
 ---
 
 ### PaymentRequirements (V2)
 
 The V2 `PaymentRequirements` structure defines what payment a resource server accepts.
-
-#### TypeScript
 
 ```typescript
 import type { PaymentRequirements } from "@x402-avm/core/types";
@@ -169,38 +118,11 @@ const algoRequirements: PaymentRequirements = {
 };
 ```
 
-#### Python
-
-```python
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.constants import USDC_TESTNET_ASA_ID
-
-# PaymentRequirements is a TypedDict or dict
-requirements = {
-    "scheme": "exact",
-    "network": ALGORAND_TESTNET_CAIP2,
-    "maxAmountRequired": "1000000",  # 1.00 USDC (6 decimals)
-    "resource": "https://api.example.com/premium/data",
-    "description": "Access to premium API endpoint",
-    "mimeType": "application/json",
-    "payTo": "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
-    "maxTimeoutSeconds": 60,
-    "asset": str(USDC_TESTNET_ASA_ID),  # "10458941"
-    "outputSchema": None,
-    "extra": {
-        "name": "USDC",
-        "decimals": 6,
-    },
-}
-```
-
 ---
 
 ### PaymentRequirements (V1 Legacy)
 
 V1 uses name-based network identifiers. The SDK handles conversion automatically.
-
-#### TypeScript
 
 ```typescript
 import type { PaymentRequirementsV1 } from "@x402-avm/core/types";
@@ -228,8 +150,6 @@ const requirementsV1: PaymentRequirementsV1 = {
 
 The payment payload is what the client sends in the `X-PAYMENT` header after signing.
 
-#### TypeScript
-
 ```typescript
 import type { PaymentPayload } from "@x402-avm/core/types";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
@@ -250,32 +170,11 @@ const payload: PaymentPayload = {
 };
 ```
 
-#### Python
-
-```python
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-
-payload = {
-    "x402Version": 2,
-    "scheme": "exact",
-    "network": ALGORAND_TESTNET_CAIP2,
-    "payload": {
-        "paymentGroup": [
-            "iaNhbXTOAAGGoKNmZWXNA...",  # client's signed payment txn
-            "iaNhbXTOAAGGoKNmZWXNA...",  # unsigned fee payer txn
-        ],
-        "paymentIndex": 0,
-    },
-}
-```
-
 ---
 
 ### PaymentRequired Response
 
 The 402 response body sent by the resource server when payment is needed.
-
-#### TypeScript
 
 ```typescript
 import type { PaymentRequired } from "@x402-avm/core/types";
@@ -360,122 +259,9 @@ async function accessPaidResource() {
 }
 ```
 
-### Python Client (Async)
-
-```python
-import os
-import base64
-from x402 import x402Client
-from x402.mechanisms.avm.exact import register_exact_avm_client
-from x402.mechanisms.avm.signer import ClientAvmSigner
-from algosdk import encoding
-
-
-class MyAvmSigner:
-    """Client signer using a private key."""
-
-    def __init__(self, private_key_b64: str):
-        self._secret_key = base64.b64decode(private_key_b64)
-        self._address = encoding.encode_address(self._secret_key[32:])
-
-    @property
-    def address(self) -> str:
-        return self._address
-
-    def sign_transactions(
-        self,
-        unsigned_txns: list[bytes],
-        indexes_to_sign: list[int],
-    ) -> list[bytes | None]:
-        from algosdk import encoding as enc, transaction
-
-        result: list[bytes | None] = []
-        for i, txn_bytes in enumerate(unsigned_txns):
-            if i not in indexes_to_sign:
-                result.append(None)
-                continue
-            # Decode the unsigned transaction
-            b64_str = base64.b64encode(txn_bytes).decode()
-            txn = enc.msgpack_decode(b64_str)
-            # Sign it
-            private_key_b64 = base64.b64encode(self._secret_key).decode()
-            signed = txn.sign(private_key_b64)
-            # Return raw bytes
-            signed_bytes = base64.b64decode(enc.msgpack_encode(signed))
-            result.append(signed_bytes)
-        return result
-
-
-async def main():
-    # 1. Create signer
-    signer = MyAvmSigner(os.environ["AVM_PRIVATE_KEY"])
-
-    # 2. Create and configure client
-    client = x402Client()
-    register_exact_avm_client(client, signer)
-
-    # 3. Fetch a paid resource
-    response = await client.fetch("https://api.example.com/premium/data")
-    print(response)
-```
-
-### Python Client (Sync)
-
-```python
-import os
-import base64
-from x402 import x402ClientSync
-from x402.mechanisms.avm.exact import register_exact_avm_client
-from algosdk import encoding
-
-
-class MyAvmSigner:
-    """Synchronous client signer."""
-
-    def __init__(self, private_key_b64: str):
-        self._secret_key = base64.b64decode(private_key_b64)
-        self._address = encoding.encode_address(self._secret_key[32:])
-
-    @property
-    def address(self) -> str:
-        return self._address
-
-    def sign_transactions(
-        self,
-        unsigned_txns: list[bytes],
-        indexes_to_sign: list[int],
-    ) -> list[bytes | None]:
-        from algosdk import encoding as enc
-
-        result: list[bytes | None] = []
-        for i, txn_bytes in enumerate(unsigned_txns):
-            if i not in indexes_to_sign:
-                result.append(None)
-                continue
-            b64_str = base64.b64encode(txn_bytes).decode()
-            txn = enc.msgpack_decode(b64_str)
-            private_key_b64 = base64.b64encode(self._secret_key).decode()
-            signed = txn.sign(private_key_b64)
-            signed_bytes = base64.b64decode(enc.msgpack_encode(signed))
-            result.append(signed_bytes)
-        return result
-
-
-def main():
-    signer = MyAvmSigner(os.environ["AVM_PRIVATE_KEY"])
-
-    client = x402ClientSync()
-    register_exact_avm_client(client, signer)
-
-    response = client.fetch("https://api.example.com/premium/data")
-    print(response)
-```
-
 ### Payment Policies
 
 Policies filter payment requirements before the client selects one.
-
-#### TypeScript
 
 ```typescript
 import { x402Client, PaymentPolicy } from "@x402-avm/core/client";
@@ -513,27 +299,6 @@ registerExactAvmScheme(client, {
 
 // Or register policies individually
 client.registerPolicy(preferAlgorand);
-```
-
-#### Python
-
-```python
-from x402 import x402Client
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-
-client = x402Client()
-
-# Register a policy function
-def prefer_testnet(version: int, requirements: list[dict]) -> list[dict]:
-    """Only accept Algorand testnet payments."""
-    return [r for r in requirements if r["network"] == ALGORAND_TESTNET_CAIP2]
-
-def max_amount_policy(version: int, requirements: list[dict]) -> list[dict]:
-    """Reject payments over 5 USDC."""
-    return [r for r in requirements if int(r["maxAmountRequired"]) <= 5_000_000]
-
-client.register_policy(prefer_testnet)
-client.register_policy(max_amount_policy)
 ```
 
 ---
@@ -652,124 +417,6 @@ const httpServer = new x402HTTPResourceServer(facilitatorClient, { routes });
 registerExactAvmScheme(httpServer.resourceServer);
 ```
 
-### Python Resource Server (Async)
-
-```python
-import os
-from x402 import x402ResourceServer
-from x402.mechanisms.avm.exact import register_exact_avm_server
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.constants import USDC_TESTNET_ASA_ID
-
-
-async def setup_server():
-    # Create resource server with facilitator URL
-    server = x402ResourceServer(
-        facilitator_url="https://facilitator.example.com"
-    )
-
-    # Register AVM scheme
-    register_exact_avm_server(server)
-
-    # Define resource config
-    resource_config = {
-        "scheme": "exact",
-        "payTo": "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
-        "price": {
-            "asset": str(USDC_TESTNET_ASA_ID),
-            "amount": "100000",  # 0.10 USDC
-            "extra": {"name": "USDC", "decimals": 6},
-        },
-        "network": ALGORAND_TESTNET_CAIP2,
-        "maxTimeoutSeconds": 60,
-    }
-
-    return server, resource_config
-
-
-# Example with FastAPI
-from fastapi import FastAPI, Request, Response
-
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup():
-    global server, resource_config
-    server, resource_config = await setup_server()
-
-@app.get("/api/premium/data")
-async def premium_data(request: Request):
-    x_payment = request.headers.get("X-PAYMENT")
-
-    if not x_payment:
-        payment_required = server.create_payment_required(
-            url=str(request.url),
-            description="Premium data endpoint",
-            mime_type="application/json",
-            configs=[resource_config],
-        )
-        return Response(
-            content=payment_required,
-            status_code=402,
-            media_type="application/json",
-        )
-
-    result = await server.process_payment(x_payment, resource_config)
-    if result.verified:
-        return {"data": "premium content"}
-    return Response(content=result.error, status_code=402)
-```
-
-### Python Resource Server (Sync)
-
-```python
-from x402 import x402ResourceServerSync
-from x402.mechanisms.avm.exact import register_exact_avm_server
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.constants import USDC_TESTNET_ASA_ID
-
-# Create synchronous resource server
-server = x402ResourceServerSync(
-    facilitator_url="https://facilitator.example.com"
-)
-register_exact_avm_server(server)
-
-resource_config = {
-    "scheme": "exact",
-    "payTo": "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
-    "price": {
-        "asset": str(USDC_TESTNET_ASA_ID),
-        "amount": "100000",
-        "extra": {"name": "USDC", "decimals": 6},
-    },
-    "network": ALGORAND_TESTNET_CAIP2,
-    "maxTimeoutSeconds": 60,
-}
-
-# Example with Flask
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
-
-@app.route("/api/premium/data")
-def premium_data():
-    x_payment = request.headers.get("X-PAYMENT")
-
-    if not x_payment:
-        payment_required = server.create_payment_required(
-            url=request.url,
-            description="Premium data endpoint",
-            mime_type="application/json",
-            configs=[resource_config],
-        )
-        return jsonify(payment_required), 402
-
-    result = server.process_payment(x_payment, resource_config)
-    if result.verified:
-        return jsonify({"data": "premium content"})
-    return jsonify({"error": result.error}), 402
-```
-
 ---
 
 ## Facilitator Implementation
@@ -843,132 +490,11 @@ async function handlePaymentVerification(paymentPayload: any, requirements: any)
 }
 ```
 
-### Python Facilitator (Async)
-
-```python
-import os
-import base64
-from x402 import x402Facilitator
-from x402.mechanisms.avm.exact import register_exact_avm_facilitator
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.signer import FacilitatorAvmSigner
-from algosdk import encoding, transaction
-from algosdk.v2client import algod
-
-
-class MyFacilitatorSigner:
-    """Facilitator signer implementation using algosdk."""
-
-    def __init__(self, private_key_b64: str, algod_url: str):
-        self._secret_key = base64.b64decode(private_key_b64)
-        self._address = encoding.encode_address(self._secret_key[32:])
-        self._private_key_b64 = base64.b64encode(self._secret_key).decode()
-        self._algod = algod.AlgodClient("", algod_url)
-
-    def get_addresses(self) -> list[str]:
-        return [self._address]
-
-    def sign_transaction(self, txn_bytes: bytes, fee_payer: str, network: str) -> bytes:
-        b64_str = base64.b64encode(txn_bytes).decode()
-        txn_obj = encoding.msgpack_decode(b64_str)
-        signed = txn_obj.sign(self._private_key_b64)
-        return base64.b64decode(encoding.msgpack_encode(signed))
-
-    def sign_group(
-        self,
-        group_bytes: list[bytes],
-        fee_payer: str,
-        indexes_to_sign: list[int],
-        network: str,
-    ) -> list[bytes]:
-        result = list(group_bytes)
-        for i in indexes_to_sign:
-            result[i] = self.sign_transaction(group_bytes[i], fee_payer, network)
-        return result
-
-    def simulate_group(self, group_bytes: list[bytes], network: str) -> None:
-        # Wrap for simulation
-        stxns = []
-        for txn_bytes in group_bytes:
-            b64_str = base64.b64encode(txn_bytes).decode()
-            obj = encoding.msgpack_decode(b64_str)
-            if isinstance(obj, transaction.SignedTransaction):
-                stxns.append(obj)
-            else:
-                stxns.append(transaction.SignedTransaction(obj, None))
-
-        request = transaction.SimulateRequest(
-            txn_groups=[transaction.SimulateRequestTransactionGroup(txns=stxns)],
-            allow_empty_signatures=True,
-        )
-        result = self._algod.simulate_raw_transactions(request)
-        # Check for errors in simulation
-        for group in result.get("txn-groups", []):
-            if group.get("failure-message"):
-                raise Exception(f"Simulation failed: {group['failure-message']}")
-
-    def send_group(self, group_bytes: list[bytes], network: str) -> str:
-        raw = base64.b64encode(b"".join(group_bytes))
-        return self._algod.send_raw_transaction(raw)
-
-    def confirm_transaction(self, txid: str, network: str, rounds: int = 4) -> None:
-        from algosdk import transaction as txn_mod
-        txn_mod.wait_for_confirmation(self._algod, txid, rounds)
-
-
-async def main():
-    signer = MyFacilitatorSigner(
-        os.environ["AVM_PRIVATE_KEY"],
-        "https://testnet-api.algonode.cloud",
-    )
-
-    facilitator = x402Facilitator()
-    register_exact_avm_facilitator(
-        facilitator,
-        signer,
-        networks=[ALGORAND_TESTNET_CAIP2],
-    )
-
-    # Verify and settle a payment
-    verify_result = await facilitator.verify(payment_payload, requirements)
-    if verify_result.is_valid:
-        settle_result = await facilitator.settle(payment_payload, requirements)
-```
-
-### Python Facilitator (Sync)
-
-```python
-from x402 import x402FacilitatorSync
-from x402.mechanisms.avm.exact import register_exact_avm_facilitator
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-
-# Same signer class as above (MyFacilitatorSigner)
-
-signer = MyFacilitatorSigner(
-    os.environ["AVM_PRIVATE_KEY"],
-    "https://testnet-api.algonode.cloud",
-)
-
-facilitator = x402FacilitatorSync()
-register_exact_avm_facilitator(
-    facilitator,
-    signer,
-    networks=[ALGORAND_TESTNET_CAIP2],
-)
-
-# Synchronous verify and settle
-verify_result = facilitator.verify(payment_payload, requirements)
-if verify_result.is_valid:
-    settle_result = facilitator.settle(payment_payload, requirements)
-```
-
 ---
 
 ## HTTPFacilitatorClient
 
 The `HTTPFacilitatorClient` handles communication between the resource server and a remote facilitator.
-
-### TypeScript
 
 ```typescript
 import { HTTPFacilitatorClient } from "@x402-avm/core/server";
@@ -1001,33 +527,6 @@ const settleResult = await facilitatorClient.settle({
   paymentPayload,
   paymentRequirements,
 });
-```
-
-### Python
-
-```python
-from x402 import HTTPFacilitatorClient
-
-# Basic usage
-facilitator_client = HTTPFacilitatorClient(
-    url="https://facilitator.example.com"
-)
-
-# With authentication
-facilitator_client = HTTPFacilitatorClient(
-    url="https://facilitator.example.com",
-    headers={"Authorization": f"Bearer {os.environ['FACILITATOR_API_KEY']}"},
-)
-
-# Check supported networks
-supported = await facilitator_client.supported()
-print("Supported:", supported)
-
-# Direct verify/settle
-verify_result = await facilitator_client.verify(
-    payment_payload=payload,
-    payment_requirements=requirements,
-)
 ```
 
 ---
@@ -1223,213 +722,19 @@ async function getWeather() {
 getWeather();
 ```
 
-### Python Full Stack
-
-```python
-# ============================================================
-# facilitator_service.py - Facilitator
-# ============================================================
-import os
-import base64
-from fastapi import FastAPI, Request
-from x402 import x402Facilitator
-from x402.mechanisms.avm.exact import register_exact_avm_facilitator
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from algosdk import encoding, transaction
-from algosdk.v2client import algod
-
-app = FastAPI()
-
-# Create signer
-secret_key = base64.b64decode(os.environ["AVM_PRIVATE_KEY"])
-address = encoding.encode_address(secret_key[32:])
-private_key_b64 = base64.b64encode(secret_key).decode()
-algod_client = algod.AlgodClient("", "https://testnet-api.algonode.cloud")
-
-
-class FacSigner:
-    def get_addresses(self) -> list[str]:
-        return [address]
-
-    def sign_transaction(self, txn_bytes: bytes, fee_payer: str, network: str) -> bytes:
-        b64 = base64.b64encode(txn_bytes).decode()
-        txn_obj = encoding.msgpack_decode(b64)
-        signed = txn_obj.sign(private_key_b64)
-        return base64.b64decode(encoding.msgpack_encode(signed))
-
-    def sign_group(self, group_bytes, fee_payer, indexes, network):
-        result = list(group_bytes)
-        for i in indexes:
-            result[i] = self.sign_transaction(group_bytes[i], fee_payer, network)
-        return result
-
-    def simulate_group(self, group_bytes, network):
-        stxns = []
-        for txn_bytes in group_bytes:
-            b64 = base64.b64encode(txn_bytes).decode()
-            obj = encoding.msgpack_decode(b64)
-            if isinstance(obj, transaction.SignedTransaction):
-                stxns.append(obj)
-            else:
-                stxns.append(transaction.SignedTransaction(obj, None))
-        req = transaction.SimulateRequest(
-            txn_groups=[transaction.SimulateRequestTransactionGroup(txns=stxns)],
-            allow_empty_signatures=True,
-        )
-        result = algod_client.simulate_raw_transactions(req)
-        for group in result.get("txn-groups", []):
-            if group.get("failure-message"):
-                raise Exception(f"Simulation failed: {group['failure-message']}")
-
-    def send_group(self, group_bytes, network):
-        raw = base64.b64encode(b"".join(group_bytes))
-        return algod_client.send_raw_transaction(raw)
-
-    def confirm_transaction(self, txid, network, rounds=4):
-        transaction.wait_for_confirmation(algod_client, txid, rounds)
-
-
-facilitator = x402Facilitator()
-register_exact_avm_facilitator(
-    facilitator, FacSigner(), networks=[ALGORAND_TESTNET_CAIP2]
-)
-
-
-@app.get("/supported")
-async def supported():
-    return facilitator.get_supported_networks()
-
-
-@app.post("/verify")
-async def verify(request: Request):
-    body = await request.json()
-    result = await facilitator.verify(
-        body["paymentPayload"], body["paymentRequirements"]
-    )
-    return result
-
-
-@app.post("/settle")
-async def settle(request: Request):
-    body = await request.json()
-    result = await facilitator.settle(
-        body["paymentPayload"], body["paymentRequirements"]
-    )
-    return result
-
-
-# ============================================================
-# resource_server.py - Resource Server
-# ============================================================
-import os
-from fastapi import FastAPI, Request, Response
-from x402 import x402ResourceServer
-from x402.mechanisms.avm.exact import register_exact_avm_server
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.constants import USDC_TESTNET_ASA_ID
-
-app = FastAPI()
-
-server = x402ResourceServer(facilitator_url="http://localhost:4000")
-register_exact_avm_server(server)
-
-resource_config = {
-    "scheme": "exact",
-    "payTo": "RECEIVER_ALGORAND_ADDRESS_58_CHARS_AAAAAAAAAAAAAAAAAAA",
-    "price": {
-        "asset": str(USDC_TESTNET_ASA_ID),
-        "amount": "10000",
-        "extra": {"name": "USDC", "decimals": 6},
-    },
-    "network": ALGORAND_TESTNET_CAIP2,
-    "maxTimeoutSeconds": 60,
-}
-
-
-@app.get("/api/weather")
-async def weather(request: Request):
-    x_payment = request.headers.get("X-PAYMENT")
-
-    if not x_payment:
-        payment_required = server.create_payment_required(
-            url=str(request.url),
-            description="Weather data API",
-            mime_type="application/json",
-            configs=[resource_config],
-        )
-        return Response(content=payment_required, status_code=402)
-
-    result = await server.process_payment(x_payment, resource_config)
-    if result.verified:
-        return {
-            "temperature": 72,
-            "condition": "Sunny",
-            "location": "San Francisco",
-        }
-    return Response(content=result.error, status_code=402)
-
-
-# ============================================================
-# client_app.py - Client Application
-# ============================================================
-import os
-import base64
-import asyncio
-from x402 import x402Client
-from x402.mechanisms.avm.exact import register_exact_avm_client
-from algosdk import encoding
-
-
-class ClientSigner:
-    def __init__(self, private_key_b64: str):
-        self._secret_key = base64.b64decode(private_key_b64)
-        self._address = encoding.encode_address(self._secret_key[32:])
-        self._pk_b64 = base64.b64encode(self._secret_key).decode()
-
-    @property
-    def address(self) -> str:
-        return self._address
-
-    def sign_transactions(self, unsigned_txns, indexes_to_sign):
-        result = []
-        for i, txn_bytes in enumerate(unsigned_txns):
-            if i not in indexes_to_sign:
-                result.append(None)
-                continue
-            b64 = base64.b64encode(txn_bytes).decode()
-            txn = encoding.msgpack_decode(b64)
-            signed = txn.sign(self._pk_b64)
-            result.append(base64.b64decode(encoding.msgpack_encode(signed)))
-        return result
-
-
-async def main():
-    signer = ClientSigner(os.environ["CLIENT_AVM_PRIVATE_KEY"])
-    client = x402Client()
-    register_exact_avm_client(client, signer)
-
-    # Automatic 402 handling
-    response = await client.fetch("http://localhost:3000/api/weather")
-    print("Weather data:", response)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
 ---
 
 ## Summary
 
-| Component | TypeScript Import | Python Import |
-|-----------|-------------------|---------------|
-| Client | `x402Client` from `@x402-avm/core/client` | `x402Client` from `x402` |
-| Resource Server | `x402ResourceServer` from `@x402-avm/core/server` | `x402ResourceServer` from `x402` |
-| HTTP Resource Server | `x402HTTPResourceServer` from `@x402-avm/core/server` | N/A (use framework adapters) |
-| Facilitator | `x402Facilitator` from `@x402-avm/core/facilitator` | `x402Facilitator` from `x402` |
-| Facilitator Client | `HTTPFacilitatorClient` from `@x402-avm/core/server` | `HTTPFacilitatorClient` from `x402` |
-| AVM Registration (Client) | `registerExactAvmScheme` from `@x402-avm/avm/exact/client` | `register_exact_avm_client` from `x402.mechanisms.avm.exact` |
-| AVM Registration (Server) | `registerExactAvmScheme` from `@x402-avm/avm/exact/server` | `register_exact_avm_server` from `x402.mechanisms.avm.exact` |
-| AVM Registration (Facilitator) | `registerExactAvmScheme` from `@x402-avm/avm/exact/facilitator` | `register_exact_avm_facilitator` from `x402.mechanisms.avm.exact` |
-| Types | `@x402-avm/core/types` | `x402.types` |
-| Constants | `@x402-avm/avm` | `x402.mechanisms.avm` |
+| Component | TypeScript Import |
+|-----------|-------------------|
+| Client | `x402Client` from `@x402-avm/core/client` |
+| Resource Server | `x402ResourceServer` from `@x402-avm/core/server` |
+| HTTP Resource Server | `x402HTTPResourceServer` from `@x402-avm/core/server` |
+| Facilitator | `x402Facilitator` from `@x402-avm/core/facilitator` |
+| Facilitator Client | `HTTPFacilitatorClient` from `@x402-avm/core/server` |
+| AVM Registration (Client) | `registerExactAvmScheme` from `@x402-avm/avm/exact/client` |
+| AVM Registration (Server) | `registerExactAvmScheme` from `@x402-avm/avm/exact/server` |
+| AVM Registration (Facilitator) | `registerExactAvmScheme` from `@x402-avm/avm/exact/facilitator` |
+| Types | `@x402-avm/core/types` |
+| Constants | `@x402-avm/avm` |

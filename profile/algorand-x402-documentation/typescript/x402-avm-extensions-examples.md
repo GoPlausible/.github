@@ -1,6 +1,8 @@
 # x402-avm V2 Extensions Examples
 
-Comprehensive examples for the `@x402-avm/extensions` TypeScript package and `x402-avm[extensions]` Python package, covering the Bazaar discovery extension, Sign-in-with-X extension, and the `WithExtensions` type utility.
+> **Python examples**: See [x402-avm-extensions-examples-python](../python/x402-avm-extensions-examples-python.md) for Python (`x402-avm[extensions]`) examples.
+
+Comprehensive examples for the `@x402-avm/extensions` TypeScript package, covering the Bazaar discovery extension, Sign-in-with-X extension, and the `WithExtensions` type utility.
 
 ## Table of Contents
 
@@ -8,31 +10,23 @@ Comprehensive examples for the `@x402-avm/extensions` TypeScript package and `x4
 - [Overview](#overview)
 - [Bazaar Discovery Extension](#bazaar-discovery-extension)
   - [Concept](#concept)
-  - [Resource Server: Declaring Discovery Info (TypeScript)](#resource-server-declaring-discovery-info-typescript)
-  - [Resource Server: Declaring Discovery Info (Python)](#resource-server-declaring-discovery-info-python)
+  - [Resource Server: Declaring Discovery Info](#resource-server-declaring-discovery-info)
   - [Resource Server: Using bazaarResourceServerExtension](#resource-server-using-bazaarresourceserverextension)
-  - [Facilitator: Extracting Discovery Info (TypeScript)](#facilitator-extracting-discovery-info-typescript)
-  - [Facilitator: Extracting Discovery Info (Python)](#facilitator-extracting-discovery-info-python)
-  - [Facilitator Client: Querying the Bazaar (TypeScript)](#facilitator-client-querying-the-bazaar-typescript)
-  - [Facilitator Client: Querying the Bazaar (Python)](#facilitator-client-querying-the-bazaar-python)
+  - [Facilitator: Extracting Discovery Info](#facilitator-extracting-discovery-info)
+  - [Facilitator Client: Querying the Bazaar](#facilitator-client-querying-the-bazaar)
 - [WithExtensions Type Utility](#withextensions-type-utility)
   - [TypeScript Usage](#typescript-usage)
   - [Chaining Multiple Extensions](#chaining-multiple-extensions)
 - [Sign-in-with-X Extension](#sign-in-with-x-extension)
   - [Concept](#sign-in-with-x-concept)
   - [TypeScript Usage](#sign-in-with-x-typescript-usage)
-  - [Python Usage](#sign-in-with-x-python-usage)
 - [Complete Examples](#complete-examples)
-  - [Resource Server with Bazaar Discovery (TypeScript)](#resource-server-with-bazaar-discovery-typescript)
-  - [Resource Server with Bazaar Discovery (Python)](#resource-server-with-bazaar-discovery-python)
-  - [Facilitator with Bazaar Cataloging (TypeScript)](#facilitator-with-bazaar-cataloging-typescript)
-  - [Facilitator with Bazaar Cataloging (Python)](#facilitator-with-bazaar-cataloging-python)
+  - [Resource Server with Bazaar Discovery](#resource-server-with-bazaar-discovery)
+  - [Facilitator with Bazaar Cataloging](#facilitator-with-bazaar-cataloging)
 
 ---
 
 ## Installation
-
-### TypeScript
 
 ```bash
 npm install @x402-avm/extensions @x402-avm/core
@@ -42,18 +36,6 @@ For full AVM support:
 
 ```bash
 npm install @x402-avm/extensions @x402-avm/core @x402-avm/avm algosdk
-```
-
-### Python
-
-```bash
-pip install "x402-avm[extensions]"
-```
-
-For full AVM support:
-
-```bash
-pip install "x402-avm[extensions,avm]"
 ```
 
 ---
@@ -94,7 +76,7 @@ The Bazaar extension enables automatic cataloging of x402-protected resources. W
 - Discovery info was stored in `PaymentRequirements.outputSchema`
 - V1 data is automatically transformed to V2 `DiscoveryInfo` format
 
-### Resource Server: Declaring Discovery Info (TypeScript)
+### Resource Server: Declaring Discovery Info
 
 ```typescript
 import {
@@ -204,137 +186,6 @@ const uploadExtension = declareDiscoveryExtension({
 });
 ```
 
-### Resource Server: Declaring Discovery Info (Python)
-
-```python
-# Python equivalent of declareDiscoveryExtension
-# The discovery extension is a dictionary structure
-
-BAZAAR = "bazaar"
-
-def declare_discovery_extension_get(
-    input_params: dict | None = None,
-    input_schema: dict | None = None,
-    output_example: dict | None = None,
-    output_schema: dict | None = None,
-) -> dict:
-    """Declare a GET endpoint discovery extension."""
-    info = {
-        "input": {
-            "type": "http",
-            **({"queryParams": input_params} if input_params else {}),
-        },
-    }
-    if output_example:
-        info["output"] = {"type": "json", "example": output_example}
-
-    schema = {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "properties": {
-            "input": {
-                "type": "object",
-                "properties": {
-                    "type": {"type": "string", "const": "http"},
-                    "method": {"type": "string", "enum": ["GET", "HEAD", "DELETE"]},
-                    **(
-                        {"queryParams": {"type": "object", **(input_schema or {})}}
-                        if input_schema
-                        else {}
-                    ),
-                },
-                "required": ["type"],
-                "additionalProperties": False,
-            },
-        },
-        "required": ["input"],
-    }
-    if output_example and output_schema:
-        schema["properties"]["output"] = {
-            "type": "object",
-            "properties": {
-                "type": {"type": "string"},
-                "example": {"type": "object", **output_schema},
-            },
-            "required": ["type"],
-        }
-
-    return {BAZAAR: {"info": info, "schema": schema}}
-
-
-def declare_discovery_extension_post(
-    body_type: str,
-    input_body: dict | None = None,
-    input_schema: dict | None = None,
-    output_example: dict | None = None,
-    output_schema: dict | None = None,
-) -> dict:
-    """Declare a POST/PUT/PATCH endpoint discovery extension."""
-    info = {
-        "input": {
-            "type": "http",
-            "bodyType": body_type,
-            "body": input_body or {},
-        },
-    }
-    if output_example:
-        info["output"] = {"type": "json", "example": output_example}
-
-    schema = {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "properties": {
-            "input": {
-                "type": "object",
-                "properties": {
-                    "type": {"type": "string", "const": "http"},
-                    "method": {"type": "string", "enum": ["POST", "PUT", "PATCH"]},
-                    "bodyType": {"type": "string", "enum": ["json", "form-data", "text"]},
-                    "body": input_schema or {},
-                },
-                "required": ["type", "bodyType", "body"],
-                "additionalProperties": False,
-            },
-        },
-        "required": ["input"],
-    }
-
-    return {BAZAAR: {"info": info, "schema": schema}}
-
-
-# Usage examples:
-
-# GET endpoint with query params
-weather_extension = declare_discovery_extension_get(
-    input_params={"city": "San Francisco", "units": "metric"},
-    input_schema={
-        "properties": {
-            "city": {"type": "string"},
-            "units": {"type": "string", "enum": ["metric", "imperial"]},
-        },
-        "required": ["city"],
-    },
-    output_example={
-        "temperature": 18.5,
-        "condition": "Partly Cloudy",
-    },
-)
-
-# POST endpoint with JSON body
-analysis_extension = declare_discovery_extension_post(
-    body_type="json",
-    input_body={"text": "Analyze this text", "language": "en"},
-    input_schema={
-        "properties": {
-            "text": {"type": "string"},
-            "language": {"type": "string"},
-        },
-        "required": ["text"],
-    },
-    output_example={"sentiment": "positive", "confidence": 0.92},
-)
-```
-
 ### Resource Server: Using bazaarResourceServerExtension
 
 The `bazaarResourceServerExtension` enriches the discovery declaration at request time by narrowing the HTTP method to the actual method used.
@@ -417,7 +268,7 @@ const paymentRequired = httpServer.resourceServer.createPaymentRequired(
 );
 ```
 
-### Facilitator: Extracting Discovery Info (TypeScript)
+### Facilitator: Extracting Discovery Info
 
 ```typescript
 import {
@@ -535,99 +386,7 @@ function extractWithoutValidation(
 }
 ```
 
-### Facilitator: Extracting Discovery Info (Python)
-
-```python
-# Python equivalent of discovery info extraction
-
-BAZAAR = "bazaar"
-
-
-def extract_discovery_info(
-    payment_payload: dict,
-    payment_requirements: dict,
-    validate: bool = True,
-) -> dict | None:
-    """
-    Extract discovery info from payment payload and requirements.
-    Handles both V2 (extensions) and V1 (outputSchema) formats.
-    """
-    x402_version = payment_payload.get("x402Version", 1)
-
-    if x402_version == 2:
-        extensions = payment_payload.get("extensions", {})
-        bazaar_ext = extensions.get(BAZAAR)
-        if not bazaar_ext:
-            return None
-
-        info = bazaar_ext.get("info")
-        if not info:
-            return None
-
-        # Optional: validate info against schema
-        if validate:
-            schema = bazaar_ext.get("schema")
-            if schema:
-                # Use jsonschema library for validation
-                try:
-                    import jsonschema
-                    jsonschema.validate(info, schema)
-                except jsonschema.ValidationError as e:
-                    print(f"Validation failed: {e.message}")
-                    return None
-
-        resource = payment_payload.get("resource", {})
-        return {
-            "resourceUrl": resource.get("url", ""),
-            "description": resource.get("description"),
-            "mimeType": resource.get("mimeType"),
-            "method": info.get("input", {}).get("method", "GET"),
-            "x402Version": 2,
-            "discoveryInfo": info,
-        }
-
-    elif x402_version == 1:
-        # V1: discovery info in outputSchema
-        output_schema = payment_requirements.get("outputSchema")
-        if not output_schema:
-            return None
-
-        return {
-            "resourceUrl": payment_requirements.get("resource", ""),
-            "description": payment_requirements.get("description"),
-            "mimeType": payment_requirements.get("mimeType"),
-            "method": "GET",  # V1 default
-            "x402Version": 1,
-            "discoveryInfo": _transform_v1_to_v2(output_schema),
-        }
-
-    return None
-
-
-def _transform_v1_to_v2(output_schema: dict) -> dict:
-    """Transform V1 outputSchema to V2 DiscoveryInfo format."""
-    return {
-        "input": {
-            "type": "http",
-            "method": "GET",
-        },
-        "output": {
-            "type": "json",
-            "example": output_schema,
-        },
-    }
-
-
-# Usage:
-discovered = extract_discovery_info(payment_payload, payment_requirements)
-if discovered:
-    print(f"Found: {discovered['resourceUrl']}")
-    print(f"Method: {discovered['method']}")
-    print(f"Version: {discovered['x402Version']}")
-    # Catalog in your database
-```
-
-### Facilitator Client: Querying the Bazaar (TypeScript)
+### Facilitator Client: Querying the Bazaar
 
 ```typescript
 import { HTTPFacilitatorClient } from "@x402-avm/core/server";
@@ -708,64 +467,6 @@ async function findAlgorandResources() {
     ),
   );
 }
-```
-
-### Facilitator Client: Querying the Bazaar (Python)
-
-```python
-import httpx
-
-
-class BazaarClient:
-    """Client for querying the Bazaar discovery service."""
-
-    def __init__(self, facilitator_url: str, auth_token: str | None = None):
-        self._url = facilitator_url
-        self._headers = {}
-        if auth_token:
-            self._headers["Authorization"] = f"Bearer {auth_token}"
-
-    async def list_resources(
-        self,
-        type_filter: str | None = None,
-        limit: int = 50,
-        offset: int = 0,
-    ) -> dict:
-        """List discovered x402 resources from the Bazaar."""
-        params = {"limit": str(limit), "offset": str(offset)}
-        if type_filter:
-            params["type"] = type_filter
-
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self._url}/discovery/resources",
-                params=params,
-                headers=self._headers,
-            )
-            response.raise_for_status()
-            return response.json()
-
-    async def find_algorand_resources(self) -> list[dict]:
-        """Find all resources that accept Algorand payments."""
-        data = await self.list_resources(type_filter="http")
-        return [
-            resource
-            for resource in data.get("items", [])
-            if any(
-                req.get("network", "").startswith("algorand:")
-                for req in resource.get("accepts", [])
-            )
-        ]
-
-
-# Usage:
-bazaar = BazaarClient("https://facilitator.example.com")
-resources = await bazaar.list_resources(type_filter="http", limit=10)
-print(f"Found {resources['pagination']['total']} resources")
-
-algorand_resources = await bazaar.find_algorand_resources()
-for r in algorand_resources:
-    print(f"  {r['resource']} - {len(r['accepts'])} payment method(s)")
 ```
 
 ---
@@ -888,46 +589,11 @@ function getUserFromPayment(settleResult: any) {
 }
 ```
 
-### Sign-in-with-X Python Usage
-
-```python
-# Planned API (in development)
-
-# Resource server can extract payer identity from settlement result
-def get_user_from_payment(settle_result: dict) -> dict | None:
-    """Extract user identity from a settled payment."""
-    if settle_result.get("success"):
-        payer_address = settle_result.get("payer")
-        network = settle_result.get("network")
-
-        # Map chain address to user
-        return get_or_create_user(payer_address, network)
-    return None
-
-
-# For Algorand specifically, the address is deterministic:
-# - Same private key always produces the same address
-# - Address can be used as a stable identity
-# - Works across testnet and mainnet (same key, same address)
-
-def get_or_create_user(address: str, network: str) -> dict:
-    """Look up or create a user by their Algorand address."""
-    # Your database logic here
-    user = db.users.find_one({"algorand_address": address})
-    if not user:
-        user = db.users.insert_one({
-            "algorand_address": address,
-            "network": network,
-            "created_at": datetime.utcnow(),
-        })
-    return user
-```
-
 ---
 
 ## Complete Examples
 
-### Resource Server with Bazaar Discovery (TypeScript)
+### Resource Server with Bazaar Discovery
 
 A complete Express.js resource server with Bazaar discovery for Algorand payments.
 
@@ -1095,113 +761,7 @@ app.listen(PORT, () => {
 });
 ```
 
-### Resource Server with Bazaar Discovery (Python)
-
-```python
-# server.py - FastAPI resource server with Bazaar discovery
-import os
-from fastapi import FastAPI, Request, Response
-from fastapi.responses import JSONResponse
-from x402 import x402ResourceServer
-from x402.mechanisms.avm.exact import register_exact_avm_server
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-from x402.mechanisms.avm.constants import USDC_TESTNET_ASA_ID
-
-app = FastAPI(title="x402-avm Resource Server with Bazaar")
-
-server = x402ResourceServer(
-    facilitator_url=os.environ.get("FACILITATOR_URL", "https://facilitator.example.com")
-)
-register_exact_avm_server(server)
-
-RECEIVER = os.environ["RECEIVER_ADDRESS"]
-
-weather_config = {
-    "scheme": "exact",
-    "payTo": RECEIVER,
-    "price": {
-        "asset": str(USDC_TESTNET_ASA_ID),
-        "amount": "10000",
-        "extra": {"name": "USDC", "decimals": 6},
-    },
-    "network": ALGORAND_TESTNET_CAIP2,
-    "maxTimeoutSeconds": 60,
-}
-
-# Bazaar discovery metadata for the weather endpoint
-weather_discovery = {
-    "bazaar": {
-        "info": {
-            "input": {
-                "type": "http",
-                "method": "GET",
-                "queryParams": {"city": "San Francisco", "units": "metric"},
-            },
-            "output": {
-                "type": "json",
-                "example": {
-                    "temperature": 18.5,
-                    "condition": "Partly Cloudy",
-                    "humidity": 65,
-                },
-            },
-        },
-        "schema": {
-            "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "type": "object",
-            "properties": {
-                "input": {
-                    "type": "object",
-                    "properties": {
-                        "type": {"type": "string", "const": "http"},
-                        "method": {"type": "string", "enum": ["GET"]},
-                        "queryParams": {
-                            "type": "object",
-                            "properties": {
-                                "city": {"type": "string"},
-                                "units": {"type": "string", "enum": ["metric", "imperial"]},
-                            },
-                            "required": ["city"],
-                        },
-                    },
-                    "required": ["type", "method"],
-                },
-            },
-            "required": ["input"],
-        },
-    }
-}
-
-
-@app.get("/api/weather")
-async def weather(request: Request, city: str = "San Francisco", units: str = "metric"):
-    x_payment = request.headers.get("X-PAYMENT")
-
-    if not x_payment:
-        payment_required = server.create_payment_required(
-            url=str(request.url),
-            description="Real-time weather data",
-            mime_type="application/json",
-            configs=[weather_config],
-            extensions=weather_discovery,
-        )
-        return JSONResponse(content=payment_required, status_code=402)
-
-    result = await server.process_payment(x_payment, weather_config)
-    if not result.verified:
-        return JSONResponse(content={"error": result.error}, status_code=402)
-
-    return {
-        "temperature": 18.5,
-        "condition": "Partly Cloudy",
-        "humidity": 65,
-        "windSpeed": 12.3,
-        "city": city,
-        "units": units,
-    }
-```
-
-### Facilitator with Bazaar Cataloging (TypeScript)
+### Facilitator with Bazaar Cataloging
 
 ```typescript
 // facilitator-with-bazaar.ts
@@ -1306,166 +866,18 @@ app.listen(4000, () => {
 });
 ```
 
-### Facilitator with Bazaar Cataloging (Python)
-
-```python
-# facilitator_with_bazaar.py
-import os
-from datetime import datetime
-from fastapi import FastAPI, Request, Query
-from fastapi.responses import JSONResponse
-from x402 import x402Facilitator
-from x402.mechanisms.avm.exact import register_exact_avm_facilitator
-from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
-
-app = FastAPI(title="x402-avm Facilitator with Bazaar")
-
-# In-memory catalog
-catalog: dict[str, dict] = {}
-
-BAZAAR = "bazaar"
-
-
-def extract_and_catalog(payment_payload: dict, requirements: dict, settle_result: dict):
-    """Extract discovery info and catalog the resource."""
-    if not settle_result.get("success"):
-        return
-
-    x402_version = payment_payload.get("x402Version", 1)
-    discovered = None
-
-    if x402_version == 2:
-        extensions = payment_payload.get("extensions", {})
-        bazaar_ext = extensions.get(BAZAAR)
-        if bazaar_ext:
-            info = bazaar_ext.get("info", {})
-            resource = payment_payload.get("resource", {})
-            discovered = {
-                "resourceUrl": resource.get("url", ""),
-                "description": resource.get("description"),
-                "mimeType": resource.get("mimeType"),
-                "method": info.get("input", {}).get("method", "GET"),
-                "x402Version": 2,
-                "discoveryInfo": info,
-            }
-    elif x402_version == 1:
-        output_schema = requirements.get("outputSchema")
-        if output_schema:
-            discovered = {
-                "resourceUrl": requirements.get("resource", ""),
-                "description": requirements.get("description"),
-                "mimeType": requirements.get("mimeType"),
-                "method": "GET",
-                "x402Version": 1,
-                "discoveryInfo": {
-                    "input": {"type": "http", "method": "GET"},
-                    "output": {"type": "json", "example": output_schema},
-                },
-            }
-
-    if discovered:
-        key = f"{discovered['method']}:{discovered['resourceUrl']}"
-        if key in catalog:
-            catalog[key]["settledCount"] += 1
-            catalog[key]["lastUpdated"] = datetime.utcnow().isoformat()
-        else:
-            catalog[key] = {
-                **discovered,
-                "settledCount": 1,
-                "lastUpdated": datetime.utcnow().isoformat(),
-            }
-        print(f"Cataloged: {key} ({catalog[key]['settledCount']} settlements)")
-
-
-# Initialize facilitator (signer setup from previous examples)
-facilitator = x402Facilitator()
-register_exact_avm_facilitator(
-    facilitator, signer, networks=[ALGORAND_TESTNET_CAIP2]
-)
-
-
-@app.post("/verify")
-async def verify(request: Request):
-    body = await request.json()
-    result = await facilitator.verify(
-        body["paymentPayload"], body["paymentRequirements"]
-    )
-    return result
-
-
-@app.post("/settle")
-async def settle(request: Request):
-    body = await request.json()
-    result = await facilitator.settle(
-        body["paymentPayload"], body["paymentRequirements"]
-    )
-
-    # Catalog after successful settlement
-    extract_and_catalog(
-        body["paymentPayload"],
-        body["paymentRequirements"],
-        result,
-    )
-
-    return result
-
-
-@app.get("/discovery/resources")
-async def discovery_resources(
-    type: str | None = Query(None),
-    limit: int = Query(50, ge=1, le=100),
-    offset: int = Query(0, ge=0),
-):
-    """List discovered x402 resources from the Bazaar catalog."""
-    items = list(catalog.values())
-
-    # Filter by type
-    if type:
-        items = [
-            r for r in items
-            if r.get("discoveryInfo", {}).get("input", {}).get("type") == type
-        ]
-
-    total = len(items)
-    paged = items[offset : offset + limit]
-
-    return {
-        "x402Version": 2,
-        "items": [
-            {
-                "resource": r["resourceUrl"],
-                "type": r.get("discoveryInfo", {}).get("input", {}).get("type", "http"),
-                "x402Version": r["x402Version"],
-                "accepts": [],
-                "lastUpdated": r.get("lastUpdated", ""),
-                "metadata": {
-                    "method": r["method"],
-                    "description": r.get("description"),
-                    "mimeType": r.get("mimeType"),
-                    "settledCount": r.get("settledCount", 0),
-                },
-            }
-            for r in paged
-        ],
-        "pagination": {"limit": limit, "offset": offset, "total": total},
-    }
-
-
-# Run: uvicorn facilitator_with_bazaar:app --port 4000
-```
-
 ---
 
 ## Summary
 
-| Feature | TypeScript Import | Python Equivalent |
-|---------|-------------------|-------------------|
-| Bazaar Extension Key | `BAZAAR` from `@x402-avm/extensions` | `"bazaar"` string constant |
-| Declare Discovery | `declareDiscoveryExtension(config)` | Manual dict construction |
-| Server Extension | `bazaarResourceServerExtension` from `@x402-avm/extensions` | Manual extension in handler |
-| Extract Discovery | `extractDiscoveryInfo(payload, req)` from `@x402-avm/extensions` | Custom `extract_discovery_info()` |
-| Validate Extension | `validateDiscoveryExtension(ext)` from `@x402-avm/extensions` | `jsonschema.validate()` |
-| Validate + Extract | `validateAndExtract(ext)` from `@x402-avm/extensions` | Combined custom function |
-| Client Extension | `withBazaar(client)` from `@x402-avm/extensions` | Custom `BazaarClient` class |
-| Type Utility | `WithExtensions<T, E>` from `@x402-avm/extensions` | N/A (Python uses duck typing) |
-| Sign-in-with-X | In development | In development |
+| Feature | TypeScript Import |
+|---------|-------------------|
+| Bazaar Extension Key | `BAZAAR` from `@x402-avm/extensions` |
+| Declare Discovery | `declareDiscoveryExtension(config)` |
+| Server Extension | `bazaarResourceServerExtension` from `@x402-avm/extensions` |
+| Extract Discovery | `extractDiscoveryInfo(payload, req)` from `@x402-avm/extensions` |
+| Validate Extension | `validateDiscoveryExtension(ext)` from `@x402-avm/extensions` |
+| Validate + Extract | `validateAndExtract(ext)` from `@x402-avm/extensions` |
+| Client Extension | `withBazaar(client)` from `@x402-avm/extensions` |
+| Type Utility | `WithExtensions<T, E>` from `@x402-avm/extensions` |
+| Sign-in-with-X | In development |
