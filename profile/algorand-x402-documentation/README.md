@@ -4,7 +4,6 @@
 
 ## Table of Contents
 
-- [X402 Protocol Algorand (AVM) Specification](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md)
 - [Introduction](#introduction)
 - [Algorand Implementation Details](#algorand-implementation-details)
 - [x402 V2 Packages for Algorand (AVM) implementation](#x402-v2-packages-for-algorand-avm-implementation)
