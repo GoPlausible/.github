@@ -2,9 +2,44 @@
 
 # x402 Protocol with Algorand (AVM) Guide
 
-GoPlausible has made the full core, tooling, and package support for Algorand (AVM) available as open source and contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [Coinbase x402 PR #361](https://github.com/coinbase/x402/pull/361/)
+GoPlausible has built the reference implementation, packages, documentation and example codes for Algorand (AVM) X402 integration available as FOSS and also contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [Coinbase x402 PR #361](https://github.com/coinbase/x402/pull/361/) which has been [merged to main branch](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md) and is available in the main Coinbase 402 repository.
 
-## NPM Packages
+## x402 V2 Packages for Algorand (AVM) implementation:
+
+### Typescript Packages:
+#### Core and Mechanism Packages:
+- x402 V2 Core Package [@x402-avm/core](https://www.npmjs.com/package/@x402-avm/core)
+- x402 V2 AVM (Algorand) Mechanism [@x402-avm/avm](https://www.npmjs.com/package/@x402-avm/avm)
+
+#### Extensions and Paywall Packages:
+- x402 V2 Extensions [@x402-avm/extensions](https://www.npmjs.com/package/@x402-avm/extensions)
+- x402 V2 Paywall UI [@x402-avm/paywall](https://www.npmjs.com/package/@x402-avm/paywall)
+
+#### Back end Framework-Specific Middleware and Client Packages:
+- x402 V2 Express Middleware [@x402-avm/express](https://www.npmjs.com/package/@x402-avm/express)
+- x402 V2 Hono Middleware [@x402-avm/hono](https://www.npmjs.com/package/@x402-avm/hono)
+- x402 V2 Next.js Middleware [@x402-avm/next](https://www.npmjs.com/package/@x402-avm/next)
+#### HTTP Client Packages:
+- x402 V2 Fetch Client [@x402-avm/fetch](https://www.npmjs.com/package/@x402-avm/fetch)
+- x402 V2 Axios Client [@x402-avm/axios](https://www.npmjs.com/package/@x402-avm/axios)
+
+### Python Packages:
+- x402 V2 Python SDK [x402-avm](https://pypi.org/project/x402-avm/)
+Extras packages for Python SDK: [all] , [clients] , [evm] , [extensions] , [fastapi] , [flask] , [httpx] , [mechanisms] , [requests] , [servers] , [svm]
+
+## x402 V2 Package-Specific Code examples:
+
+- x402 V2 Core Package Examples [x402-avm-core-examples](./x402-avm-core-examples.md)
+- x402 V2 AVM (Algorand) Mechanism Examples [x402-avm-avm-examples](./x402-avm-avm-examples.md)
+- x402 V2 Extensions Examples [x402-avm-extensions-examples](./x402-avm-extensions-examples.md)
+- x402 V2 Paywall UI Examples [x402-avm-paywall-examples](./x402-avm-paywall-examples.md)
+- x402 V2 Express Middleware Examples [x402-avm-express-examples](./x402-avm-express-examples.md)
+- x402 V2 Hono Middleware Examples [x402-avm-hono-examples](./x402-avm-hono-examples.md)
+- x402 V2 Next.js Middleware Examples [x402-avm-next-examples](./x402-avm-next-examples.md)
+- x402 V2 Fetch Client Examples [x402-avm-fetch-examples](./x402-avm-fetch-examples.md)
+- x402 V2 Axios Client Examples [x402-avm-axios-examples](./x402-avm-axios-examples.md)
+
+## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
 
 - [x402 Core Package](https://www.npmjs.com/package/x402-avm)
 - [x402-express Package](https://www.npmjs.com/package/x402-avm-express)
@@ -15,14 +50,14 @@ GoPlausible has made the full core, tooling, and package support for Algorand (A
 
 This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
 
-## Package-Specific Examples
+## x402 Legacy V1 Package-Specific Examples
 
-- [x402 Core Package Examples](./x402-core-examples.md)
-- [x402-express Examples](./x402-express-examples.md)
-- [x402-hono Examples](./x402-hono-examples.md)
-- [x402-next Examples](./x402-next-examples.md)
-- [x402-fetch Examples](./x402-fetch-examples.md)
-- [x402-axios Examples](./x402-axios-examples.md)
+- [x402 V1 Core Package Examples](./x402-v1-core-examples.md)
+- [x402 V1 Express Examples](./x402-v1-express-examples.md)
+- [x402 V1 Hono Examples](./x402-v1-hono-examples.md)
+- [x402 V1 Next Examples](./x402-v1-next-examples.md)
+- [x402 V1 Fetch Examples](./x402-v1-fetch-examples.md)
+- [x402 V1 Axios Examples](./x402-v1-axios-examples.md)
 
 ## Table of Contents
 - [X402 Protocol Algorand (AVM) Specification](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md)
