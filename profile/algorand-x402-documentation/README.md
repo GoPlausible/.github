@@ -95,26 +95,6 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 - x402 V2 Fetch Client Examples [x402-avm-fetch-examples](./x402-avm-fetch-examples.md)
 - x402 V2 Axios Client Examples [x402-avm-axios-examples](./x402-avm-axios-examples.md)
 
-## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
-
-- [x402 Core Package](https://www.npmjs.com/package/x402-avm)
-- [x402-express Package](https://www.npmjs.com/package/x402-avm-express)
-- [x402-hono Package](https://www.npmjs.com/package/x402-avm-hono)
-- [x402-next Package](https://www.npmjs.com/package/x402-avm-next)
-- [x402-fetch Package](https://www.npmjs.com/package/x402-avm-fetch)
-- [x402-axios Package](https://www.npmjs.com/package/x402-avm-axios)
-
-This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
-
-## x402 Legacy V1 Package-Specific Examples
-
-- [x402 V1 Core Package Examples](./v1/x402-v1-core-examples.md)
-- [x402 V1 Express Examples](./v1/x402-v1-express-examples.md)
-- [x402 V1 Hono Examples](./v1/x402-v1-hono-examples.md)
-- [x402 V1 Next Examples](./v1/x402-v1-next-examples.md)
-- [x402 V1 Fetch Examples](./v1/x402-v1-fetch-examples.md)
-- [x402 V1 Axios Examples](./v1/x402-v1-axios-examples.md)
-
 ## Payment Flow
 
 1. **Client** requests a resource and receives a 402 Payment Required response with `paymentRequirements`
@@ -232,3 +212,23 @@ npm install @algorand/algosdk @txnlab/use-wallet
 # Plus the x402 packages you need:
 npm install x402 x402-express x402-next # etc.
 ```
+
+## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
+
+- [x402 Core Package](https://www.npmjs.com/package/x402-avm)
+- [x402-express Package](https://www.npmjs.com/package/x402-avm-express)
+- [x402-hono Package](https://www.npmjs.com/package/x402-avm-hono)
+- [x402-next Package](https://www.npmjs.com/package/x402-avm-next)
+- [x402-fetch Package](https://www.npmjs.com/package/x402-avm-fetch)
+- [x402-axios Package](https://www.npmjs.com/package/x402-avm-axios)
+
+This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
+
+## x402 Legacy V1 Package-Specific Examples
+
+- [x402 V1 Core Package Examples](./v1/x402-v1-core-examples.md)
+- [x402 V1 Express Examples](./v1/x402-v1-express-examples.md)
+- [x402 V1 Hono Examples](./v1/x402-v1-hono-examples.md)
+- [x402 V1 Next Examples](./v1/x402-v1-next-examples.md)
+- [x402 V1 Fetch Examples](./v1/x402-v1-fetch-examples.md)
+- [x402 V1 Axios Examples](./v1/x402-v1-axios-examples.md)
