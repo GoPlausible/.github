@@ -81,17 +81,31 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 ### Python Packages:
 
 - x402 V2 Python SDK [x402-avm](https://pypi.org/project/x402-avm/)
+
   Extras packages for Python SDK: [all] , [clients] , [evm] , [extensions] , [fastapi] , [flask] , [httpx] , [mechanisms] , [requests] , [servers] , [svm]
 
 ## x402 V2 Package-Specific Code examples:
 
+### Typescript Examples:
+
+#### Core and Mechanism Examples:
+
 - x402 V2 Core Package Examples [x402-avm-core-examples](./x402-avm-core-examples.md)
 - x402 V2 AVM (Algorand) Mechanism Examples [x402-avm-avm-examples](./x402-avm-avm-examples.md)
+
+#### Extensions and Paywall Examples:
+
 - x402 V2 Extensions Examples [x402-avm-extensions-examples](./x402-avm-extensions-examples.md)
 - x402 V2 Paywall UI Examples [x402-avm-paywall-examples](./x402-avm-paywall-examples.md)
+
+#### Back end Framework-Specific Middleware and Client Examples:
+
 - x402 V2 Express Middleware Examples [x402-avm-express-examples](./x402-avm-express-examples.md)
 - x402 V2 Hono Middleware Examples [x402-avm-hono-examples](./x402-avm-hono-examples.md)
 - x402 V2 Next.js Middleware Examples [x402-avm-next-examples](./x402-avm-next-examples.md)
+
+#### HTTP Client Examples:
+
 - x402 V2 Fetch Client Examples [x402-avm-fetch-examples](./x402-avm-fetch-examples.md)
 - x402 V2 Axios Client Examples [x402-avm-axios-examples](./x402-avm-axios-examples.md)
 
