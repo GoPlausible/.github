@@ -2,7 +2,7 @@
 
 # x402 Protocol with Algorand (AVM) Guide
 
-GoPlausible has built the reference implementation, packages, documentation and example codes for Algorand (AVM) X402 integration available as FOSS and also contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [Coinbase x402 PR #361](https://github.com/coinbase/x402/pull/361/) which has been [merged to main branch](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md) and is available in the main Coinbase 402 repository.
+GoPlausible has built the reference implementation, packages, documentation and example codes for Algorand (AVM) X402 integration available as FOSS and also contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [Coinbase x402 PR #361](https://github.com/coinbase/x402/pull/361/) which has been [merged to Coinbase x402 repository](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md) and is available in the main Coinbase 402 repository.
 
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
