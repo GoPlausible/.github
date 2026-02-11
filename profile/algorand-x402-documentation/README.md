@@ -133,120 +133,406 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 
 ## Payment Flow
 
-1. **Client** requests a resource and receives a 402 Payment Required response with `paymentRequirements`
-2. If **feePayer** is not present **Client** creates an Algorand asset transfer (In case Asset is present, e.g. pay with USDC) or pay (if no asset is present) transaction with minimum fee (0.001 Algo) and:
-   - Payment amount matching `paymentRequirements.maxAmountRequired`
-   - Recipient matching `paymentRequirements.payTo`
-   - Asset ID matching `paymentRequirements.asset` (0 for ALGO)
-   - Lease field set to SHA-256 hash of `paymentRequirements`
-3. If **feePayer** is present **Client** creates two grouped Algorand transactions in `paymentGroup` field of payload:
-   - **Payment Transaction** from step 2 with fee=0.
-   - **Fee Transaction** from `feePayer` to `feePayer` with amount=0, fee covering both transactions (2 x minimum fee)
-4. **Client** adds other transactions to group and specifies the payment transaction index as `paymentIndex` field of payload.
-5. **Client** signs the transaction and includes it in the `X-PAYMENT` header payload `paymentGroup` at `paymentIndex`.
-6. **Resource Server** verifies and settles the payment via the **Facilitator**
-7. **Facilitator** verifies and submits the transaction (possibly as part of an atomic group for fee abstraction) and creates settlement response (Failed or fulfilled).
-8. **Resource Server** grants access to the resource once the payment is settled
+### Overview
+
+```
+Client → Resource Server → Facilitator → Algorand Network
+  │          │                  │                │
+  │ 1. GET   │                  │                │
+  │─────────>│                  │                │
+  │ 2. 402   │                  │                │
+  │<─────────│                  │                │
+  │ 3. Build │                  │                │
+  │   payload│                  │                │
+  │ 4. GET + │                  │                │
+  │ X-PAYMENT│                  │                │
+  │─────────>│ 5. verify()      │                │
+  │          │─────────────────>│ 6. simulate    │
+  │          │                  │───────────────>│
+  │          │                  │<───────────────│
+  │          │<─────────────────│                │
+  │          │ 7. settle()      │                │
+  │          │─────────────────>│ 8. sign + send │
+  │          │                  │───────────────>│
+  │          │                  │<───────────────│
+  │          │<─────────────────│ 9. txId        │
+  │ 10. 200  │                  │                │
+  │<─────────│                  │                │
+```
+
+### Detailed Steps
+
+1. **Client** requests a protected resource and receives a `402 Payment Required` response containing `paymentRequirements` (scheme, network, amount, asset, payTo, extra)
+
+2. **Client** creates an atomic transaction group based on `paymentRequirements`:
+
+   **Without fee abstraction** (no `feePayer` in `extra`):
+   - Single ASA transfer transaction (`axfer`) with:
+     - Sender: client's Algorand address
+     - Receiver: `paymentRequirements.payTo`
+     - Amount: `paymentRequirements.amount` (atomic units)
+     - Asset Index: `paymentRequirements.asset` (ASA ID)
+     - Fee: minimum fee (1000 microAlgos)
+     - Note: `"x402-payment-v2"` (bytes)
+
+   **With fee abstraction** (`feePayer` in `extra`):
+   - **Transaction [0] — Fee Payer** (unsigned, for facilitator to sign):
+     - Type: `pay` (payment)
+     - Sender: `feePayer` address
+     - Receiver: `feePayer` (self-payment)
+     - Amount: `0`
+     - Fee: `minFee × 2` (pooled fee covering both transactions)
+     - FlatFee: `true`
+     - Note: `"x402-fee-payer"` (bytes)
+   - **Transaction [1] — ASA Transfer** (signed by client):
+     - Type: `axfer` (asset transfer)
+     - Sender: client's address
+     - Receiver: `paymentRequirements.payTo`
+     - Amount: `paymentRequirements.amount`
+     - Asset Index: `paymentRequirements.asset`
+     - Fee: `0` (fee payer covers)
+     - FlatFee: `true`
+     - Note: `"x402-payment-v2"` (bytes)
+   - Atomic group ID is assigned to both transactions
+
+3. **Client** signs only its own transactions (ASA transfer), leaves fee payer transaction unsigned. Encodes all transactions as base64 msgpack strings in `paymentGroup` array.
+
+4. **Client** sends the request with `X-PAYMENT` header containing the payload:
+   ```json
+   {
+     "x402Version": 2,
+     "scheme": "exact",
+     "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+     "payload": {
+       "paymentGroup": ["<base64-fee-payer-txn>", "<base64-signed-asa-transfer>"],
+       "paymentIndex": 1
+     }
+   }
+   ```
+
+5. **Resource Server** forwards the payment to the **Facilitator** for verification.
+
+6. **Facilitator** runs `verify()`:
+   - Validates payload format (`paymentGroup` array, `paymentIndex` bounds)
+   - Validates group size ≤ 16 transactions
+   - Decodes all transactions (signed and unsigned)
+   - Only allows unsigned transactions from facilitator-managed addresses
+   - Verifies group ID consistency across all transactions
+   - **Security checks** on all transactions:
+     - No `keyreg` (key registration) transactions
+     - No `rekeyTo` (unless balanced sandwich pattern: A→B then B→A)
+     - No `closeRemainderTo` or `assetCloseTo` fields (prevents account draining)
+   - Verifies payment transaction at `paymentIndex`:
+     - Type must be `axfer` (asset transfer)
+     - Asset ID matches `requirements.asset`
+     - Receiver matches `requirements.payTo`
+     - Amount matches `requirements.amount`
+     - Transaction is signed
+   - Verifies fee payer transaction (if present):
+     - Sender is in facilitator's managed addresses
+     - Type is `pay`, amount is `0`, no `closeRemainderTo`, no `rekeyTo`
+     - Fee ≤ `MAX_REASONABLE_FEE` (10 Algo / 10,000,000 microAlgos)
+   - Signs fee payer transaction and **simulates** the full group on-chain
+   - Returns `VerifyResponse { isValid, invalidReason? }`
+
+7. **Facilitator** runs `settle()`:
+   - Re-verifies the payment
+   - Signs all facilitator-managed transactions (fee payer)
+   - Submits the complete signed group to the Algorand network
+   - Extracts the payment transaction ID
+   - Returns `SettleResponse { success, transaction (txId), network }`
+
+8. **Resource Server** grants access to the protected resource
+
+### Algorand-Specific Advantages
+
+- **Instant Finality**: Algorand transactions are final in ~3.3 seconds — no reorgs, no rollbacks
+- **Atomic Groups**: Up to 16 transactions execute all-or-nothing (no partial failures)
+- **Fee Pooling**: One transaction in a group can pay fees for all others
+- **Composability**: Additional transactions (smart contract calls, opt-ins) can be added to the `paymentGroup` alongside the payment
 
 ## Schema and Types
 
-### NetworkSchema for Algorand
+### V2 CAIP-2 Network Identifiers
+
+x402 V2 uses [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) identifiers — the genesis hash uniquely identifies each Algorand network:
+
+| Network | CAIP-2 Identifier |
+|---------|-------------------|
+| Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` |
+| Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` |
+
+V1 legacy identifiers (`algorand-mainnet`, `algorand-testnet`) are still supported via automatic mapping.
+
+### PaymentRequirements
 
 ```typescript
-// Extended NetworkSchema with Algorand networks
-export const NetworkSchema = z.enum([
-  // Existing networks
-  "base-sepolia",
-  "base",
-  "avalanche-fuji",
-  "avalanche",
-  "iotex",
-  "solana-devnet",
-  "solana",
-  // Algorand networks
-  "algorand-testnet",
-  "algorand-mainnet",
-]);
+// TypeScript
+type PaymentRequirements = {
+  scheme: string;                          // "exact"
+  network: Network;                        // CAIP-2 identifier
+  asset: string;                           // ASA ID as string (e.g., "10458941" for USDC testnet)
+  amount: string;                          // Amount in atomic units (smallest unit)
+  payTo: string;                           // Recipient address (58-char Algorand address)
+  maxTimeoutSeconds: number;               // Payment validity window
+  extra: Record<string, unknown>;          // AVM-specific: feePayer, decimals
+};
 ```
 
-### Payment Requirements for Algorand
+```python
+# Python
+class PaymentRequirements(BaseX402Model):
+    scheme: str                            # "exact"
+    network: Network                       # CAIP-2 identifier
+    asset: str                             # ASA ID as string
+    amount: str                            # Atomic units (smallest unit)
+    pay_to: str                            # Recipient address
+    max_timeout_seconds: int               # Validity window
+    extra: dict[str, Any]                  # feePayer, decimals
+```
+
+#### `extra` Field Contents (AVM-Specific)
+
+| Key | Type | Description | Source |
+|-----|------|-------------|--------|
+| `feePayer` | `string` | Fee payer address for gasless payments | Facilitator's `getExtra()` |
+| `decimals` | `number` | Asset decimals (e.g., 6 for USDC) | Server enhancement |
+
+#### Example
 
 ```typescript
 const paymentRequirements = {
   scheme: "exact",
-  network: "algorand", // or "algorand-testnet"
-  maxAmountRequired: "10000", // amount in smallest unit 0.01 USDC (6 decimal places)
-  asset: "31566704", // ASA ID or "0" for ALGO
+  network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+  amount: "10000",           // 0.01 USDC (6 decimal places)
+  asset: "10458941",         // USDC ASA ID on Algorand Testnet
   payTo: "PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  resource: "https://example.com/weather",
-  description: "Access to protected content",
-  mimeType: "application/json",
   maxTimeoutSeconds: 60,
-  outputSchema: null,
   extra: {
-    decimals: 6, // Optional, defaults to 6 for ALGO
-    feePayer: "PAYERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", // Optional
+    decimals: 6,
+    feePayer: "PAYERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   },
 };
 ```
 
-### X-PAYMENT Header Payload for Algorand
+### X-PAYMENT Header Payload
 
 ```typescript
-const paymentHeader = {
-  x402Version: 1,
-  scheme: "exact",
-  network: "algorand-mainnet", // or "algorand-testnet"
-  payload: {
-    paymentGroup: [
-      "AAAAAAAAAAAAA...AAAAAAAAAAAAA=",
-      "BBBBBBBBBBBBB...BBBBBBBBBBBBB=",
-    ],
-    paymentIndex: 1,
-  },
-};
+// TypeScript
+interface ExactAvmPayloadV2 {
+  /** Array of base64-encoded msgpack transactions forming an atomic group */
+  paymentGroup: string[];
+  /** Zero-based index of the payment transaction within paymentGroup */
+  paymentIndex: number;
+}
 ```
+
+```python
+# Python
+@dataclass
+class ExactAvmPayload:
+    payment_group: list[str] = field(default_factory=list)
+    payment_index: int = 0
+```
+
+#### Full X-PAYMENT Header Example
+
+```json
+{
+  "x402Version": 2,
+  "scheme": "exact",
+  "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+  "payload": {
+    "paymentGroup": [
+      "iqNhbXQAo2ZlZc0H0KJm...==",
+      "iqNhbXTOAAAnEKRhcmN2..."
+    ],
+    "paymentIndex": 1
+  }
+}
+```
+
+### Constants Reference
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| USDC Mainnet ASA ID | `31566704` | USDC on Algorand Mainnet |
+| USDC Testnet ASA ID | `10458941` | USDC on Algorand Testnet |
+| USDC Decimals | `6` | Decimal places for USDC |
+| Min Transaction Fee | `1000` microAlgos | Minimum fee per transaction |
+| Max Atomic Group Size | `16` | Maximum transactions in a group |
+| Max Reasonable Fee | `10,000,000` microAlgos (10 Algo) | Safety cap for fee payer transactions |
 
 ## Environment Setup
 
-### Required Environment Variables
+### Facilitator (Standalone Examples)
+
+The facilitator verifies and settles payments. It needs a private key to sign fee payer transactions.
+
+> **Online Facilitator**: You can use the public GoPlausible facilitator at `https://facilitator.goplausible.xyz` instead of running your own.
+
+#### TypeScript
 
 ```bash
-# Resource server configuration
-FACILITATOR_URL=http://localhost:3000/facilitator
-RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
-PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
-NETWORK=algorand-testnet  # or algorand for mainnet
-ASSET=10458941  # USDC, use  0 or leave undefined for ALGO or use ASA ID for Algorand Standard Asset
-PRICE=10000 # Price in units (e.g. 10000 for 0.01 USDC with 6 decimal places)
+# Server port (default: 4022)
+PORT=4022
 
-ALGOD_SERVER=https://testnet-api.algonode.cloud  # or mainnet
-ALGOD_TOKEN=
-ALGOD_PORT=
-FEE_PAYER=YOUR_FEE_PAYER_ADDRESS  # Optional
-```
+# AVM facilitator private key (Base64-encoded, 64 bytes: 32-byte seed + 32-byte pubkey)
+AVM_PRIVATE_KEY=<your-base64-private-key>
 
-### ENV Variables for refrence implementation site (NextJS) package on AVM:
-
-```bash
-NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
-RESOURCE_WALLET_ADDRESS=YOUR_ALGORAND_ADDRESS
-NETWORK=algorand-testnet # or algorand for mainnet
-PRIVATE_KEY=YOUR_ALGORAND_MNEMONICS # Algorand account secret key or mnemonics
-ASSET=10458941 // USDC ASA ID on Algorand TESTNET, use '0' or leave undefined for ALGO
-PRICE=10000 # Price in units (e.g. 10000 for 0.01 USDC with 6 decimal places)
+# Algod endpoint (optional — defaults to AlgoNode public testnet)
 ALGOD_SERVER=https://testnet-api.algonode.cloud
 ALGOD_TOKEN=
-ALGOD_PORT=
-FEE_PAYER=YOUR_FEE_PAYER_ADDRESS
+```
+
+#### Python
+
+```bash
+# Server port (default: 4022)
+PORT=4022
+
+# AVM facilitator private key (Base64-encoded, 64 bytes: 32-byte seed + 32-byte pubkey)
+AVM_PRIVATE_KEY=<your-base64-private-key>
+
+# Algod endpoint (optional — defaults to AlgoNode public testnet)
+ALGOD_SERVER=https://testnet-api.algonode.cloud
+ALGOD_TOKEN=
+```
+
+### Facilitator (Next.js Reference Site)
+
+The Next.js reference site bundles the facilitator as an API route (`/facilitator`). It uses different env var names with `FACILITATOR_` prefix.
+
+```bash
+# Facilitator URL (both server-side and client-side)
+NEXT_PUBLIC_FACILITATOR_URL=http://localhost:3000/facilitator
+FACILITATOR_URL=http://localhost:3000/facilitator
+# Or use the online facilitator:
+# NEXT_PUBLIC_FACILITATOR_URL=https://facilitator.goplausible.xyz
+# FACILITATOR_URL=https://facilitator.goplausible.xyz
+
+# AVM facilitator private key (Base64-encoded, 64 bytes: 32-byte seed + 32-byte pubkey)
+FACILITATOR_AVM_PRIVATE_KEY=<your-base64-private-key>
+
+# AVM payee address (58-character Algorand address)
+RESOURCE_AVM_ADDRESS=YOUR_ALGORAND_ADDRESS_HERE
+```
+
+### Resource Server
+
+The resource server protects endpoints and requires payment via x402.
+
+#### TypeScript
+
+```bash
+# AVM payee address (receives payments)
+AVM_ADDRESS=YOUR_ALGORAND_ADDRESS_HERE
+
+# Facilitator URL for payment verification
+FACILITATOR_URL=http://localhost:4022
+# Or use the online facilitator:
+# FACILITATOR_URL=https://facilitator.goplausible.xyz
+```
+
+#### Python
+
+```bash
+# AVM payee address (receives payments)
+AVM_ADDRESS=YOUR_ALGORAND_ADDRESS_HERE
+
+# Facilitator URL for payment verification
+FACILITATOR_URL=http://localhost:4022
+# Or use the online facilitator:
+# FACILITATOR_URL=https://facilitator.goplausible.xyz
+```
+
+### Client
+
+The client makes payments to access protected resources.
+
+#### TypeScript
+
+```bash
+# AVM client private key (Base64-encoded, 64 bytes)
+AVM_PRIVATE_KEY=<your-base64-private-key>
+
+# Protected resource server
+RESOURCE_SERVER_URL=http://localhost:4021
+ENDPOINT_PATH=/weather
+```
+
+#### Python
+
+```bash
+# AVM client private key (Base64-encoded, 64 bytes)
+AVM_PRIVATE_KEY=<your-base64-private-key>
+
+# Protected resource server
+RESOURCE_SERVER_URL=http://localhost:4021
+ENDPOINT_PATH=/weather
+```
+
+### Private Key Format
+
+The `AVM_PRIVATE_KEY` / `FACILITATOR_AVM_PRIVATE_KEY` is a **Base64-encoded 64-byte key**:
+- First 32 bytes: Ed25519 seed (private key)
+- Last 32 bytes: Ed25519 public key
+- Address is derived from the public key: `encode_address(secret_key[32:])`
+
+### SDK Algod Endpoint Configuration
+
+The SDK uses AlgoNode public endpoints by default. Override with environment variables:
+
+```bash
+# Custom Algod endpoints (optional — fallback to AlgoNode)
+ALGOD_MAINNET_URL=https://mainnet-api.algonode.cloud    # default
+ALGOD_TESTNET_URL=https://testnet-api.algonode.cloud    # default
+
+# Python SDK also supports custom Indexer endpoints
+INDEXER_MAINNET_URL=https://mainnet-idx.algonode.cloud   # default
+INDEXER_TESTNET_URL=https://testnet-idx.algonode.cloud   # default
 ```
 
 ### Package Installation
 
+#### TypeScript
+
 ```bash
-npm install @algorand/algosdk @txnlab/use-wallet
-# Plus the x402 packages you need:
-npm install x402 x402-express x402-next # etc.
+# Core packages
+npm install @x402/core @x402/avm algosdk
+
+# Server middleware (choose one)
+npm install @x402/express    # Express.js
+npm install @x402/hono       # Hono
+npm install @x402/next       # Next.js
+
+# Client packages (choose one)
+npm install @x402/fetch      # Fetch API
+npm install @x402/axios      # Axios
+
+# Paywall UI (optional)
+npm install @x402/paywall
+
+# Wallet integration (for browser clients)
+npm install @txnlab/use-wallet
+```
+
+#### Python
+
+```bash
+# Minimal AVM support
+pip install x402[avm]
+
+# Server frameworks (choose one)
+pip install x402[avm,fastapi]
+pip install x402[avm,flask]
+
+# HTTP clients (choose one)
+pip install x402[avm,httpx]
+pip install x402[avm,requests]
+
+# Full installation (all mechanisms + all extras)
+pip install x402[all]
 ```
 
 ## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
