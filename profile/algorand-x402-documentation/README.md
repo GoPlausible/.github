@@ -100,10 +100,13 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 - x402 V2 Extensions Examples [x402-avm-extensions-examples](./typescript/x402-avm-extensions-examples.md)
 - x402 V2 Paywall UI Examples [x402-avm-paywall-examples](./typescript/x402-avm-paywall-examples.md)
 
-#### Back end Framework-Specific Middleware and Client Examples:
+#### Back-end Framework-Specific Middleware Examples:
 
 - x402 V2 Express Middleware Examples [x402-avm-express-examples](./typescript/x402-avm-express-examples.md)
 - x402 V2 Hono Middleware Examples [x402-avm-hono-examples](./typescript/x402-avm-hono-examples.md)
+
+#### Fullstack Framework-Specific Examples:
+
 - x402 V2 Next.js Middleware Examples [x402-avm-next-examples](./typescript/x402-avm-next-examples.md)
 
 #### HTTP Client Examples:
@@ -198,13 +201,17 @@ Client → Resource Server → Facilitator → Algorand Network
 3. **Client** signs only its own transactions (ASA transfer), leaves fee payer transaction unsigned. Encodes all transactions as base64 msgpack strings in `paymentGroup` array.
 
 4. **Client** sends the request with `X-PAYMENT` header containing the payload:
+
    ```json
    {
      "x402Version": 2,
      "scheme": "exact",
      "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
      "payload": {
-       "paymentGroup": ["<base64-fee-payer-txn>", "<base64-signed-asa-transfer>"],
+       "paymentGroup": [
+         "<base64-fee-payer-txn>",
+         "<base64-signed-asa-transfer>"
+       ],
        "paymentIndex": 1
      }
    }
@@ -257,8 +264,8 @@ Client → Resource Server → Facilitator → Algorand Network
 
 x402 V2 uses [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md) identifiers — the genesis hash uniquely identifies each Algorand network:
 
-| Network | CAIP-2 Identifier |
-|---------|-------------------|
+| Network          | CAIP-2 Identifier                                       |
+| ---------------- | ------------------------------------------------------- |
 | Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` |
 | Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` |
 
@@ -269,13 +276,13 @@ V1 legacy identifiers (`algorand-mainnet`, `algorand-testnet`) are still support
 ```typescript
 // TypeScript
 type PaymentRequirements = {
-  scheme: string;                          // "exact"
-  network: Network;                        // CAIP-2 identifier
-  asset: string;                           // ASA ID as string (e.g., "10458941" for USDC testnet)
-  amount: string;                          // Amount in atomic units (smallest unit)
-  payTo: string;                           // Recipient address (58-char Algorand address)
-  maxTimeoutSeconds: number;               // Payment validity window
-  extra: Record<string, unknown>;          // AVM-specific: feePayer, decimals
+  scheme: string; // "exact"
+  network: Network; // CAIP-2 identifier
+  asset: string; // ASA ID as string (e.g., "10458941" for USDC testnet)
+  amount: string; // Amount in atomic units (smallest unit)
+  payTo: string; // Recipient address (58-char Algorand address)
+  maxTimeoutSeconds: number; // Payment validity window
+  extra: Record<string, unknown>; // AVM-specific: feePayer, decimals
 };
 ```
 
@@ -293,10 +300,10 @@ class PaymentRequirements(BaseX402Model):
 
 #### `extra` Field Contents (AVM-Specific)
 
-| Key | Type | Description | Source |
-|-----|------|-------------|--------|
+| Key        | Type     | Description                            | Source                     |
+| ---------- | -------- | -------------------------------------- | -------------------------- |
 | `feePayer` | `string` | Fee payer address for gasless payments | Facilitator's `getExtra()` |
-| `decimals` | `number` | Asset decimals (e.g., 6 for USDC) | Server enhancement |
+| `decimals` | `number` | Asset decimals (e.g., 6 for USDC)      | Server enhancement         |
 
 #### Example
 
@@ -304,8 +311,8 @@ class PaymentRequirements(BaseX402Model):
 const paymentRequirements = {
   scheme: "exact",
   network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-  amount: "10000",           // 0.01 USDC (6 decimal places)
-  asset: "10458941",         // USDC ASA ID on Algorand Testnet
+  amount: "10000", // 0.01 USDC (6 decimal places)
+  asset: "10458941", // USDC ASA ID on Algorand Testnet
   payTo: "PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   maxTimeoutSeconds: 60,
   extra: {
@@ -343,10 +350,7 @@ class ExactAvmPayload:
   "scheme": "exact",
   "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
   "payload": {
-    "paymentGroup": [
-      "iqNhbXQAo2ZlZc0H0KJm...==",
-      "iqNhbXTOAAAnEKRhcmN2..."
-    ],
+    "paymentGroup": ["iqNhbXQAo2ZlZc0H0KJm...==", "iqNhbXTOAAAnEKRhcmN2..."],
     "paymentIndex": 1
   }
 }
@@ -354,14 +358,14 @@ class ExactAvmPayload:
 
 ### Constants Reference
 
-| Constant | Value | Description |
-|----------|-------|-------------|
-| USDC Mainnet ASA ID | `31566704` | USDC on Algorand Mainnet |
-| USDC Testnet ASA ID | `10458941` | USDC on Algorand Testnet |
-| USDC Decimals | `6` | Decimal places for USDC |
-| Min Transaction Fee | `1000` microAlgos | Minimum fee per transaction |
-| Max Atomic Group Size | `16` | Maximum transactions in a group |
-| Max Reasonable Fee | `10,000,000` microAlgos (10 Algo) | Safety cap for fee payer transactions |
+| Constant              | Value                             | Description                           |
+| --------------------- | --------------------------------- | ------------------------------------- |
+| USDC Mainnet ASA ID   | `31566704`                        | USDC on Algorand Mainnet              |
+| USDC Testnet ASA ID   | `10458941`                        | USDC on Algorand Testnet              |
+| USDC Decimals         | `6`                               | Decimal places for USDC               |
+| Min Transaction Fee   | `1000` microAlgos                 | Minimum fee per transaction           |
+| Max Atomic Group Size | `16`                              | Maximum transactions in a group       |
+| Max Reasonable Fee    | `10,000,000` microAlgos (10 Algo) | Safety cap for fee payer transactions |
 
 ## Environment Setup
 
@@ -475,6 +479,7 @@ ENDPOINT_PATH=/weather
 ### Private Key Format
 
 The `AVM_PRIVATE_KEY` / `FACILITATOR_AVM_PRIVATE_KEY` is a **Base64-encoded 64-byte key**:
+
 - First 32 bytes: Ed25519 seed (private key)
 - Last 32 bytes: Ed25519 public key
 - Address is derived from the public key: `encode_address(secret_key[32:])`
@@ -499,19 +504,19 @@ INDEXER_TESTNET_URL=https://testnet-idx.algonode.cloud   # default
 
 ```bash
 # Core packages
-npm install @x402/core @x402/avm algosdk
+npm install @x402-avm/core @x402-avm/avm algosdk
 
 # Server middleware (choose one)
-npm install @x402/express    # Express.js
-npm install @x402/hono       # Hono
-npm install @x402/next       # Next.js
+npm install @x402-avm/express    # Express.js
+npm install @x402-avm/hono       # Hono
+npm install @x402-avm/next       # Next.js
 
 # Client packages (choose one)
-npm install @x402/fetch      # Fetch API
-npm install @x402/axios      # Axios
+npm install @x402-avm/fetch      # Fetch API
+npm install @x402-avm/axios      # Axios
 
 # Paywall UI (optional)
-npm install @x402/paywall
+npm install @x402-avm/paywall
 
 # Wallet integration (for browser clients)
 npm install @txnlab/use-wallet
@@ -521,18 +526,18 @@ npm install @txnlab/use-wallet
 
 ```bash
 # Minimal AVM support
-pip install x402[avm]
+pip install x402-avm[avm]
 
 # Server frameworks (choose one)
-pip install x402[avm,fastapi]
-pip install x402[avm,flask]
+pip install x402-avm[avm,fastapi]
+pip install x402-avm[avm,flask]
 
 # HTTP clients (choose one)
-pip install x402[avm,httpx]
-pip install x402[avm,requests]
+pip install x402-avm[avm,httpx]
+pip install x402-avm[avm,requests]
 
 # Full installation (all mechanisms + all extras)
-pip install x402[all]
+pip install x402-avm[all]
 ```
 
 ## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
