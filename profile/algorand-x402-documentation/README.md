@@ -107,12 +107,12 @@ This guide provides comprehensive documentation and examples for using the x402 
 
 ## x402 Legacy V1 Package-Specific Examples
 
-- [x402 V1 Core Package Examples](./x402-v1-core-examples.md)
-- [x402 V1 Express Examples](./x402-v1-express-examples.md)
-- [x402 V1 Hono Examples](./x402-v1-hono-examples.md)
-- [x402 V1 Next Examples](./x402-v1-next-examples.md)
-- [x402 V1 Fetch Examples](./x402-v1-fetch-examples.md)
-- [x402 V1 Axios Examples](./x402-v1-axios-examples.md)
+- [x402 V1 Core Package Examples](./v1/x402-v1-core-examples.md)
+- [x402 V1 Express Examples](./v1/x402-v1-express-examples.md)
+- [x402 V1 Hono Examples](./v1/x402-v1-hono-examples.md)
+- [x402 V1 Next Examples](./v1/x402-v1-next-examples.md)
+- [x402 V1 Fetch Examples](./v1/x402-v1-fetch-examples.md)
+- [x402 V1 Axios Examples](./v1/x402-v1-axios-examples.md)
 
 ## Payment Flow
 
