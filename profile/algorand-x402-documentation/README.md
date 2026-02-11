@@ -33,11 +33,16 @@ Key features of the Algorand implementation:
 
 The Algorand implementation of x402 utilizes several unique features of the Algorand blockchain:
 
-### Atomic Transaction Groups for Fee Abstraction and beyond
+### Transaction Group with composability
 
-Atomic transaction groups are used to enable fee abstraction, allowing a third-party fee payer to cover transaction fees on behalf of the resource requester. This is achieved by grouping the payment transaction with a fee transaction from the fee payer, ensuring both transactions are processed together.
+The implementation allows for composability of transactions within the payment group, enabling more complex interactions such as multi-step payments, conditional payments, or integrating with other smart contracts on Algorand.
 
-Same pattern can be used to bring much more complex payment scenarios to x402 on Algorand.
+The `paymentGroup` can include additional transactions beyond the payment and fee transactions, and the `paymentIndex` field specifies which transaction in the group is the actual payment transaction. This flexibility allows developers to create more sophisticated payment flows while still adhering to the x402 protocol.
+
+### Fee Abstraction and beyond
+
+Atomic transaction groups enable fee abstraction as well, allowing a third-party fee payer to cover transaction fees on behalf of the resource requester. This is achieved by grouping the payment transaction with a fee transaction from the fee payer.
+This transaction is not signed by the client but is included in the `paymentGroup` and the protocol ensures that the fee transaction covers the fees for both transactions in the group. This allows for a seamless user experience where the client can make payments without needing to hold ALGO for fees, while still ensuring that the resource server receives the required payment.
 
 ### ASA Support
 
@@ -46,12 +51,6 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 1. ASA opt-in verification
 2. Asset ID validation
 3. Decimal place conversions on asset units and amounts
-
-### Transaction Group with composability
-
-The implementation allows for composability of transactions within the payment group, enabling more complex interactions such as multi-step payments, conditional payments, or integrating with other smart contracts on Algorand.
-
-The `paymentGroup` can include additional transactions beyond the payment and fee transactions, and the `paymentIndex` field specifies which transaction in the group is the actual payment transaction. This flexibility allows developers to create more sophisticated payment flows while still adhering to the x402 protocol.
 
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
