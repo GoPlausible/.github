@@ -1,31 +1,82 @@
 <img src="https://github.com/user-attachments/assets/e5256b28-db76-44f7-9fbf-da4057bc0448" alt="GoPlausible" width="200" />
 
-# x402 Protocol with Algorand (AVM) Guide
+# x402 Protocol with Algorand (AVM) documentation
+
+## Table of Contents
+
+- [X402 Protocol Algorand (AVM) Specification](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md)
+- [Introduction](#introduction)
+- [Algorand Implementation Details](#algorand-implementation-details)
+- [x402 V2 Packages for Algorand (AVM) implementation](#x402-v2-packages-for-algorand-avm-implementation)
+- [x402 V2 Package-Specific Code examples](#x402-v2-package-specific-code-examples)
+- [x402 Legacy V1 NPM Packages for Algorand (AVM) implementation](#x402-legacy-v1-npm-packages-for-algorand-avm-implementation)
+- [x402 Legacy V1 Package-Specific Examples](#x402-legacy-v1-package-specific-examples)
+- [Payment Flow](#payment-flow)
+- [Schema and Types](#schema-and-types)
+- [Environment Setup](#environment-setup)
+- [Demo and Screenshots](#demo-and-screenshots)
+
+## Introduction
 
 GoPlausible has built the reference implementation, packages, documentation and example codes for Algorand (AVM) X402 integration available as FOSS and also contributed to the Algorand Foundation PR to Coinbase's x402 protocol repo: [Coinbase x402 PR #361](https://github.com/coinbase/x402/pull/361/) which has been [merged to Coinbase x402 repository](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md) and is available in the main Coinbase 402 repository.
+
+By collaboration between Algorand Foundation and GoPlausible, The x402 protocol has been extended to support Algorand Virtual Machine (AVM), enabling payment verification and settlement on Algorand networks (both mainnet and testnet). This implementation follows the `exact` payment scheme pattern established for EVM and SVM networks, providing a consistent developer experience across all supported blockchains.
+
+Key features of the Algorand implementation:
+
+- **Native Protocol Features**: Uses Algorand's native transaction capabilities for flexible, secure and efficient payments.
+- **Fee Abstraction**: Supports fee delegation through atomic transaction groups
+- **Asset Support**: Handles both ALGO and Algorand Standard Assets (ASAs)
+- **Fast Finality**: Benefits from Algorand's sub-5 second transaction finality
+- **Wallet Support**: Integrates with Algorand wallets via `@txnlab/use-wallet`
+
+## Algorand Implementation Details
+
+The Algorand implementation of x402 utilizes several unique features of the Algorand blockchain:
+
+### Atomic Transaction Groups for Fee Abstraction and beyond
+
+Atomic transaction groups are used to enable fee abstraction, allowing a third-party fee payer to cover transaction fees on behalf of the resource requester. This is achieved by grouping the payment transaction with a fee transaction from the fee payer, ensuring both transactions are processed together.
+
+Same pattern can be used to bring much more complex payment scenarios to x402 on Algorand.
+
+### ASA Support
+
+The implementation supports both native ALGO payments and transfers of Algorand Standard Assets (ASAs) e.g. USDC, with special handling for:
+
+1. ASA opt-in verification
+2. Asset ID validation
+3. Decimal place conversions on asset units and amounts
 
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
 ### Typescript Packages:
+
 #### Core and Mechanism Packages:
+
 - x402 V2 Core Package [@x402-avm/core](https://www.npmjs.com/package/@x402-avm/core)
 - x402 V2 AVM (Algorand) Mechanism [@x402-avm/avm](https://www.npmjs.com/package/@x402-avm/avm)
 
 #### Extensions and Paywall Packages:
+
 - x402 V2 Extensions [@x402-avm/extensions](https://www.npmjs.com/package/@x402-avm/extensions)
 - x402 V2 Paywall UI [@x402-avm/paywall](https://www.npmjs.com/package/@x402-avm/paywall)
 
 #### Back end Framework-Specific Middleware and Client Packages:
+
 - x402 V2 Express Middleware [@x402-avm/express](https://www.npmjs.com/package/@x402-avm/express)
 - x402 V2 Hono Middleware [@x402-avm/hono](https://www.npmjs.com/package/@x402-avm/hono)
 - x402 V2 Next.js Middleware [@x402-avm/next](https://www.npmjs.com/package/@x402-avm/next)
+
 #### HTTP Client Packages:
+
 - x402 V2 Fetch Client [@x402-avm/fetch](https://www.npmjs.com/package/@x402-avm/fetch)
 - x402 V2 Axios Client [@x402-avm/axios](https://www.npmjs.com/package/@x402-avm/axios)
 
 ### Python Packages:
+
 - x402 V2 Python SDK [x402-avm](https://pypi.org/project/x402-avm/)
-Extras packages for Python SDK: [all] , [clients] , [evm] , [extensions] , [fastapi] , [flask] , [httpx] , [mechanisms] , [requests] , [servers] , [svm]
+  Extras packages for Python SDK: [all] , [clients] , [evm] , [extensions] , [fastapi] , [flask] , [httpx] , [mechanisms] , [requests] , [servers] , [svm]
 
 ## x402 V2 Package-Specific Code examples:
 
@@ -59,46 +110,6 @@ This guide provides comprehensive documentation and examples for using the x402 
 - [x402 V1 Fetch Examples](./x402-v1-fetch-examples.md)
 - [x402 V1 Axios Examples](./x402-v1-axios-examples.md)
 
-## Table of Contents
-- [X402 Protocol Algorand (AVM) Specification](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md)
-- [Introduction](#introduction)
-- [Algorand Implementation Details](#algorand-implementation-details)
-- [Payment Flow](#payment-flow)
-- [Schema and Types](#schema-and-types)
-- [Environment Setup](#environment-setup)
-- [Demo and Screenshots](#demo-and-screenshots)
-
-## Introduction
-
-By collaboration between Algorand Foundation and GoPlausible, The x402 protocol has been extended to support Algorand Virtual Machine (AVM), enabling payment verification and settlement on Algorand networks (both mainnet and testnet). This implementation follows the `exact` payment scheme pattern established for EVM and SVM networks, providing a consistent developer experience across all supported blockchains.
-
-Key features of the Algorand implementation:
-
-- **Native Protocol Features**: Uses Algorand's native transaction capabilities for flexible, secure and efficient payments.
-- **Fee Abstraction**: Supports fee delegation through atomic transaction groups
-- **Asset Support**: Handles both ALGO and Algorand Standard Assets (ASAs)
-- **Fast Finality**: Benefits from Algorand's sub-5 second transaction finality
-- **Wallet Support**: Integrates with Algorand wallets via `@txnlab/use-wallet`
-
-## Algorand Implementation Details
-
-The Algorand implementation of x402 utilizes several unique features of the Algorand blockchain:
-
-
-### Atomic Transaction Groups for Fee Abstraction and beyond
-
-Atomic transaction groups are used to enable fee abstraction, allowing a third-party fee payer to cover transaction fees on behalf of the resource requester. This is achieved by grouping the payment transaction with a fee transaction from the fee payer, ensuring both transactions are processed together.
-
-Same pattern can be used to bring much more complex payment scenarios to x402 on Algorand.
-
-### ASA Support
-
-The implementation supports both native ALGO payments and transfers of Algorand Standard Assets (ASAs) e.g. USDC, with special handling for:
-
-1. ASA opt-in verification
-2. Asset ID validation
-3. Decimal place conversions on asset units and amounts
-
 ## Payment Flow
 
 1. **Client** requests a resource and receives a 402 Payment Required response with `paymentRequirements`
@@ -111,10 +122,10 @@ The implementation supports both native ALGO payments and transfers of Algorand 
    - **Payment Transaction** from step 2 with fee=0.
    - **Fee Transaction** from `feePayer` to `feePayer` with amount=0, fee covering both transactions (2 x minimum fee)
 4. **Client** adds other transactions to group and specifies the payment transaction index as `paymentIndex` field of payload.
-3. **Client** signs the transaction and includes it in the `X-PAYMENT` header payload `paymentGroup` at `paymentIndex`.
-4. **Resource Server** verifies and settles the payment via the **Facilitator**
-5. **Facilitator** verifies and submits the transaction (possibly as part of an atomic group for fee abstraction) and creates settlement response (Failed or fulfilled).
-6. **Resource Server** grants access to the resource once the payment is settled
+5. **Client** signs the transaction and includes it in the `X-PAYMENT` header payload `paymentGroup` at `paymentIndex`.
+6. **Resource Server** verifies and settles the payment via the **Facilitator**
+7. **Facilitator** verifies and submits the transaction (possibly as part of an atomic group for fee abstraction) and creates settlement response (Failed or fulfilled).
+8. **Resource Server** grants access to the resource once the payment is settled
 
 ## Schema and Types
 
@@ -124,38 +135,38 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 // Extended NetworkSchema with Algorand networks
 export const NetworkSchema = z.enum([
   // Existing networks
-  'base-sepolia',
-  'base',
-  'avalanche-fuji',
-  'avalanche',
-  'iotex',
-  'solana-devnet',
-  'solana',
+  "base-sepolia",
+  "base",
+  "avalanche-fuji",
+  "avalanche",
+  "iotex",
+  "solana-devnet",
+  "solana",
   // Algorand networks
-  'algorand-testnet',
-  'algorand-mainnet',
-])
+  "algorand-testnet",
+  "algorand-mainnet",
+]);
 ```
 
 ### Payment Requirements for Algorand
 
 ```typescript
 const paymentRequirements = {
-  scheme: 'exact',
-  network: 'algorand', // or "algorand-testnet"
-  maxAmountRequired: '10000', // amount in smallest unit 0.01 USDC (6 decimal places)
-  asset: '31566704', // ASA ID or "0" for ALGO
-  payTo: 'PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-  resource: 'https://example.com/weather',
-  description: 'Access to protected content',
-  mimeType: 'application/json',
+  scheme: "exact",
+  network: "algorand", // or "algorand-testnet"
+  maxAmountRequired: "10000", // amount in smallest unit 0.01 USDC (6 decimal places)
+  asset: "31566704", // ASA ID or "0" for ALGO
+  payTo: "PAYEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  resource: "https://example.com/weather",
+  description: "Access to protected content",
+  mimeType: "application/json",
   maxTimeoutSeconds: 60,
   outputSchema: null,
   extra: {
     decimals: 6, // Optional, defaults to 6 for ALGO
-    feePayer: 'PAYERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', // Optional
+    feePayer: "PAYERAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", // Optional
   },
-}
+};
 ```
 
 ### X-PAYMENT Header Payload for Algorand
@@ -163,17 +174,17 @@ const paymentRequirements = {
 ```typescript
 const paymentHeader = {
   x402Version: 1,
-  scheme: 'exact',
-  network: 'algorand-mainnet', // or "algorand-testnet"
+  scheme: "exact",
+  network: "algorand-mainnet", // or "algorand-testnet"
   payload: {
-    paymentGroup: ['AAAAAAAAAAAAA...AAAAAAAAAAAAA=','BBBBBBBBBBBBB...BBBBBBBBBBBBB='], 
-    paymentIndex: 1, 
+    paymentGroup: [
+      "AAAAAAAAAAAAA...AAAAAAAAAAAAA=",
+      "BBBBBBBBBBBBB...BBBBBBBBBBBBB=",
+    ],
+    paymentIndex: 1,
   },
-}
+};
 ```
-
-
-
 
 ## Environment Setup
 
