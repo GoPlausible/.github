@@ -47,6 +47,12 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 2. Asset ID validation
 3. Decimal place conversions on asset units and amounts
 
+### Transaction Group with composability
+
+The implementation allows for composability of transactions within the payment group, enabling more complex interactions such as multi-step payments, conditional payments, or integrating with other smart contracts on Algorand.
+
+The `paymentGroup` can include additional transactions beyond the payment and fee transactions, and the `paymentIndex` field specifies which transaction in the group is the actual payment transaction. This flexibility allows developers to create more sophisticated payment flows while still adhering to the x402 protocol.
+
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
 ### Typescript Packages:
