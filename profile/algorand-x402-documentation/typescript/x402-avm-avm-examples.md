@@ -2,7 +2,7 @@
 
 Comprehensive examples for the `@x402-avm/avm` TypeScript package covering signer interfaces, constants, utilities, transaction handling, and fee abstraction.
 
-> **Python examples**: See [x402-avm-avm-examples-python.md](./x402-avm-avm-examples-python.md) for Python (`x402-avm[avm]`) examples.
+> **Python examples**: See [x402-avm-avm-examples-python](../python/x402-avm-avm-examples-python.md) for Python (`x402-avm[avm]`) examples.
 
 ## Table of Contents
 
