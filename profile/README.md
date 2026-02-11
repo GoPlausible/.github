@@ -56,12 +56,10 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 [top↑](#goplausible)
 
-- X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](./algorand-x402-guide/scheme_exact_avm.md)
-- X402 Protocol packages, guides and examples on Algorand : [X402](./algorand-x402-guide/README.md)
+- X402 Protocol Algorand (AVM) Specification : [X402-AVM Spec](https://github.com/coinbase/x402/blob/main/specs/schemes/exact/scheme_exact_algo.md)
+- X402 Protocol documentation on Algorand : [X402-AVM Documentation](./algorand-x402-documentation/README.md)
 - X402 Protocol live instance for Algorand : [Algorand X402](https://x402.goplausible.xyz)
-
-- [Algorand X402 Spec PR to coinbase](https://github.com/coinbase/x402/pull/361)
-- [Algorand X402 PR Implementations repo](https://github.com/GoPlausible/x402-avm/tree/branch-pr-361)
+- Algorand X402 reference implementations repo [x402-AVM Repository](https://github.com/GoPlausible/x402-avm/tree/branch-algorand-v2)
 
 ---
 
