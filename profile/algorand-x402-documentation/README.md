@@ -6,6 +6,7 @@
 
 - [Introduction](#introduction)
 - [Algorand Implementation Details](#algorand-implementation-details)
+- [Facilitator](#facilitator)
 - [x402 V2 Packages for Algorand (AVM) implementation](#x402-v2-packages-for-algorand-avm-implementation)
 - [x402 V2 Package-Specific Code examples](#x402-v2-package-specific-code-examples)
   - [Typescript Examples](#typescript-examples)
@@ -54,6 +55,13 @@ The implementation supports both native ALGO payments and transfers of Algorand 
 1. ASA opt-in verification
 2. Asset ID validation
 3. Decimal place conversions on asset units and amounts
+
+## Facilitator
+
+Algorand has a dedicated facilitator that handles payment verification and settlement for the x402 protocol on Algorand **MAINNET** and **TESTNET**:
+- **Facilitator Address**: [x402-avm-facilitator](https://facilitator.goplausible.xyz/)
+- **Supported Networks**: Algorand Mainnet and Testnet, Solana Mainnet and Devnet, Base ETH and Sepolia. Check live here [Algorand x402 supported networks](https://facilitator.goplausible.xyz/supported)
+- **Facilitator API docs**: [Algorand x402 Facilitator OpenAPI docs](https://facilitator.goplausible.xyz/docs)
 
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
