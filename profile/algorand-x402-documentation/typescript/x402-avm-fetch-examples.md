@@ -24,14 +24,16 @@ Comprehensive guide for using `@x402-avm/fetch` to make automatic payments over 
 ## Installation
 
 ```bash
-npm install @x402-avm/fetch @x402-avm/avm algosdk
+npm install @x402-avm/fetch @x402-avm/avm
 ```
+
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
 
 Or with other package managers:
 
 ```bash
-pnpm add @x402-avm/fetch @x402-avm/avm algosdk
-yarn add @x402-avm/fetch @x402-avm/avm algosdk
+pnpm add @x402-avm/fetch @x402-avm/avm
+yarn add @x402-avm/fetch @x402-avm/avm
 ```
 
 ---
@@ -43,22 +45,10 @@ The simplest way to get started with x402-avm fetch is a 10-line setup:
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 // 1. Create a signer (see detailed examples below)
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // 2. Create and configure the client
 const client = new x402Client();
@@ -354,7 +344,7 @@ const response = await paidFetch("https://api.example.com/paid-api");
 
 ## Implementing ClientAvmSigner for Node.js
 
-In Node.js or server environments, use algosdk directly with a private key.
+In Node.js or server environments, use `toClientAvmSigner` from `@x402-avm/avm`.
 
 ### Environment Variables
 
@@ -366,36 +356,10 @@ AVM_PRIVATE_KEY=base64EncodedPrivateKeyHere
 ### Basic Implementation
 
 ```typescript
-import algosdk from "algosdk";
-import type { ClientAvmSigner } from "@x402-avm/avm";
-
-function createNodeSigner(privateKeyBase64: string): ClientAvmSigner {
-  const secretKey = Buffer.from(privateKeyBase64, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-
-  return {
-    address,
-    signTransactions: async (
-      txns: Uint8Array[],
-      indexesToSign?: number[],
-    ): Promise<(Uint8Array | null)[]> => {
-      return txns.map((txnBytes, i) => {
-        // Skip transactions we should not sign
-        if (indexesToSign && !indexesToSign.includes(i)) {
-          return null;
-        }
-
-        // Decode, sign, return blob
-        const decoded = algosdk.decodeUnsignedTransaction(txnBytes);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
-}
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 // Usage
-const signer = createNodeSigner(process.env.AVM_PRIVATE_KEY!);
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 console.log("Signer address:", signer.address);
 ```
 
@@ -404,24 +368,11 @@ console.log("Signer address:", signer.address);
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 async function main() {
   // Create signer from private key
-  const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-
-  const signer = {
-    address,
-    signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-      return txns.map((txn, i) => {
-        if (indexesToSign && !indexesToSign.includes(i)) return null;
-        const decoded = algosdk.decodeUnsignedTransaction(txn);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
+  const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
   // Configure x402 client
   const client = new x402Client();
@@ -462,25 +413,18 @@ async function main() {
 main().catch(console.error);
 ```
 
-### With Custom Algod Client
+### With Custom Algod URL
 
 ```typescript
-import algosdk from "algosdk";
 import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-
-// Create a custom Algod client (e.g., for a private node)
-const algodClient = new algosdk.Algodv2(
-  process.env.ALGOD_TOKEN || "",
-  process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
-  process.env.ALGOD_PORT || "",
-);
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
   signer,
   algodConfig: {
-    algodClient, // Pass pre-configured client directly
+    algodUrl: process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
+    algodToken: process.env.ALGOD_TOKEN || "",
   },
 });
 
@@ -768,8 +712,7 @@ export default function App() {
 // cli-paid-api.ts
 import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
 
 async function main() {
   // Validate environment
@@ -781,21 +724,8 @@ async function main() {
   }
 
   // Create signer
-  const secretKey = Buffer.from(privateKey, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-  console.log(`Using address: ${address}`);
-
-  const signer = {
-    address,
-    signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-      return txns.map((txn, i) => {
-        if (indexesToSign && !indexesToSign.includes(i)) return null;
-        const decoded = algosdk.decodeUnsignedTransaction(txn);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
+  const signer = toClientAvmSigner(privateKey);
+  console.log(`Using address: ${signer.address}`);
 
   // Configure client with policies
   const client = new x402Client();

@@ -29,6 +29,8 @@ including both the proxy pattern (middleware.ts) and route handler wrapper patte
 npm install @x402-avm/next @x402-avm/avm @x402-avm/core
 ```
 
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+
 For paywall UI support:
 
 ```bash

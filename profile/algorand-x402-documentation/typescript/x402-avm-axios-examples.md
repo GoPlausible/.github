@@ -24,14 +24,16 @@ Comprehensive guide for using `@x402-avm/axios` to make automatic payments over 
 ## Installation
 
 ```bash
-npm install @x402-avm/axios @x402-avm/avm algosdk axios
+npm install @x402-avm/axios @x402-avm/avm axios
 ```
+
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
 
 Or with other package managers:
 
 ```bash
-pnpm add @x402-avm/axios @x402-avm/avm algosdk axios
-yarn add @x402-avm/axios @x402-avm/avm algosdk axios
+pnpm add @x402-avm/axios @x402-avm/avm axios
+yarn add @x402-avm/axios @x402-avm/avm axios
 ```
 
 ---
@@ -42,22 +44,10 @@ yarn add @x402-avm/axios @x402-avm/avm algosdk axios
 import axios from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 // 1. Create signer
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // 2. Create and configure the x402 client
 const client = new x402Client();
@@ -217,31 +207,12 @@ interface ClientAvmSigner {
 }
 ```
 
-### Node.js Implementation (algosdk)
+### Node.js Implementation
 
 ```typescript
-import algosdk from "algosdk";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
-function createSigner(privateKeyBase64: string): ClientAvmSigner {
-  const secretKey = Buffer.from(privateKeyBase64, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-
-  return {
-    address,
-    signTransactions: async (
-      txns: Uint8Array[],
-      indexesToSign?: number[],
-    ): Promise<(Uint8Array | null)[]> => {
-      return txns.map((txnBytes, i) => {
-        if (indexesToSign && !indexesToSign.includes(i)) return null;
-        const decoded = algosdk.decodeUnsignedTransaction(txnBytes);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
-}
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 ```
 
 ### Browser Implementation (@txnlab/use-wallet)
@@ -359,23 +330,17 @@ registerExactAvmScheme(client, {
 });
 ```
 
-### Pre-Configured Algod Client
+### Pre-Configured Algod URL
 
 ```typescript
-import algosdk from "algosdk";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-
-const algodClient = new algosdk.Algodv2(
-  "your-token",
-  "https://your-node.example.com",
-  443,
-);
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
   signer,
   algodConfig: {
-    algodClient, // Pass pre-configured algosdk.Algodv2 directly
+    algodUrl: "https://your-node.example.com",
+    algodToken: "your-token",
   },
 });
 ```
@@ -564,25 +529,11 @@ try {
 import axios, { AxiosError } from "axios";
 import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402-avm/axios";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
 
 // ---- Signer Setup ----
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-
-const signer = {
-  address,
-  signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // ---- Client Configuration ----
 
@@ -668,7 +619,7 @@ async function submitPaidQuery(query: string) {
 // ---- Main ----
 
 async function main() {
-  console.log(`Wallet address: ${address}`);
+  console.log(`Wallet address: ${signer.address}`);
   console.log(`Network: ${ALGORAND_TESTNET_CAIP2}\n`);
 
   // Fetch premium content (auto-pays if 402)

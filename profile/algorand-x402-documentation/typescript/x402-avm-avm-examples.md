@@ -46,13 +46,15 @@ Comprehensive examples for the `@x402-avm/avm` TypeScript package covering signe
 ## Installation
 
 ```bash
-npm install @x402-avm/avm algosdk
+npm install @x402-avm/avm
 ```
+
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
 
 For browser wallet integration:
 
 ```bash
-npm install @x402-avm/avm algosdk @txnlab/use-wallet
+npm install @x402-avm/avm @txnlab/use-wallet
 ```
 
 ---
@@ -109,7 +111,7 @@ interface FacilitatorAvmSigner {
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
 
   // Get Algod client for a specific network
-  getAlgodClient(network: Network): unknown; // algosdk.Algodv2
+  getAlgodClient(network: Network): unknown; // AlgodClient from @algorandfoundation/algokit-utils
 
   // Simulate a transaction group before submission
   simulateTransactions(txns: Uint8Array[], network: Network): Promise<unknown>;
@@ -210,47 +212,16 @@ export default function App() {
 ### With algosdk Private Key (Server-Side)
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 /**
  * Create a ClientAvmSigner from a base64-encoded private key.
+ * Uses @algorandfoundation/algokit-utils internally — no algosdk required.
  *
  * The private key is 64 bytes: [32-byte seed][32-byte public key].
- * The address is derived from the last 32 bytes (public key).
+ * The address is derived from the seed via Ed25519.
  */
-function createPrivateKeySigner(privateKeyBase64: string): ClientAvmSigner {
-  const secretKey = Buffer.from(privateKeyBase64, "base64");
-
-  if (secretKey.length !== 64) {
-    throw new Error(`Invalid key length: expected 64, got ${secretKey.length}`);
-  }
-
-  const address = algosdk.encodeAddress(secretKey.slice(32));
-
-  return {
-    address,
-    signTransactions: async (
-      txns: Uint8Array[],
-      indexesToSign?: number[],
-    ): Promise<(Uint8Array | null)[]> => {
-      return txns.map((txnBytes, i) => {
-        // Skip if not in indexes to sign
-        if (indexesToSign && !indexesToSign.includes(i)) {
-          return null;
-        }
-
-        // Decode, sign, return raw blob
-        const decoded = algosdk.decodeUnsignedTransaction(txnBytes);
-        const signed = algosdk.signTransaction(decoded, secretKey);
-        return signed.blob;
-      });
-    },
-  };
-}
-
-// Usage:
-const signer = createPrivateKeySigner(process.env.AVM_PRIVATE_KEY!);
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 console.log("Signer address:", signer.address);
 ```
 
@@ -261,118 +232,18 @@ console.log("Signer address:", signer.address);
 Complete, production-ready implementation.
 
 ```typescript
-import type { FacilitatorAvmSigner, FacilitatorAvmSignerConfig } from "@x402-avm/avm";
-import type { Network } from "@x402-avm/core/types";
-import {
-  ALGORAND_TESTNET_CAIP2,
-  ALGORAND_MAINNET_CAIP2,
-  createAlgodClient,
-  isAlgorandNetwork,
-  isTestnetNetwork,
-} from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner } from "@x402-avm/avm";
 
-/**
- * Creates a FacilitatorAvmSigner from a base64-encoded private key.
- * Supports both mainnet and testnet with automatic network detection.
- */
-function createFacilitatorSigner(
-  privateKeyBase64: string,
-  config?: FacilitatorAvmSignerConfig,
-): FacilitatorAvmSigner {
-  const secretKey = Buffer.from(privateKeyBase64, "base64");
-  const address = algosdk.encodeAddress(secretKey.slice(32));
+// Default (uses AlgoNode endpoints automatically):
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
-  // Create Algod clients for each network
-  const clients: Record<string, algosdk.Algodv2> = {};
+// With custom Algod URLs:
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: "https://testnet-api.algonode.cloud",
+  mainnetUrl: "https://mainnet-api.algonode.cloud",
+});
 
-  function getClient(network: Network): algosdk.Algodv2 {
-    if (!clients[network]) {
-      clients[network] = createAlgodClient(
-        network,
-        isTestnetNetwork(network) ? config?.testnetUrl : config?.mainnetUrl,
-        config?.algodToken,
-      );
-    }
-    return clients[network];
-  }
-
-  return {
-    getAddresses: () => [address],
-
-    signTransaction: async (txn: Uint8Array, _senderAddress: string) => {
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    },
-
-    getAlgodClient: (network: Network) => getClient(network),
-
-    simulateTransactions: async (txns: Uint8Array[], network: Network) => {
-      const client = getClient(network);
-
-      const signedTxns = txns.map((txnBytes) => {
-        try {
-          // Already signed
-          return algosdk.decodeSignedTransaction(txnBytes);
-        } catch {
-          // Unsigned -- wrap for simulation
-          const txn = algosdk.decodeUnsignedTransaction(txnBytes);
-          return new algosdk.SignedTransaction({ txn });
-        }
-      });
-
-      const request = new algosdk.modelsv2.SimulateRequest({
-        txnGroups: [
-          new algosdk.modelsv2.SimulateRequestTransactionGroup({
-            txns: signedTxns,
-          }),
-        ],
-        allowEmptySignatures: true,
-      });
-
-      const result = await client.simulateTransactions(request).do();
-
-      // Check for simulation failures
-      for (const group of result.txnGroups || []) {
-        if (group.failureMessage) {
-          throw new Error(`Simulation failed: ${group.failureMessage}`);
-        }
-      }
-
-      return result;
-    },
-
-    sendTransactions: async (signedTxns: Uint8Array[], network: Network) => {
-      const client = getClient(network);
-
-      // Concatenate all signed transaction bytes for atomic group submission
-      const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-      const { txId } = await client.sendRawTransaction(combined).do();
-      return txId;
-    },
-
-    waitForConfirmation: async (
-      txId: string,
-      network: Network,
-      waitRounds: number = 4,
-    ) => {
-      const client = getClient(network);
-      return algosdk.waitForConfirmation(client, txId, waitRounds);
-    },
-  };
-}
-
-// Usage:
-const facilitatorSigner = createFacilitatorSigner(
-  process.env.AVM_PRIVATE_KEY!,
-  {
-    testnetUrl: "https://testnet-api.algonode.cloud",
-    mainnetUrl: "https://mainnet-api.algonode.cloud",
-  },
-);
-
-console.log("Fee payer addresses:", facilitatorSigner.getAddresses());
+console.log("Fee payer addresses:", signer.getAddresses());
 ```
 
 ---
@@ -465,7 +336,7 @@ const isValid = ALGORAND_ADDRESS_REGEX.test(someAddress);
 ```typescript
 import { isValidAlgorandAddress } from "@x402-avm/avm";
 
-// Full validation (format + checksum via algosdk)
+// Full validation (format + checksum)
 isValidAlgorandAddress("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 // => true (zero address)
 
@@ -513,11 +384,11 @@ const bytes = decodeTransaction(base64Str);
 
 // Decode a signed transaction from base64
 const signedTxn = decodeSignedTransaction(base64Str);
-// => algosdk.SignedTransaction
+// => SignedTransaction object
 
 // Decode an unsigned transaction from base64
 const unsignedTxn = decodeUnsignedTransaction(base64Str);
-// => algosdk.Transaction
+// => Transaction object
 ```
 
 ### Network Utilities
@@ -599,7 +470,7 @@ const signed = hasSignature(txnBytes);  // true/false
 // Validate group ID consistency
 const allMatch = validateGroupId([txn1Bytes, txn2Bytes, txn3Bytes]);
 
-// Assign group ID to transactions (algosdk.Transaction objects)
+// Assign group ID to transactions
 const groupedTxns = assignGroupId([txn1, txn2, txn3]);
 ```
 
@@ -609,99 +480,24 @@ const groupedTxns = assignGroupId([txn1, txn2, txn3]);
 
 ### Simple Payment Group
 
-A single USDC transfer without fee abstraction.
-
-```typescript
-import algosdk from "algosdk";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID, createAlgodClient } from "@x402-avm/avm";
-
-async function createSimplePayment(
-  senderAddress: string,
-  receiverAddress: string,
-  amount: number,  // in atomic units (e.g., 1000000 = 1 USDC)
-) {
-  const algod = createAlgodClient(ALGORAND_TESTNET_CAIP2);
-  const params = await algod.getTransactionParams().do();
-
-  // Create USDC transfer
-  const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: senderAddress,
-    to: receiverAddress,
-    amount,
-    assetIndex: parseInt(USDC_TESTNET_ASA_ID, 10),
-    suggestedParams: params,
-  });
-
-  // Return as bytes for the signer
-  return [txn.toByte()];
-}
-```
-
 ### Fee-Abstracted Payment Group
 
-A USDC transfer with a fee payer transaction (2-transaction atomic group).
-
 ```typescript
-import algosdk from "algosdk";
-import {
-  ALGORAND_TESTNET_CAIP2,
-  USDC_TESTNET_ASA_ID,
-  MIN_TXN_FEE,
-  createAlgodClient,
-  encodeTransaction,
-} from "@x402-avm/avm";
+// Transaction group creation is handled internally by ExactAvmScheme.
+// Users do not need to build transactions manually.
+// Simply create a signer and register the scheme:
 
-async function createFeeAbstractedPayment(
-  senderAddress: string,
-  receiverAddress: string,
-  feePayerAddress: string,
-  amount: number,
-) {
-  const algod = createAlgodClient(ALGORAND_TESTNET_CAIP2);
-  const params = await algod.getTransactionParams().do();
+import { toClientAvmSigner } from "@x402-avm/avm";
+import { ExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { x402Client } from "@x402-avm/core/client";
 
-  // Transaction 0: USDC transfer (client pays, fee = 0)
-  const paymentTxn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-    from: senderAddress,
-    to: receiverAddress,
-    amount,
-    assetIndex: parseInt(USDC_TESTNET_ASA_ID, 10),
-    suggestedParams: {
-      ...params,
-      fee: 0,      // Client pays zero fee
-      flatFee: true,
-    },
-  });
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
+const client = new x402Client({ schemes: [] });
+client.register("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", new ExactAvmScheme(signer));
 
-  // Transaction 1: Fee payer (self-payment with pooled fee)
-  const feePayerTxn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-    from: feePayerAddress,
-    to: feePayerAddress,  // Self-payment
-    amount: 0,             // No value transfer
-    suggestedParams: {
-      ...params,
-      fee: MIN_TXN_FEE * 2,  // Cover fee for both txns (2000 microAlgos)
-      flatFee: true,
-    },
-  });
-
-  // Assign group ID for atomic execution
-  const grouped = algosdk.assignGroupID([paymentTxn, feePayerTxn]);
-
-  // Return as bytes
-  const paymentBytes = grouped[0].toByte();
-  const feePayerBytes = grouped[1].toByte();
-
-  return {
-    // For the payment payload
-    paymentGroup: [
-      encodeTransaction(paymentBytes),
-      encodeTransaction(feePayerBytes),
-    ],
-    paymentIndex: 0,  // Index of the payment transaction
-    rawBytes: [paymentBytes, feePayerBytes],
-  };
-}
+// The client automatically builds and signs the correct transaction group
+// (single payment or 2-transaction fee-abstracted group) based on server requirements.
+const response = await client.fetch("https://api.example.com/paid-resource");
 ```
 
 ---
@@ -731,40 +527,20 @@ In x402-avm, fee abstraction allows the **facilitator** to pay transaction fees 
 ### Client-Side Fee Abstraction
 
 ```typescript
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
 import { x402Client } from "@x402-avm/core/client";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import algosdk from "algosdk";
 
-// The fee abstraction is handled automatically by the ExactAvmScheme
-// when it detects a feePayer in the PaymentRequirements
-
-const signer: ClientAvmSigner = {
-  address: myAddress,
-  signTransactions: async (txns, indexesToSign) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      return algosdk.signTransaction(decoded, secretKey).blob;
-    });
-  },
-};
-
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 const client = new x402Client({ schemes: [] });
 registerExactAvmScheme(client, { signer });
 
-// When the server's PaymentRequirements include a feePayer address,
-// the scheme automatically:
+// Fee abstraction is handled automatically when the server's
+// PaymentRequirements include a feePayer address. The scheme:
 // 1. Creates a 2-transaction group (payment + fee payer)
-// 2. Asks the signer to sign only the payment transaction
+// 2. Signs only the payment transaction via signer
 // 3. Sends both transactions in the payload
-//
-// The facilitator then:
-// 1. Verifies the payment transaction
-// 2. Validates the fee payer transaction (self-payment, amount=0, no rekey)
-// 3. Signs the fee payer transaction
-// 4. Submits the atomic group
+// The facilitator signs the fee payer transaction during settlement.
 const response = await client.fetch("https://api.example.com/paid-resource");
 ```
 
@@ -934,53 +710,14 @@ A complete Express.js facilitator service.
 import express from "express";
 import { x402Facilitator } from "@x402-avm/core/facilitator";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
 
-// Build signer from environment
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: "https://testnet-api.algonode.cloud",
+  mainnetUrl: "https://mainnet-api.algonode.cloud",
+});
 
-const algodTestnet = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-const algodMainnet = new algosdk.Algodv2("", "https://mainnet-api.algonode.cloud", "");
-
-function getClient(network: string) {
-  return network === ALGORAND_MAINNET_CAIP2 ? algodMainnet : algodTestnet;
-}
-
-const signer = {
-  getAddresses: () => [address] as const,
-  signTransaction: async (txn: Uint8Array) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    return algosdk.signTransaction(decoded, secretKey).blob;
-  },
-  getAlgodClient: (network: string) => getClient(network),
-  simulateTransactions: async (txns: Uint8Array[], network: string) => {
-    const client = getClient(network);
-    const stxns = txns.map((t) => {
-      try { return algosdk.decodeSignedTransaction(t); }
-      catch { return new algosdk.SignedTransaction({ txn: algosdk.decodeUnsignedTransaction(t) }); }
-    });
-    const req = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns })],
-      allowEmptySignatures: true,
-    });
-    const result = await client.simulateTransactions(req).do();
-    for (const g of result.txnGroups || []) {
-      if (g.failureMessage) throw new Error(`Simulation failed: ${g.failureMessage}`);
-    }
-    return result;
-  },
-  sendTransactions: async (signedTxns: Uint8Array[], network: string) => {
-    const client = getClient(network);
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await client.sendRawTransaction(combined).do();
-    return txId;
-  },
-  waitForConfirmation: async (txId: string, network: string, rounds = 4) => {
-    return algosdk.waitForConfirmation(getClient(network), txId, rounds);
-  },
-};
+console.log("Fee payer address:", signer.getAddresses()[0]);
 
 // Setup facilitator
 const facilitator = new x402Facilitator();
@@ -1024,7 +761,7 @@ app.post("/settle", async (req, res) => {
 const PORT = parseInt(process.env.PORT || "4000", 10);
 app.listen(PORT, () => {
   console.log(`Facilitator service running on port ${PORT}`);
-  console.log(`Fee payer address: ${address}`);
+  console.log(`Fee payer address: ${signer.getAddresses()[0]}`);
   console.log(`Networks: Testnet + Mainnet`);
 });
 ```
@@ -1045,4 +782,4 @@ app.listen(PORT, () => {
 | Algod Client | `createAlgodClient(network)` |
 | Encode Txn | `encodeTransaction(bytes)` |
 | Decode Txn | `decodeTransaction(b64)` |
-| algosdk Encoding | Raw `Uint8Array` directly |
+| Signer Factory | `toClientAvmSigner(key)` / `toFacilitatorAvmSigner(key)` |

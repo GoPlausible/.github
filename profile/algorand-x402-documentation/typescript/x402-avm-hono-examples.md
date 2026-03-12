@@ -28,6 +28,8 @@ including Algorand (AVM) blockchain payments and Cloudflare Workers deployment.
 npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono
 ```
 
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+
 For Node.js server deployment:
 
 ```bash
@@ -737,79 +739,20 @@ A facilitator server built with Hono for verifying and settling Algorand payment
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
-import algosdk from "algosdk";
 import { x402Facilitator } from "@x402-avm/core/facilitator";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
 
 const app = new Hono();
 app.use("*", cors());
 
 // ---- Signer ----
 
-const privateKeyBase64 = process.env.AVM_PRIVATE_KEY!;
-const privateKeyBytes = Buffer.from(privateKeyBase64, "base64");
-const facilitatorAddress = algosdk.encodeAddress(privateKeyBytes.slice(32));
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
+});
 
-const algodClient = new algosdk.Algodv2(
-  process.env.ALGOD_TOKEN || "",
-  process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
-  "",
-);
-
-const signer: FacilitatorAvmSigner = {
-  address: facilitatorAddress,
-
-  async getAlgodClient(_network: string) {
-    return algodClient;
-  },
-
-  async signGroupTransactions(
-    groupTxnBytes: Uint8Array[],
-    myIndices: number[],
-  ): Promise<Uint8Array[]> {
-    const result = [...groupTxnBytes];
-    for (const idx of myIndices) {
-      const txn = algosdk.decodeUnsignedTransaction(groupTxnBytes[idx]);
-      result[idx] = txn.signTxn(privateKeyBytes);
-    }
-    return result;
-  },
-
-  async sendGroup(signedGroupBytes: Uint8Array[]): Promise<string> {
-    const combined = new Uint8Array(
-      signedGroupBytes.reduce((acc, b) => acc + b.length, 0),
-    );
-    let offset = 0;
-    for (const bytes of signedGroupBytes) {
-      combined.set(bytes, offset);
-      offset += bytes.length;
-    }
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-
-  async simulateGroup(groupTxnBytes: Uint8Array[]): Promise<any> {
-    const txns = groupTxnBytes.map((bytes) => {
-      try {
-        return algosdk.decodeSignedTransaction(bytes);
-      } catch {
-        const unsigned = algosdk.decodeUnsignedTransaction(bytes);
-        return new algosdk.SignedTransaction(unsigned);
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [
-        new algosdk.modelsv2.SimulateRequestTransactionGroup({
-          txns: txns.map((t) => algosdk.decodeObj(algosdk.encodeMsgpack(t))),
-        }),
-      ],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-};
+const facilitatorAddress = signer.getAddresses()[0];
 
 // ---- Facilitator ----
 

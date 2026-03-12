@@ -33,6 +33,8 @@ Comprehensive examples for `@x402-avm/core` and `@x402-avm/avm` packages coverin
 npm install @x402-avm/core @x402-avm/avm
 ```
 
+> **Breaking change (v2 → v2.1+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+
 ---
 
 ## Types and Schemas
@@ -215,24 +217,10 @@ const paymentRequired: PaymentRequired = {
 ```typescript
 import { x402Client } from "@x402-avm/core/client";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 
 // 1. Create a signer (using private key for server-side usage)
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-
-const signer: ClientAvmSigner = {
-  address,
-  signTransactions: async (txns, indexesToSign) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      const signed = algosdk.signTransaction(decoded, secretKey);
-      return signed.blob;
-    });
-  },
-};
+const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // 2. Create and configure the client
 const client = new x402Client({
@@ -426,48 +414,10 @@ registerExactAvmScheme(httpServer.resourceServer);
 ```typescript
 import { x402Facilitator } from "@x402-avm/core/facilitator";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
 
-// 1. Create the facilitator signer (see avm-examples.md for full implementation)
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const facilitatorSigner: FacilitatorAvmSigner = {
-  getAddresses: () => [address],
-  signTransaction: async (txn, senderAddress) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    const signed = algosdk.signTransaction(decoded, secretKey);
-    return signed.blob;
-  },
-  getAlgodClient: (network) => algodClient,
-  simulateTransactions: async (txns, network) => {
-    // Wrap unsigned txns for simulation
-    const stxns = txns.map((txnBytes) => {
-      try {
-        return algosdk.decodeSignedTransaction(txnBytes);
-      } catch {
-        const txn = algosdk.decodeUnsignedTransaction(txnBytes);
-        return new algosdk.SignedTransaction({ txn });
-      }
-    });
-    const request = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns })],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(request).do();
-  },
-  sendTransactions: async (signedTxns, network) => {
-    const combined = Buffer.concat(signedTxns.map(t => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  waitForConfirmation: async (txId, network, waitRounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, waitRounds);
-  },
-};
+// 1. Create the facilitator signer
+const facilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // 2. Create and configure facilitator
 const facilitator = new x402Facilitator();
@@ -555,41 +505,10 @@ export const RESOURCE_SERVER_URL = "http://localhost:3000";
 import express from "express";
 import { x402Facilitator } from "@x402-avm/core/facilitator";
 import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toFacilitatorAvmSigner } from "@x402-avm/avm";
 import { NETWORK } from "../shared/config";
 
-const secretKey = Buffer.from(process.env.AVM_PRIVATE_KEY!, "base64");
-const address = algosdk.encodeAddress(secretKey.slice(32));
-const algodClient = new algosdk.Algodv2("", "https://testnet-api.algonode.cloud", "");
-
-const signer: FacilitatorAvmSigner = {
-  getAddresses: () => [address],
-  signTransaction: async (txn, _addr) => {
-    const decoded = algosdk.decodeUnsignedTransaction(txn);
-    return algosdk.signTransaction(decoded, secretKey).blob;
-  },
-  getAlgodClient: () => algodClient,
-  simulateTransactions: async (txns) => {
-    const stxns = txns.map((t) => {
-      try { return algosdk.decodeSignedTransaction(t); }
-      catch { return new algosdk.SignedTransaction({ txn: algosdk.decodeUnsignedTransaction(t) }); }
-    });
-    const req = new algosdk.modelsv2.SimulateRequest({
-      txnGroups: [new algosdk.modelsv2.SimulateRequestTransactionGroup({ txns: stxns })],
-      allowEmptySignatures: true,
-    });
-    return algodClient.simulateTransactions(req).do();
-  },
-  sendTransactions: async (signedTxns) => {
-    const combined = Buffer.concat(signedTxns.map((t) => Buffer.from(t)));
-    const { txId } = await algodClient.sendRawTransaction(combined).do();
-    return txId;
-  },
-  waitForConfirmation: async (txId, _net, rounds = 4) => {
-    return algosdk.waitForConfirmation(algodClient, txId, rounds);
-  },
-};
+const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 const facilitator = new x402Facilitator();
 registerExactAvmScheme(facilitator, { signer, networks: NETWORK });
@@ -683,23 +602,10 @@ app.listen(3000, () => console.log("Resource server running on :3000"));
 // ============================================================
 import { x402Client } from "@x402-avm/core/client";
 import { registerExactAvmScheme as registerClientScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
-import algosdk from "algosdk";
+import { toClientAvmSigner } from "@x402-avm/avm";
 import { RESOURCE_SERVER_URL } from "../shared/config";
 
-const clientSecretKey = Buffer.from(process.env.CLIENT_AVM_PRIVATE_KEY!, "base64");
-const clientAddress = algosdk.encodeAddress(clientSecretKey.slice(32));
-
-const clientSigner: ClientAvmSigner = {
-  address: clientAddress,
-  signTransactions: async (txns, indexesToSign) => {
-    return txns.map((txn, i) => {
-      if (indexesToSign && !indexesToSign.includes(i)) return null;
-      const decoded = algosdk.decodeUnsignedTransaction(txn);
-      return algosdk.signTransaction(decoded, clientSecretKey).blob;
-    });
-  },
-};
+const clientSigner = toClientAvmSigner(process.env.CLIENT_AVM_PRIVATE_KEY!);
 
 const client = new x402Client({ schemes: [] });
 registerClientScheme(client, { signer: clientSigner });
