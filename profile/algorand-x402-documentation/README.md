@@ -11,12 +11,14 @@
 - [x402 V2 Package-Specific Code examples](#x402-v2-package-specific-code-examples)
   - [Typescript Examples](#typescript-examples)
   - [Python Examples](#python-examples)
+- [Algorand x402 Legacy V2 Using AlgoSDK](./v2_Algosdk_legacy/README.md)
 - [Algorand x402 Screencast](./x402-screencast.md)
 - [Payment Flow](#payment-flow)
 - [Schema and Types](#schema-and-types)
 - [Environment Setup](#environment-setup)
 - [x402 Legacy V1 NPM Packages for Algorand (AVM) implementation](#x402-legacy-v1-npm-packages-for-algorand-avm-implementation)
 - [x402 Legacy V1 Package-Specific Examples](#x402-legacy-v1-package-specific-examples)
+
 - [Algorand x402 Legacy V1 Screencast](./v1/x402-screencast.md)
 
 ## Introduction

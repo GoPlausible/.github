@@ -44,6 +44,8 @@ Algorand Local MCP is the self-hosted version of MCP protocol for Algorand, whic
 
 ### Algorand Ecosystem Projects MCP implementations (by GoPlausible)
 
+- HayStack Router: Embedded in Algorand MCP, Algorand Remote MCP and Algorand Remote MCP Lite
+- Alpha Arcade: Embedded in Algorand MCP, Algorand Remote MCP and Algorand Remote MCP Lite
 - [Ultrade MCP](https://github.com/ultrade-org/ultrade-mcp)
 - [TinyMan MCP](https://github.com/GoPlausible/tinyman-mcp)
 - [Vestige MCP](https://github.com/GoPlausible/vestige-mcp)
