@@ -18,7 +18,6 @@
 - [Environment Setup](#environment-setup)
 - [x402 Legacy V1 NPM Packages for Algorand (AVM) implementation](#x402-legacy-v1-npm-packages-for-algorand-avm-implementation)
 - [x402 Legacy V1 Package-Specific Examples](#x402-legacy-v1-package-specific-examples)
-
 - [Algorand x402 Legacy V1 Screencast](./v1/x402-screencast.md)
 
 ## Introduction
