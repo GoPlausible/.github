@@ -510,9 +510,11 @@ INDEXER_TESTNET_URL=https://testnet-idx.algonode.cloud   # default
 
 #### TypeScript
 
+> **Breaking Change:** `algosdk` has been removed as a direct dependency. The AVM packages now use `@algorandfoundation/algokit-utils` (v10 alpha) internally. If you were previously installing `algosdk` alongside `@x402-avm/avm`, remove it from your install command and uninstall it from your project.
+
 ```bash
 # Core packages
-npm install @x402-avm/core @x402-avm/avm algosdk
+npm install @x402-avm/core @x402-avm/avm
 
 # Server middleware (choose one)
 npm install @x402-avm/express    # Express.js
