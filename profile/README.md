@@ -88,19 +88,6 @@ With just a Web 2.0 login, own User/Agent, Web 3.0 Ⱥlgorand Wallet accounts bou
 
 ---
 
-## Falcon keys WASM based TS implementation for NodeJS and Web
-[top↑](#goplausible)
-
-Falcon keys are [Algorand](https://algorand.co) innovation for Post Quantum Cryptography. GoPlausible has developed Falcon keys TS implementation for NodeJS and Web using WebAssembly (WASM).
-
-- [Falcon keys TS implementation repo](https://github.com/GoPlausible/falcon-signatures-js)
-- [Falcon keys TS implementation NPM Package](https://www.npmjs.com/package/falcon-signatures)
-- [Falcon keys TS implementation Live Playground](https://daoauth.org)
-
-<img width="500" height="1024" alt="ChatGPT Image Sep 26, 2025, 08_53_23 PM" src="https://github.com/user-attachments/assets/b6b50e1d-9df2-4f04-b3a4-6d578d9fdd77" />
-
----
-
 ## PLAUSIBLE Protocol
 [top↑](#goplausible)
 
