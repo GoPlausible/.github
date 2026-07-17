@@ -1,6 +1,6 @@
 # x402-avm V2: Paywall UI Examples
 
-Comprehensive guide for using `@x402-avm/paywall` to create payment-gated content with server-side middleware and client-side wallet integration for Algorand (AVM).
+Comprehensive guide for using `@x402/paywall` to create payment-gated content with server-side middleware and client-side wallet integration for Algorand (AVM).
 
 ---
 
@@ -26,26 +26,26 @@ Comprehensive guide for using `@x402-avm/paywall` to create payment-gated conten
 ### Server-Side (Paywall Provider + Middleware)
 
 ```bash
-npm install @x402-avm/paywall @x402-avm/avm @x402-avm/core
+npm install @x402/paywall @x402/avm @x402/core
 ```
 
 Plus your framework-specific middleware package:
 
 ```bash
 # Express.js
-npm install @x402-avm/express
+npm install @x402/express
 
 # Hono
-npm install @x402-avm/hono
+npm install @x402/hono
 
 # Next.js
-npm install @x402-avm/next
+npm install @x402/next
 ```
 
 ### Full Installation (All Packages)
 
 ```bash
-npm install @x402-avm/paywall @x402-avm/avm @x402-avm/core @x402-avm/express
+npm install @x402/paywall @x402/avm @x402/core @x402/express
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -104,7 +104,7 @@ The `PaywallBuilder` class creates a `PaywallProvider` that generates HTML paywa
 ### createPaywall() Factory
 
 ```typescript
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 // Create a paywall that supports Algorand
 const paywall = createPaywall()
@@ -120,7 +120,7 @@ const paywall = createPaywall()
 ### PaywallBuilder API
 
 ```typescript
-import { PaywallBuilder, avmPaywall, evmPaywall, svmPaywall } from "@x402-avm/paywall";
+import { PaywallBuilder, avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 
 const paywall = new PaywallBuilder()
   // Register network handlers (order matters -- first match wins)
@@ -172,7 +172,7 @@ The `avmPaywall` handler is responsible for generating Algorand-specific paywall
 ### How It Works
 
 ```typescript
-import { avmPaywall } from "@x402-avm/paywall/avm";
+import { avmPaywall } from "@x402/paywall/avm";
 
 // The handler checks if it supports the requirement
 avmPaywall.supports({ network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", ... });
@@ -188,10 +188,10 @@ There are two import paths:
 
 ```typescript
 // From the paywall package root (re-exported for convenience)
-import { avmPaywall } from "@x402-avm/paywall";
+import { avmPaywall } from "@x402/paywall";
 
 // From the AVM-specific subpath
-import { avmPaywall } from "@x402-avm/paywall/avm";
+import { avmPaywall } from "@x402/paywall/avm";
 ```
 
 Both import the same handler.
@@ -248,9 +248,9 @@ import express from "express";
 import {
   paymentMiddleware,
   x402ResourceServer,
-} from "@x402-avm/express";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+} from "@x402/express";
+import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -319,8 +319,8 @@ import {
   paymentMiddlewareFromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/express";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+} from "@x402/express";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 // Create and configure the resource server
 const resourceServer = new x402ResourceServer({ url: facilitatorUrl });
@@ -392,8 +392,8 @@ const routes = {
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = new Hono();
 
@@ -439,8 +439,8 @@ export default app;
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig, x402ResourceServer } from "@x402-avm/hono";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { paymentMiddlewareFromConfig, x402ResourceServer } from "@x402/hono";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 type Env = {
   FACILITATOR_URL: string;
@@ -491,8 +491,8 @@ export default app;
 
 ```typescript
 // middleware.ts
-import { paymentProxy, x402ResourceServer } from "@x402-avm/next";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 import { NextRequest, NextResponse } from "next/server";
 
 const routes = {
@@ -541,8 +541,8 @@ export const config = {
 ```typescript
 // app/api/premium/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402-avm/next";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { withX402, x402ResourceServer } from "@x402/next";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const server = new x402ResourceServer({
   url: process.env.FACILITATOR_URL!,
@@ -609,7 +609,7 @@ const algorandWallets = walletsApi.get().filter((wallet) => {
 Once a wallet is connected, the paywall derives a `ClientAvmSigner`:
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 // The paywall internally creates this signer from the connected wallet
 const signer: ClientAvmSigner = {
@@ -627,15 +627,15 @@ The paywall template uses several React hooks internally. These are not public A
 
 ```typescript
 // useAlgorandWalletOptions -- discovers Algorand-capable wallets
-import { useAlgorandWalletOptions } from "@x402-avm/paywall/avm/algorand/useAlgorandWalletOptions";
+import { useAlgorandWalletOptions } from "@x402/paywall/avm/algorand/useAlgorandWalletOptions";
 const walletOptions = useAlgorandWalletOptions();
 
 // useAlgorandSigner -- derives ClientAvmSigner from connected wallet
-import { useAlgorandSigner } from "@x402-avm/paywall/avm/algorand/useAlgorandSigner";
+import { useAlgorandSigner } from "@x402/paywall/avm/algorand/useAlgorandSigner";
 const signer = useAlgorandSigner({ activeWallet, activeAccount });
 
 // useAlgorandBalance -- tracks USDC balance for connected account
-import { useAlgorandBalance } from "@x402-avm/paywall/avm/algorand/useAlgorandBalance";
+import { useAlgorandBalance } from "@x402/paywall/avm/algorand/useAlgorandBalance";
 const { usdcBalance, formattedBalance, refreshBalance } = useAlgorandBalance({
   activeAccount,
   paymentRequired,
@@ -649,9 +649,9 @@ If you need to build a custom payment UI instead of using the built-in paywall:
 
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function CustomPaymentUI() {
   const { activeAccount, signTransactions } = useWallet();
@@ -796,7 +796,7 @@ const paywall = createPaywall()
 If the built-in paywall does not meet your needs, you can create a completely custom `PaywallNetworkHandler`:
 
 ```typescript
-import type { PaywallNetworkHandler, PaymentRequirements, PaymentRequired, PaywallConfig } from "@x402-avm/paywall";
+import type { PaywallNetworkHandler, PaymentRequirements, PaymentRequired, PaywallConfig } from "@x402/paywall";
 
 const customAvmPaywall: PaywallNetworkHandler = {
   supports(requirement: PaymentRequirements): boolean {
@@ -920,7 +920,7 @@ const routes = {
 ### Paywall: Register Multiple Network Handlers
 
 ```typescript
-import { createPaywall, avmPaywall, evmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall, evmPaywall } from "@x402/paywall";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)    // Handles algorand:* requirements
@@ -937,7 +937,7 @@ The paywall will select the first matching handler based on the order of `accept
 ### Algorand + Solana + EVM
 
 ```typescript
-import { createPaywall, avmPaywall, evmPaywall, svmPaywall } from "@x402-avm/paywall";
+import { createPaywall, avmPaywall, evmPaywall, svmPaywall } from "@x402/paywall";
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)    // algorand:*
@@ -963,8 +963,8 @@ import cors from "cors";
 import {
   paymentMiddleware,
   x402ResourceServer,
-} from "@x402-avm/express";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+} from "@x402/express";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = express();
 app.use(cors());
@@ -1111,8 +1111,8 @@ app.listen(PORT, () => {
 ```typescript
 // app/api/premium/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402-avm/next";
-import { createPaywall, avmPaywall } from "@x402-avm/paywall";
+import { withX402, x402ResourceServer } from "@x402/next";
+import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const server = new x402ResourceServer({
   url: process.env.FACILITATOR_URL!,
@@ -1218,8 +1218,8 @@ export default function Home() {
 // index.ts
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
-import { createPaywall, avmPaywall, evmPaywall } from "@x402-avm/paywall";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { createPaywall, avmPaywall, evmPaywall } from "@x402/paywall";
 
 const app = new Hono();
 app.use("*", cors());
@@ -1290,7 +1290,7 @@ export default {
 
 ## API Reference Summary
 
-### Exports from `@x402-avm/paywall`
+### Exports from `@x402/paywall`
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -1305,7 +1305,7 @@ export default {
 | `PaymentRequired` | Type | 402 response structure |
 | `PaymentRequirements` | Type | Individual payment requirement |
 
-### Exports from `@x402-avm/paywall/avm`
+### Exports from `@x402/paywall/avm`
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -1329,13 +1329,13 @@ export default {
 
 | Package | Function | Description |
 |---------|----------|-------------|
-| `@x402-avm/express` | `paymentMiddleware(routes, server, config?, paywall?)` | Express middleware |
-| `@x402-avm/express` | `paymentMiddlewareFromHTTPServer(httpServer, config?, paywall?)` | Express (HTTP server) |
-| `@x402-avm/express` | `paymentMiddlewareFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Express (config) |
-| `@x402-avm/hono` | `paymentMiddleware(routes, server, config?, paywall?)` | Hono middleware |
-| `@x402-avm/hono` | `paymentMiddlewareFromHTTPServer(httpServer, config?, paywall?)` | Hono (HTTP server) |
-| `@x402-avm/hono` | `paymentMiddlewareFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Hono (config) |
-| `@x402-avm/next` | `paymentProxy(routes, server, config?, paywall?)` | Next.js middleware proxy |
-| `@x402-avm/next` | `withX402(handler, routeConfig, server, config?, paywall?)` | Next.js route wrapper |
-| `@x402-avm/next` | `paymentProxyFromHTTPServer(httpServer, config?, paywall?)` | Next.js (HTTP server) |
-| `@x402-avm/next` | `paymentProxyFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Next.js (config) |
+| `@x402/express` | `paymentMiddleware(routes, server, config?, paywall?)` | Express middleware |
+| `@x402/express` | `paymentMiddlewareFromHTTPServer(httpServer, config?, paywall?)` | Express (HTTP server) |
+| `@x402/express` | `paymentMiddlewareFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Express (config) |
+| `@x402/hono` | `paymentMiddleware(routes, server, config?, paywall?)` | Hono middleware |
+| `@x402/hono` | `paymentMiddlewareFromHTTPServer(httpServer, config?, paywall?)` | Hono (HTTP server) |
+| `@x402/hono` | `paymentMiddlewareFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Hono (config) |
+| `@x402/next` | `paymentProxy(routes, server, config?, paywall?)` | Next.js middleware proxy |
+| `@x402/next` | `withX402(handler, routeConfig, server, config?, paywall?)` | Next.js route wrapper |
+| `@x402/next` | `paymentProxyFromHTTPServer(httpServer, config?, paywall?)` | Next.js (HTTP server) |
+| `@x402/next` | `paymentProxyFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Next.js (config) |

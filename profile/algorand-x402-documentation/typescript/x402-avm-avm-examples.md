@@ -1,6 +1,6 @@
 # x402-avm V2 AVM Mechanism Examples (TypeScript)
 
-Comprehensive examples for the `@x402-avm/avm` TypeScript package covering signer interfaces, constants, utilities, transaction handling, and fee abstraction.
+Comprehensive examples for the `@x402/avm` TypeScript package covering signer interfaces, constants, utilities, transaction handling, and fee abstraction.
 
 > **Python examples**: See [x402-avm-avm-examples-python](../python/x402-avm-avm-examples-python.md) for Python (`x402-avm[avm]`) examples.
 
@@ -46,7 +46,7 @@ Comprehensive examples for the `@x402-avm/avm` TypeScript package covering signe
 ## Installation
 
 ```bash
-npm install @x402-avm/avm
+npm install @x402/avm
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -54,7 +54,7 @@ npm install @x402-avm/avm
 For browser wallet integration:
 
 ```bash
-npm install @x402-avm/avm @txnlab/use-wallet
+npm install @x402/avm @txnlab/use-wallet
 ```
 
 ---
@@ -66,7 +66,7 @@ npm install @x402-avm/avm @txnlab/use-wallet
 The client signer interface is compatible with `@txnlab/use-wallet` and similar wallet libraries.
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 // Interface definition:
 interface ClientAvmSigner {
@@ -84,7 +84,7 @@ interface ClientAvmSigner {
 }
 
 // Type guard
-import { isAvmSignerWallet } from "@x402-avm/avm";
+import { isAvmSignerWallet } from "@x402/avm";
 
 function checkWallet(wallet: unknown) {
   if (isAvmSignerWallet(wallet)) {
@@ -99,8 +99,8 @@ function checkWallet(wallet: unknown) {
 The facilitator signer handles verification, signing, simulation, and settlement.
 
 ```typescript
-import type { FacilitatorAvmSigner } from "@x402-avm/avm";
-import type { Network } from "@x402-avm/core/types";
+import type { FacilitatorAvmSigner } from "@x402/avm";
+import type { Network } from "@x402/core/types";
 
 // Interface definition:
 interface FacilitatorAvmSigner {
@@ -137,7 +137,7 @@ interface FacilitatorAvmSigner {
 The `@txnlab/use-wallet` library provides a `signTransactions` function that is directly compatible with the `ClientAvmSigner` interface.
 
 ```typescript
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 import { useWallet } from "@txnlab/use-wallet";
 
 // In a React component:
@@ -163,9 +163,9 @@ function PaymentComponent() {
 
 ```typescript
 import React, { useCallback } from "react";
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 import { useWallet, WalletProvider, WalletId } from "@txnlab/use-wallet-react";
 
 const walletConfig = {
@@ -212,7 +212,7 @@ export default function App() {
 ### With algosdk Private Key (Server-Side)
 
 ```typescript
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { toClientAvmSigner } from "@x402/avm";
 
 /**
  * Create a ClientAvmSigner from a base64-encoded private key.
@@ -232,7 +232,7 @@ console.log("Signer address:", signer.address);
 Complete, production-ready implementation.
 
 ```typescript
-import { toFacilitatorAvmSigner } from "@x402-avm/avm";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 
 // Default (uses AlgoNode endpoints automatically):
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -271,7 +271,7 @@ import {
   // Bidirectional mapping
   V1_TO_CAIP2,  // { "algorand-mainnet": CAIP2, "algorand-testnet": CAIP2 }
   CAIP2_TO_V1,  // { CAIP2: "algorand-mainnet", CAIP2: "algorand-testnet" }
-} from "@x402-avm/avm";
+} from "@x402/avm";
 ```
 
 ### USDC Configuration
@@ -282,7 +282,7 @@ import {
   USDC_TESTNET_ASA_ID,  // "10458941"
   USDC_DECIMALS,         // 6
   USDC_CONFIG,           // Record<network, { asaId, name, decimals }>
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Look up USDC config by network
 const testnetUsdc = USDC_CONFIG[ALGORAND_TESTNET_CAIP2];
@@ -299,7 +299,7 @@ import {
   NETWORK_TO_ALGOD,        // Record<network, url>
   FALLBACK_ALGOD_MAINNET,  // "https://mainnet-api.algonode.cloud"
   FALLBACK_ALGOD_TESTNET,  // "https://testnet-api.algonode.cloud"
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Override with environment variables:
 // ALGOD_MAINNET_URL=https://my-node.example.com
@@ -313,7 +313,7 @@ import {
   MAX_ATOMIC_GROUP_SIZE,  // 16 (max transactions per group)
   MIN_TXN_FEE,            // 1000 (microAlgos)
   MAX_REASONABLE_FEE,     // 10_000_000 (10 ALGO sanity check)
-} from "@x402-avm/avm";
+} from "@x402/avm";
 ```
 
 ### Address Validation
@@ -322,7 +322,7 @@ import {
 import {
   ALGORAND_ADDRESS_REGEX,   // /^[A-Z2-7]{58}$/
   ALGORAND_ADDRESS_LENGTH,  // 58
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const isValid = ALGORAND_ADDRESS_REGEX.test(someAddress);
 ```
@@ -334,7 +334,7 @@ const isValid = ALGORAND_ADDRESS_REGEX.test(someAddress);
 ### Address Validation Utilities
 
 ```typescript
-import { isValidAlgorandAddress } from "@x402-avm/avm";
+import { isValidAlgorandAddress } from "@x402/avm";
 
 // Full validation (format + checksum)
 isValidAlgorandAddress("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -349,7 +349,7 @@ isValidAlgorandAddress(""); // => false
 ### Amount Conversion
 
 ```typescript
-import { convertToTokenAmount, convertFromTokenAmount } from "@x402-avm/avm";
+import { convertToTokenAmount, convertFromTokenAmount } from "@x402/avm";
 
 // Decimal to atomic units
 convertToTokenAmount("1.50", 6);    // => "1500000"
@@ -372,7 +372,7 @@ import {
   decodeTransaction,
   decodeSignedTransaction,
   decodeUnsignedTransaction,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Encode Uint8Array to base64
 const base64Str = encodeTransaction(txnBytes);
@@ -401,7 +401,7 @@ import {
   v1ToCaip2,
   caip2ToV1,
   createAlgodClient,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Determine network type from CAIP-2
 getNetworkFromCaip2("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
@@ -455,7 +455,7 @@ import {
   getGenesisHashFromTransaction,
   validateGroupId,
   assignGroupId,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // Get sender from transaction bytes
 const sender = getSenderFromTransaction(signedTxnBytes, true);  // signed
@@ -487,9 +487,9 @@ const groupedTxns = assignGroupId([txn1, txn2, txn3]);
 // Users do not need to build transactions manually.
 // Simply create a signer and register the scheme:
 
-import { toClientAvmSigner } from "@x402-avm/avm";
-import { ExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { x402Client } from "@x402-avm/core/client";
+import { toClientAvmSigner } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { x402Client } from "@x402/core/client";
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 const client = new x402Client({ schemes: [] });
@@ -527,9 +527,9 @@ In x402-avm, fee abstraction allows the **facilitator** to pay transaction fees 
 ### Client-Side Fee Abstraction
 
 ```typescript
-import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 const client = new x402Client({ schemes: [] });
@@ -551,8 +551,8 @@ const response = await client.fetch("https://api.example.com/paid-resource");
 ### Client Registration
 
 ```typescript
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client({ schemes: [] });
 
@@ -571,8 +571,8 @@ registerExactAvmScheme(client, {
 ### Server Registration
 
 ```typescript
-import { x402ResourceServer } from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
+import { x402ResourceServer } from "@x402/core/server";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
 
 const server = new x402ResourceServer(facilitatorClient);
 
@@ -588,9 +588,9 @@ registerExactAvmScheme(server);  // registers algorand:*
 ### Facilitator Registration
 
 ```typescript
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 const facilitator = new x402Facilitator();
 
@@ -618,9 +618,9 @@ A complete browser application using Pera Wallet to pay for API access.
 ```typescript
 // app.tsx
 import React, { useState, useCallback } from "react";
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 import {
   WalletProvider,
   useWallet,
@@ -708,9 +708,9 @@ A complete Express.js facilitator service.
 ```typescript
 // facilitator-service.ts
 import express from "express";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
   testnetUrl: "https://testnet-api.algonode.cloud",
@@ -772,7 +772,7 @@ app.listen(PORT, () => {
 
 | Feature | Import / Usage |
 |---------|---------------|
-| Package | `@x402-avm/avm` |
+| Package | `@x402/avm` |
 | Client Signer | `ClientAvmSigner` interface |
 | Facilitator Signer | `FacilitatorAvmSigner` interface |
 | Network Constants | `ALGORAND_TESTNET_CAIP2` |

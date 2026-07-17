@@ -25,7 +25,7 @@ Comprehensive examples for integrating x402-avm payment-gated routes with Expres
 ## Installation
 
 ```bash
-npm install @x402-avm/express @x402-avm/avm @x402-avm/core
+npm install @x402/express @x402/avm @x402/core
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -33,7 +33,7 @@ npm install @x402-avm/express @x402-avm/avm @x402-avm/core
 For paywall UI support:
 
 ```bash
-npm install @x402-avm/express @x402-avm/avm @x402-avm/core @x402-avm/paywall
+npm install @x402/express @x402/avm @x402/core @x402/paywall
 ```
 
 ---
@@ -45,11 +45,11 @@ the `x402ResourceServer` internally.
 
 ```typescript
 import express from "express";
-import { paymentMiddlewareFromConfig } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { x402ResourceServer } from "@x402-avm/core/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { x402ResourceServer } from "@x402/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -110,10 +110,10 @@ registering multiple schemes or reusing the server across multiple middlewares.
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -181,10 +181,10 @@ import {
   paymentMiddlewareFromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm";
+} from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -249,7 +249,7 @@ to `RouteConfig` objects.
 ### Route Pattern Syntax
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 // Pattern: "METHOD /path" or just "/path" (matches all methods)
 const routes = {
@@ -356,7 +356,7 @@ app.use(paymentMiddlewareFromConfig(singleRoute, facilitatorClient));
 ### ALGO Native Token Payments
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -377,7 +377,7 @@ const routes = {
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/premium": {
@@ -401,7 +401,7 @@ const routes = {
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -427,7 +427,7 @@ const routes = {
 ### Cross-Chain: Accept Algorand AND EVM Payments
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -458,10 +458,10 @@ Use a `DynamicPrice` function to compute price at request time.
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -528,9 +528,9 @@ app.listen(4021);
 
 ```typescript
 import express from "express";
-import { paymentMiddlewareFromConfig } from "@x402-avm/express";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = express();
 
@@ -623,9 +623,9 @@ This example shows how to build a facilitator using Express with the AVM scheme.
 
 ```typescript
 import express from "express";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 
 const app = express();
 app.use(express.json());
@@ -697,9 +697,9 @@ a fee-covering transaction.
 
 ```typescript
 import express from "express";
-import { paymentMiddlewareFromConfig } from "@x402-avm/express";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -745,17 +745,17 @@ The facilitator co-signs transaction 2 during settlement.
 
 ## Paywall Integration
 
-The `@x402-avm/paywall` package provides a browser-based payment UI that automatically
+The `@x402/paywall` package provides a browser-based payment UI that automatically
 appears when a user visits a protected route in their browser.
 
 ### Basic Paywall
 
 ```typescript
 import express from "express";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = express();
 
@@ -834,7 +834,7 @@ const routes = {
 ### Custom Paywall Provider
 
 ```typescript
-import { PaywallProvider } from "@x402-avm/core/server";
+import { PaywallProvider } from "@x402/core/server";
 
 // Create a custom paywall provider
 const customPaywall: PaywallProvider = {
@@ -923,13 +923,13 @@ FACILITATOR_PORT=4020
 ```typescript
 import express from "express";
 import dotenv from "dotenv";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/express";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 dotenv.config();
 
@@ -1056,9 +1056,9 @@ app.listen(PORT, () => {
 ```typescript
 import express from "express";
 import dotenv from "dotenv";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 dotenv.config();
 

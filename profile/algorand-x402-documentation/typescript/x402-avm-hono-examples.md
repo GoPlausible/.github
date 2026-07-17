@@ -25,7 +25,7 @@ including Algorand (AVM) blockchain payments and Cloudflare Workers deployment.
 ## Installation
 
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono
+npm install @x402/hono @x402/avm @x402/core hono
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -33,7 +33,7 @@ npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono
 For Node.js server deployment:
 
 ```bash
-npm install @x402-avm/hono @x402-avm/avm @x402-avm/core hono @hono/node-server
+npm install @x402/hono @x402/avm @x402/core hono @hono/node-server
 ```
 
 ---
@@ -45,9 +45,9 @@ The simplest way to add x402 payment gating to a Hono app.
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
@@ -119,10 +119,10 @@ server across different middleware.
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
@@ -191,10 +191,10 @@ import {
   paymentMiddlewareFromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
-} from "@x402-avm/hono";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+} from "@x402/hono";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
@@ -261,7 +261,7 @@ import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const routes = {
   // Exact match
@@ -355,7 +355,7 @@ app.use(paymentMiddlewareFromConfig(singleRoute, facilitatorClient));
 ### Native ALGO Payments
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const routes = {
   "GET /api/data": {
@@ -373,7 +373,7 @@ const routes = {
 ### USDC (ASA) Payments
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const routes = {
   "GET /api/premium": {
@@ -394,7 +394,7 @@ const routes = {
 ### Mainnet Deployment
 
 ```typescript
-import { ALGORAND_MAINNET_CAIP2, USDC_MAINNET_ASA_ID } from "@x402-avm/avm";
+import { ALGORAND_MAINNET_CAIP2, USDC_MAINNET_ASA_ID } from "@x402/avm";
 
 const routes = {
   "GET /api/production": {
@@ -418,9 +418,9 @@ const routes = {
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = new Hono();
 const PAY_TO = "YOUR_ALGORAND_ADDRESS";
@@ -535,9 +535,9 @@ FACILITATOR_URL = "https://x402.org/facilitator"
 ```typescript
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 type Bindings = {
   PAY_TO: string;
@@ -621,9 +621,9 @@ export default app;
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Static configuration (created once at module level)
 const routes = {
@@ -669,9 +669,9 @@ export default app;
 ```typescript
 // src/index.ts
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
@@ -704,9 +704,9 @@ export default {
 ```typescript
 // main.ts
 import { Hono } from "https://deno.land/x/hono/mod.ts";
-import { paymentMiddlewareFromConfig } from "@x402-avm/hono";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { paymentMiddlewareFromConfig } from "@x402/hono";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
@@ -739,9 +739,9 @@ A facilitator server built with Hono for verifying and settling Algorand payment
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 app.use("*", cors());
@@ -813,13 +813,13 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
-import { paymentMiddleware, x402ResourceServer } from "@x402-avm/hono";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 const app = new Hono();
 

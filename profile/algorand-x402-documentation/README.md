@@ -71,24 +71,24 @@ Algorand has a dedicated facilitator that handles payment verification and settl
 
 #### Core and Mechanism Packages:
 
-- x402 V2 Core Package [@x402-avm/core](https://www.npmjs.com/package/@x402-avm/core)
-- x402 V2 AVM (Algorand) Mechanism [@x402-avm/avm](https://www.npmjs.com/package/@x402-avm/avm)
+- x402 V2 Core Package [@x402/core](https://www.npmjs.com/package/@x402/core)
+- x402 V2 AVM (Algorand) Mechanism [@x402/avm](https://www.npmjs.com/package/@x402/avm)
 
 #### Extensions and Paywall Packages:
 
-- x402 V2 Extensions [@x402-avm/extensions](https://www.npmjs.com/package/@x402-avm/extensions)
-- x402 V2 Paywall UI [@x402-avm/paywall](https://www.npmjs.com/package/@x402-avm/paywall)
+- x402 V2 Extensions [@x402/extensions](https://www.npmjs.com/package/@x402/extensions)
+- x402 V2 Paywall UI [@x402/paywall](https://www.npmjs.com/package/@x402/paywall)
 
 #### Back end Framework-Specific Middleware and Client Packages:
 
-- x402 V2 Express Middleware [@x402-avm/express](https://www.npmjs.com/package/@x402-avm/express)
-- x402 V2 Hono Middleware [@x402-avm/hono](https://www.npmjs.com/package/@x402-avm/hono)
-- x402 V2 Next.js Middleware [@x402-avm/next](https://www.npmjs.com/package/@x402-avm/next)
+- x402 V2 Express Middleware [@x402/express](https://www.npmjs.com/package/@x402/express)
+- x402 V2 Hono Middleware [@x402/hono](https://www.npmjs.com/package/@x402/hono)
+- x402 V2 Next.js Middleware [@x402/next](https://www.npmjs.com/package/@x402/next)
 
 #### HTTP Client Packages:
 
-- x402 V2 Fetch Client [@x402-avm/fetch](https://www.npmjs.com/package/@x402-avm/fetch)
-- x402 V2 Axios Client [@x402-avm/axios](https://www.npmjs.com/package/@x402-avm/axios)
+- x402 V2 Fetch Client [@x402/fetch](https://www.npmjs.com/package/@x402/fetch)
+- x402 V2 Axios Client [@x402/axios](https://www.npmjs.com/package/@x402/axios)
 
 ### Python Packages:
 
@@ -512,23 +512,23 @@ INDEXER_TESTNET_URL=https://testnet-idx.algonode.cloud   # default
 
 #### TypeScript
 
-> **Breaking Change:** `algosdk` has been removed as a direct dependency. The AVM packages now use `@algorandfoundation/algokit-utils` (v10 alpha) internally. If you were previously installing `algosdk` alongside `@x402-avm/avm`, remove it from your install command and uninstall it from your project.
+> **Breaking Change:** `algosdk` has been removed as a direct dependency. The AVM packages now use `@algorandfoundation/algokit-utils` (v10 alpha) internally. If you were previously installing `algosdk` alongside `@x402/avm`, remove it from your install command and uninstall it from your project.
 
 ```bash
 # Core packages
-npm install @x402-avm/core @x402-avm/avm
+npm install @x402/core @x402/avm
 
 # Server middleware (choose one)
-npm install @x402-avm/express    # Express.js
-npm install @x402-avm/hono       # Hono
-npm install @x402-avm/next       # Next.js
+npm install @x402/express    # Express.js
+npm install @x402/hono       # Hono
+npm install @x402/next       # Next.js
 
 # Client packages (choose one)
-npm install @x402-avm/fetch      # Fetch API
-npm install @x402-avm/axios      # Axios
+npm install @x402/fetch      # Fetch API
+npm install @x402/axios      # Axios
 
 # Paywall UI (optional)
-npm install @x402-avm/paywall
+npm install @x402/paywall
 
 # Wallet integration (for browser clients)
 npm install @txnlab/use-wallet

@@ -2,7 +2,7 @@
 
 > **Python examples**: See [x402-avm-httpx-examples-python](../python/x402-avm-httpx-examples-python.md) for the Python equivalent using `httpx` and `requests`.
 
-Comprehensive guide for using `@x402-avm/fetch` to make automatic payments over HTTP using the native `fetch` API with Algorand (AVM) support.
+Comprehensive guide for using `@x402/fetch` to make automatic payments over HTTP using the native `fetch` API with Algorand (AVM) support.
 
 ---
 
@@ -24,7 +24,7 @@ Comprehensive guide for using `@x402-avm/fetch` to make automatic payments over 
 ## Installation
 
 ```bash
-npm install @x402-avm/fetch @x402-avm/avm
+npm install @x402/fetch @x402/avm
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -32,8 +32,8 @@ npm install @x402-avm/fetch @x402-avm/avm
 Or with other package managers:
 
 ```bash
-pnpm add @x402-avm/fetch @x402-avm/avm
-yarn add @x402-avm/fetch @x402-avm/avm
+pnpm add @x402/fetch @x402/avm
+yarn add @x402/fetch @x402/avm
 ```
 
 ---
@@ -43,9 +43,9 @@ yarn add @x402-avm/fetch @x402-avm/avm
 The simplest way to get started with x402-avm fetch is a 10-line setup:
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner } from "@x402/avm";
 
 // 1. Create a signer (see detailed examples below)
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -91,8 +91,8 @@ function wrapFetchWithPayment(
 ### Example
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 // Assume `signer` is a ClientAvmSigner (see implementation sections below)
 const client = new x402Client();
@@ -134,8 +134,8 @@ function wrapFetchWithPaymentFromConfig(
 import {
   wrapFetchWithPaymentFromConfig,
   type x402ClientConfig,
-} from "@x402-avm/fetch";
-import { ExactAvmScheme } from "@x402-avm/avm";
+} from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm";
 
 // Assume `signer` is a ClientAvmSigner
 const config: x402ClientConfig = {
@@ -193,7 +193,7 @@ interface ClientAvmSigner {
 
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function useAvmSigner(): ClientAvmSigner | null {
   const { activeAccount, signTransactions } = useWallet();
@@ -220,9 +220,9 @@ function useAvmSigner(): ClientAvmSigner | null {
 import React, { useMemo, useCallback } from "react";
 import { useWallet, WalletProvider } from "@txnlab/use-wallet-react";
 import { WalletId } from "@txnlab/use-wallet";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 // Configure wallet providers
 const walletProviders = [
@@ -298,9 +298,9 @@ export default function App() {
 
 ```typescript
 import { PeraWalletConnect } from "@perawallet/connect";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 const peraWallet = new PeraWalletConnect();
 
@@ -344,7 +344,7 @@ const response = await paidFetch("https://api.example.com/paid-api");
 
 ## Implementing ClientAvmSigner for Node.js
 
-In Node.js or server environments, use `toClientAvmSigner` from `@x402-avm/avm`.
+In Node.js or server environments, use `toClientAvmSigner` from `@x402/avm`.
 
 ### Environment Variables
 
@@ -356,7 +356,7 @@ AVM_PRIVATE_KEY=base64EncodedPrivateKeyHere
 ### Basic Implementation
 
 ```typescript
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { toClientAvmSigner } from "@x402/avm";
 
 // Usage
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -366,9 +366,9 @@ console.log("Signer address:", signer.address);
 ### Full Node.js Script
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner } from "@x402/avm";
 
 async function main() {
   // Create signer from private key
@@ -416,8 +416,8 @@ main().catch(console.error);
 ### With Custom Algod URL
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
@@ -440,8 +440,8 @@ Policies filter and transform payment requirements before a selection is made. T
 ### Prefer Algorand Network
 
 ```typescript
-import { wrapFetchWithPayment, x402Client, type PaymentPolicy } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client, type PaymentPolicy } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 // Policy: prefer Algorand networks over EVM/SVM
 const preferAlgorand: PaymentPolicy = (version, reqs) => {
@@ -474,7 +474,7 @@ client.registerPolicy(maxAmount);
 ### Prefer Testnet
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const preferTestnet: PaymentPolicy = (version, reqs) => {
   const testnetReqs = reqs.filter((r) => r.network === ALGORAND_TESTNET_CAIP2);
@@ -517,8 +517,8 @@ const fetchWithPay = wrapFetchWithPaymentFromConfig(fetch, config);
 ### Common Error Scenarios
 
 ```typescript
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, { signer });
@@ -599,7 +599,7 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 const response = await fetchWithPay("https://api.example.com/paid-endpoint");
 
 // The server includes a payment response header after settlement
-import { decodePaymentResponseHeader } from "@x402-avm/fetch";
+import { decodePaymentResponseHeader } from "@x402/fetch";
 
 const paymentResponseHeader =
   response.headers.get("PAYMENT-RESPONSE") ||
@@ -622,9 +622,9 @@ if (paymentResponseHeader) {
 import React, { useState, useMemo, useCallback } from "react";
 import { WalletProvider, useWallet } from "@txnlab/use-wallet-react";
 import { WalletId } from "@txnlab/use-wallet";
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import type { ClientAvmSigner } from "@x402/avm";
 
 const WALLET_PROVIDERS = [
   { id: WalletId.PERA },
@@ -710,9 +710,9 @@ export default function App() {
 
 ```typescript
 // cli-paid-api.ts
-import { wrapFetchWithPayment, x402Client } from "@x402-avm/fetch";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 async function main() {
   // Validate environment
@@ -796,7 +796,7 @@ AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.co
 
 ## API Reference Summary
 
-### Exports from `@x402-avm/fetch`
+### Exports from `@x402/fetch`
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -814,7 +814,7 @@ AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.co
 | `Network` | Type | Network identifier string type |
 | `SchemeNetworkClient` | Type | Client-side scheme interface |
 
-### Exports from `@x402-avm/avm`
+### Exports from `@x402/avm`
 
 | Export | Type | Description |
 |--------|------|-------------|
@@ -825,7 +825,7 @@ AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.co
 | `ALGORAND_MAINNET_CAIP2` | Constant | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
 | `isAvmSignerWallet` | Function | Type guard for ClientAvmSigner |
 
-### Exports from `@x402-avm/avm/exact/client`
+### Exports from `@x402/avm/exact/client`
 
 | Export | Type | Description |
 |--------|------|-------------|

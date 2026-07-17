@@ -2,7 +2,7 @@
 
 > **Python examples**: See [x402-avm-extensions-examples-python](../python/x402-avm-extensions-examples-python.md) for Python (`x402-avm[extensions]`) examples.
 
-Comprehensive examples for the `@x402-avm/extensions` TypeScript package, covering the Bazaar discovery extension, Sign-in-with-X extension, and the `WithExtensions` type utility.
+Comprehensive examples for the `@x402/extensions` TypeScript package, covering the Bazaar discovery extension, Sign-in-with-X extension, and the `WithExtensions` type utility.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ Comprehensive examples for the `@x402-avm/extensions` TypeScript package, coveri
 ## Installation
 
 ```bash
-npm install @x402-avm/extensions @x402-avm/core
+npm install @x402/extensions @x402/core
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -37,7 +37,7 @@ npm install @x402-avm/extensions @x402-avm/core
 For full AVM support:
 
 ```bash
-npm install @x402-avm/extensions @x402-avm/core @x402-avm/avm
+npm install @x402/extensions @x402/core @x402/avm
 ```
 
 ---
@@ -84,7 +84,7 @@ The Bazaar extension enables automatic cataloging of x402-protected resources. W
 import {
   declareDiscoveryExtension,
   BAZAAR,
-} from "@x402-avm/extensions";
+} from "@x402/extensions";
 
 // ============================================================
 // Example 1: GET endpoint with query parameters
@@ -196,14 +196,14 @@ The `bazaarResourceServerExtension` enriches the discovery declaration at reques
 import {
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
-} from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
+} from "@x402/core/server";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
 import {
   bazaarResourceServerExtension,
   declareDiscoveryExtension,
   BAZAAR,
-} from "@x402-avm/extensions";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+} from "@x402/extensions";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 // Create resource server
 const facilitatorClient = new HTTPFacilitatorClient({
@@ -282,8 +282,8 @@ import {
   type DiscoveryInfo,
   type DiscoveredResource,
   type ValidationResult,
-} from "@x402-avm/extensions";
-import type { PaymentPayload, PaymentRequirements } from "@x402-avm/core/types";
+} from "@x402/extensions";
+import type { PaymentPayload, PaymentRequirements } from "@x402/core/types";
 
 // ============================================================
 // Method 1: Full extraction from payload + requirements
@@ -391,14 +391,14 @@ function extractWithoutValidation(
 ### Facilitator Client: Querying the Bazaar
 
 ```typescript
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 import {
   withBazaar,
   type BazaarClientExtension,
   type DiscoveryResourcesResponse,
   type DiscoveryResource,
   type ListDiscoveryResourcesParams,
-} from "@x402-avm/extensions";
+} from "@x402/extensions";
 
 // ============================================================
 // Basic usage
@@ -480,8 +480,8 @@ async function findAlgorandResources() {
 The `WithExtensions<T, E>` type utility properly merges extension types when chaining.
 
 ```typescript
-import { WithExtensions } from "@x402-avm/extensions";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { WithExtensions } from "@x402/extensions";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 // Type definition:
 // type WithExtensions<T, E> = T extends { extensions: infer Existing }
@@ -506,8 +506,8 @@ type ClientWithBazaarAndAuth = WithExtensions<
 ### Chaining Multiple Extensions
 
 ```typescript
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { withBazaar } from "@x402-avm/extensions";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { withBazaar } from "@x402/extensions";
 
 // Define a custom extension
 interface MyCustomExtension {
@@ -559,7 +559,7 @@ The Sign-in-with-X extension enables authentication through payment proof. When 
 
 ```typescript
 // Planned API (in development)
-import { signInWithX } from "@x402-avm/extensions";
+import { signInWithX } from "@x402/extensions";
 
 // Resource server declares sign-in requirement
 const signInConfig = {
@@ -605,14 +605,14 @@ import express from "express";
 import {
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
-} from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
+} from "@x402/core/server";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
 import {
   bazaarResourceServerExtension,
   declareDiscoveryExtension,
   BAZAAR,
-} from "@x402-avm/extensions";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+} from "@x402/extensions";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = express();
 
@@ -768,13 +768,13 @@ app.listen(PORT, () => {
 ```typescript
 // facilitator-with-bazaar.ts
 import express from "express";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import {
   extractDiscoveryInfo,
   type DiscoveredResource,
-} from "@x402-avm/extensions";
+} from "@x402/extensions";
 
 // In-memory catalog (use a database in production)
 const catalog: Map<string, DiscoveredResource & { settledCount: number }> = new Map();
@@ -874,12 +874,12 @@ app.listen(4000, () => {
 
 | Feature | TypeScript Import |
 |---------|-------------------|
-| Bazaar Extension Key | `BAZAAR` from `@x402-avm/extensions` |
+| Bazaar Extension Key | `BAZAAR` from `@x402/extensions` |
 | Declare Discovery | `declareDiscoveryExtension(config)` |
-| Server Extension | `bazaarResourceServerExtension` from `@x402-avm/extensions` |
-| Extract Discovery | `extractDiscoveryInfo(payload, req)` from `@x402-avm/extensions` |
-| Validate Extension | `validateDiscoveryExtension(ext)` from `@x402-avm/extensions` |
-| Validate + Extract | `validateAndExtract(ext)` from `@x402-avm/extensions` |
-| Client Extension | `withBazaar(client)` from `@x402-avm/extensions` |
-| Type Utility | `WithExtensions<T, E>` from `@x402-avm/extensions` |
+| Server Extension | `bazaarResourceServerExtension` from `@x402/extensions` |
+| Extract Discovery | `extractDiscoveryInfo(payload, req)` from `@x402/extensions` |
+| Validate Extension | `validateDiscoveryExtension(ext)` from `@x402/extensions` |
+| Validate + Extract | `validateAndExtract(ext)` from `@x402/extensions` |
+| Client Extension | `withBazaar(client)` from `@x402/extensions` |
+| Type Utility | `WithExtensions<T, E>` from `@x402/extensions` |
 | Sign-in-with-X | In development |

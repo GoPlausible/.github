@@ -2,7 +2,7 @@
 
 > **Python examples**: See [x402-avm-requests-examples-python](../python/x402-avm-requests-examples-python.md) for the Python equivalent using `requests` and `httpx`.
 
-Comprehensive guide for using `@x402-avm/axios` to make automatic payments over HTTP using Axios with Algorand (AVM) support.
+Comprehensive guide for using `@x402/axios` to make automatic payments over HTTP using Axios with Algorand (AVM) support.
 
 ---
 
@@ -24,7 +24,7 @@ Comprehensive guide for using `@x402-avm/axios` to make automatic payments over 
 ## Installation
 
 ```bash
-npm install @x402-avm/axios @x402-avm/avm axios
+npm install @x402/axios @x402/avm axios
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -32,8 +32,8 @@ npm install @x402-avm/axios @x402-avm/avm axios
 Or with other package managers:
 
 ```bash
-pnpm add @x402-avm/axios @x402-avm/avm axios
-yarn add @x402-avm/axios @x402-avm/avm axios
+pnpm add @x402/axios @x402/avm axios
+yarn add @x402/axios @x402/avm axios
 ```
 
 ---
@@ -42,9 +42,9 @@ yarn add @x402-avm/axios @x402-avm/avm axios
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner } from "@x402/avm";
 
 // 1. Create signer
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -82,8 +82,8 @@ The function returns the same Axios instance (mutated with the interceptor), so 
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 // Create a signer (see below for full implementation)
 const client = new x402Client();
@@ -121,8 +121,8 @@ You can wrap the global axios instance directly:
 
 ```typescript
 import axios from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, { signer });
@@ -156,8 +156,8 @@ import axios from "axios";
 import {
   wrapAxiosWithPaymentFromConfig,
   type x402ClientConfig,
-} from "@x402-avm/axios";
-import { ExactAvmScheme } from "@x402-avm/avm";
+} from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
@@ -210,7 +210,7 @@ interface ClientAvmSigner {
 ### Node.js Implementation
 
 ```typescript
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { toClientAvmSigner } from "@x402/avm";
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 ```
@@ -219,7 +219,7 @@ const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
-import type { ClientAvmSigner } from "@x402-avm/avm";
+import type { ClientAvmSigner } from "@x402/avm";
 
 function useAvmSigner(): ClientAvmSigner | null {
   const { activeAccount, signTransactions } = useWallet();
@@ -318,7 +318,7 @@ wrapAxiosWithPayment(api, client);
 ### Custom Algod Endpoint
 
 ```typescript
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
@@ -333,7 +333,7 @@ registerExactAvmScheme(client, {
 ### Pre-Configured Algod URL
 
 ```typescript
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
@@ -350,8 +350,8 @@ registerExactAvmScheme(client, {
 Instead of the wildcard `algorand:*`, register for specific networks:
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402-avm/avm";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, {
@@ -363,8 +363,8 @@ registerExactAvmScheme(client, {
 ### Payment Policies
 
 ```typescript
-import type { PaymentPolicy } from "@x402-avm/axios";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import type { PaymentPolicy } from "@x402/axios";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Prefer Algorand when multiple networks are available
 const preferAlgorand: PaymentPolicy = (version, reqs) => {
@@ -451,8 +451,8 @@ Axios throws errors for non-2xx responses. The payment interceptor catches 402 e
 
 ```typescript
 import axios, { AxiosError } from "axios";
-import { wrapAxiosWithPayment, x402Client } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
+import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
 registerExactAvmScheme(client, { signer });
@@ -527,9 +527,9 @@ try {
 ```typescript
 // paid-api-client.ts
 import axios, { AxiosError } from "axios";
-import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402-avm/axios";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402/axios";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // ---- Signer Setup ----
 
@@ -641,7 +641,7 @@ main().catch((err) => {
 
 ## API Reference Summary
 
-### Exports from `@x402-avm/axios`
+### Exports from `@x402/axios`
 
 | Export | Type | Description |
 |--------|------|-------------|

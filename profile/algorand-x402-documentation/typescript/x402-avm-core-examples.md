@@ -2,7 +2,7 @@
 
 > **Python examples**: See the dedicated Python example docs in the [python/](../python/) folder for equivalent Python SDK examples.
 
-Comprehensive examples for `@x402-avm/core` and `@x402-avm/avm` packages covering types, client, server, facilitator, and end-to-end usage.
+Comprehensive examples for `@x402/core` and `@x402/avm` packages covering types, client, server, facilitator, and end-to-end usage.
 
 ## Table of Contents
 
@@ -30,7 +30,7 @@ Comprehensive examples for `@x402-avm/core` and `@x402-avm/avm` packages coverin
 ## Installation
 
 ```bash
-npm install @x402-avm/core @x402-avm/avm
+npm install @x402/core @x402/avm
 ```
 
 > **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
@@ -44,7 +44,7 @@ npm install @x402-avm/core @x402-avm/avm
 x402-avm V2 uses CAIP-2 format for network identifiers. V1 name-based identifiers are supported for backward compatibility.
 
 ```typescript
-import type { Network } from "@x402-avm/core/types";
+import type { Network } from "@x402/core/types";
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
@@ -52,7 +52,7 @@ import {
   V1_ALGORAND_MAINNET,
   V1_TO_CAIP2,
   CAIP2_TO_V1,
-} from "@x402-avm/avm";
+} from "@x402/avm";
 
 // V2 CAIP-2 format (preferred)
 const testnet: Network = ALGORAND_TESTNET_CAIP2;
@@ -80,8 +80,8 @@ const v1Name = CAIP2_TO_V1[ALGORAND_TESTNET_CAIP2];
 The V2 `PaymentRequirements` structure defines what payment a resource server accepts.
 
 ```typescript
-import type { PaymentRequirements } from "@x402-avm/core/types";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import type { PaymentRequirements } from "@x402/core/types";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 // USDC payment on Algorand Testnet
 const requirements: PaymentRequirements = {
@@ -127,7 +127,7 @@ const algoRequirements: PaymentRequirements = {
 V1 uses name-based network identifiers. The SDK handles conversion automatically.
 
 ```typescript
-import type { PaymentRequirementsV1 } from "@x402-avm/core/types";
+import type { PaymentRequirementsV1 } from "@x402/core/types";
 
 const requirementsV1: PaymentRequirementsV1 = {
   scheme: "exact",
@@ -153,8 +153,8 @@ const requirementsV1: PaymentRequirementsV1 = {
 The payment payload is what the client sends in the `X-PAYMENT` header after signing.
 
 ```typescript
-import type { PaymentPayload } from "@x402-avm/core/types";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import type { PaymentPayload } from "@x402/core/types";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // V2 PaymentPayload with AVM exact scheme
 const payload: PaymentPayload = {
@@ -179,7 +179,7 @@ const payload: PaymentPayload = {
 The 402 response body sent by the resource server when payment is needed.
 
 ```typescript
-import type { PaymentRequired } from "@x402-avm/core/types";
+import type { PaymentRequired } from "@x402/core/types";
 
 // V2 PaymentRequired response
 const paymentRequired: PaymentRequired = {
@@ -215,9 +215,9 @@ const paymentRequired: PaymentRequired = {
 ### TypeScript Client
 
 ```typescript
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner } from "@x402/avm";
 
 // 1. Create a signer (using private key for server-side usage)
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -252,9 +252,9 @@ async function accessPaidResource() {
 Policies filter payment requirements before the client selects one.
 
 ```typescript
-import { x402Client, PaymentPolicy } from "@x402-avm/core/client";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/client";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Client, PaymentPolicy } from "@x402/core/client";
+import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Policy: only pay on Algorand Testnet
 const preferTestnet: PaymentPolicy = (version, requirements) => {
@@ -298,10 +298,10 @@ client.registerPolicy(preferAlgorand);
 The `x402ResourceServer` is transport-agnostic. Use it with any framework.
 
 ```typescript
-import { x402ResourceServer, ResourceConfig } from "@x402-avm/core/server";
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { x402ResourceServer, ResourceConfig } from "@x402/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 // 1. Create facilitator client
 const facilitatorClient = new HTTPFacilitatorClient({
@@ -356,9 +356,9 @@ import {
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
   RouteConfig,
-} from "@x402-avm/core/server";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/server";
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+} from "@x402/core/server";
+import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 // Create facilitator client
 const facilitatorClient = new HTTPFacilitatorClient({
@@ -412,9 +412,9 @@ registerExactAvmScheme(httpServer.resourceServer);
 ### TypeScript Facilitator
 
 ```typescript
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // 1. Create the facilitator signer
 const facilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -447,7 +447,7 @@ async function handlePaymentVerification(paymentPayload: any, requirements: any)
 The `HTTPFacilitatorClient` handles communication between the resource server and a remote facilitator.
 
 ```typescript
-import { HTTPFacilitatorClient } from "@x402-avm/core/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
 
 // Basic configuration
 const facilitatorClient = new HTTPFacilitatorClient({
@@ -491,7 +491,7 @@ A complete example showing client, resource server, and facilitator working toge
 // ============================================================
 // shared/config.ts - Shared configuration
 // ============================================================
-import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402-avm/avm";
+import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
 export const USDC_ASA = USDC_TESTNET_ASA_ID;
@@ -503,9 +503,9 @@ export const RESOURCE_SERVER_URL = "http://localhost:3000";
 // facilitator/index.ts - Facilitator Service
 // ============================================================
 import express from "express";
-import { x402Facilitator } from "@x402-avm/core/facilitator";
-import { registerExactAvmScheme } from "@x402-avm/avm/exact/facilitator";
-import { toFacilitatorAvmSigner } from "@x402-avm/avm";
+import { x402Facilitator } from "@x402/core/facilitator";
+import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { toFacilitatorAvmSigner } from "@x402/avm";
 import { NETWORK } from "../shared/config";
 
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
@@ -542,8 +542,8 @@ import express from "express";
 import {
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
-} from "@x402-avm/core/server";
-import { registerExactAvmScheme as registerServerScheme } from "@x402-avm/avm/exact/server";
+} from "@x402/core/server";
+import { registerExactAvmScheme as registerServerScheme } from "@x402/avm/exact/server";
 import {
   NETWORK,
   USDC_ASA,
@@ -600,9 +600,9 @@ app.listen(3000, () => console.log("Resource server running on :3000"));
 // ============================================================
 // client/index.ts - Client Application
 // ============================================================
-import { x402Client } from "@x402-avm/core/client";
-import { registerExactAvmScheme as registerClientScheme } from "@x402-avm/avm/exact/client";
-import { toClientAvmSigner } from "@x402-avm/avm";
+import { x402Client } from "@x402/core/client";
+import { registerExactAvmScheme as registerClientScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner } from "@x402/avm";
 import { RESOURCE_SERVER_URL } from "../shared/config";
 
 const clientSigner = toClientAvmSigner(process.env.CLIENT_AVM_PRIVATE_KEY!);
@@ -634,13 +634,13 @@ getWeather();
 
 | Component | TypeScript Import |
 |-----------|-------------------|
-| Client | `x402Client` from `@x402-avm/core/client` |
-| Resource Server | `x402ResourceServer` from `@x402-avm/core/server` |
-| HTTP Resource Server | `x402HTTPResourceServer` from `@x402-avm/core/server` |
-| Facilitator | `x402Facilitator` from `@x402-avm/core/facilitator` |
-| Facilitator Client | `HTTPFacilitatorClient` from `@x402-avm/core/server` |
-| AVM Registration (Client) | `registerExactAvmScheme` from `@x402-avm/avm/exact/client` |
-| AVM Registration (Server) | `registerExactAvmScheme` from `@x402-avm/avm/exact/server` |
-| AVM Registration (Facilitator) | `registerExactAvmScheme` from `@x402-avm/avm/exact/facilitator` |
-| Types | `@x402-avm/core/types` |
-| Constants | `@x402-avm/avm` |
+| Client | `x402Client` from `@x402/core/client` |
+| Resource Server | `x402ResourceServer` from `@x402/core/server` |
+| HTTP Resource Server | `x402HTTPResourceServer` from `@x402/core/server` |
+| Facilitator | `x402Facilitator` from `@x402/core/facilitator` |
+| Facilitator Client | `HTTPFacilitatorClient` from `@x402/core/server` |
+| AVM Registration (Client) | `registerExactAvmScheme` from `@x402/avm/exact/client` |
+| AVM Registration (Server) | `registerExactAvmScheme` from `@x402/avm/exact/server` |
+| AVM Registration (Facilitator) | `registerExactAvmScheme` from `@x402/avm/exact/facilitator` |
+| Types | `@x402/core/types` |
+| Constants | `@x402/avm` |
