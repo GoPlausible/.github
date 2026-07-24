@@ -7,6 +7,7 @@
 - [Introduction](#introduction)
 - [Algorand Implementation Details](#algorand-implementation-details)
 - [Facilitator](#facilitator)
+- [Discovery router (GATEWAY)](#discovery-router-gateway)
 - [x402 V2 Packages for Algorand (AVM) implementation](#x402-v2-packages-for-algorand-avm-implementation)
 - [x402 V2 Package-Specific Code examples](#x402-v2-package-specific-code-examples)
   - [Typescript Examples](#typescript-examples)
@@ -64,6 +65,17 @@ Algorand has a dedicated facilitator that handles payment verification and settl
 - **Facilitator Address**: [x402-avm-facilitator](https://facilitator.goplausible.xyz/)
 - **Supported Networks**: Algorand Mainnet and Testnet, Solana Mainnet and Devnet, Base ETH and Sepolia. Check live here [Algorand x402 supported networks](https://facilitator.goplausible.xyz/supported)
 - **Facilitator API docs**: [Algorand x402 Facilitator OpenAPI docs](https://facilitator.goplausible.xyz/docs)
+
+## Discovery router (GATEWAY)
+
+For agent discovery on Algorand x402, prefer a cleaned alive catalog before scraping raw facilitator Bazaar dumps:
+
+- **GATEWAY** (discovery + AF orchestrator hop): https://gateway-x402.vercel.app  
+- Free: `/registry`, `/rail`, `/agents.txt`  
+- Paid Exact AVM: `/discover`, `/orchestrate` (client pays GATEWAY → GATEWAY pays peer merchants)  
+- OpenClaw skill Pattern 0: https://github.com/GoPlausible/openclaw-algorand-plugin/pull/4  
+
+Facilitator verifies/settles; GATEWAY ranks alive peers agents should call next.
 
 ## x402 V2 Packages for Algorand (AVM) implementation:
 
