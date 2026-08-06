@@ -12,6 +12,7 @@ two servers and two clients per platform.
 | Server | [`hono-server/`](hono-server/) | Hono (+ @hono/node-server): same paid route |
 | Client | [`fetch-client/`](fetch-client/) | fetch wrapper: pays the 402 automatically |
 | Client | [`axios-client/`](axios-client/) | Axios wrapper: pays the 402 automatically |
+| Client | [`client-web/`](client-web/) | Browser dApp: the connected wallet (Lute via @txnlab/use-wallet) is the signer — no keys in the app |
 
 TypeScript projects install the **published upstream `@x402/*` packages from
 npm** (not the `typescript/` workspace in this repo) and use plain `npm`.
@@ -37,3 +38,11 @@ merchant address as `AVM_ADDRESS`, then run any client with a funded TestNet
 buyer key as `AVM_PRIVATE_KEY` — clients and servers mix freely across
 platforms. Every project reads its config from `.env` (copy `.env.example`).
 See each project's README.
+
+Or run the whole matrix at once — every server against every client, with
+thorough logs under `logs/` (each pair pays a real $0.01 TestNet USDC):
+
+```bash
+./run-matrix.sh                 # full 4x4 matrix (16 payments)
+./run-matrix.sh --servers express-server --clients fetch-client
+```

@@ -1,2 +1,4 @@
-x402-avm[flask,avm]
+# httpx included: the sync facilitator client imports it (the flask extra
+# alone does not pull it in)
+x402-avm[flask,avm,httpx]
 python-dotenv

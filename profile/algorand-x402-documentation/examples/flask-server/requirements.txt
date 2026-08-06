@@ -1,2 +1,0 @@
-x402-avm[flask,avm]
-python-dotenv
