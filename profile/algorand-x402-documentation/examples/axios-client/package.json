@@ -1,0 +1,23 @@
+{
+  "name": "x402-guide-axios-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Runnable copy of the Axios client sample from https://facilitator.goplausible.xyz/guide (upstream @x402 packages)",
+  "scripts": {
+    "start": "tsx index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@x402/avm": "^2.21.0",
+    "@x402/axios": "^2.21.0",
+    "@x402/core": "^2.21.0",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}

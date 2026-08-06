@@ -1,0 +1,3 @@
+x402-avm[fastapi,avm]
+uvicorn
+python-dotenv
