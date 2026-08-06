@@ -19,7 +19,7 @@ A **TestNet buyer account** with:
 
 Start [`../express-server`](../express-server/) or
 [`../hono-server`](../hono-server/) first. Copy `.env.example` to `.env` and set
-`AVM_PRIVATE_KEY` (`RESOURCE_URL` is the paid endpoint,
+`AVM_PRIVATE_KEY` (`RESOURCE_SERVER_URL` is the paid endpoint's full URL,
 `http://localhost:4021/my-api` by default), then:
 
 ```bash

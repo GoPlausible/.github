@@ -53,7 +53,7 @@ print("buyer account:", signer.address)
 client = x402ClientSync()
 register_exact_avm_client(client, signer)
 
-url = os.getenv("RESOURCE_URL", "http://localhost:4021/my-api")
+url = os.getenv("RESOURCE_SERVER_URL", "http://localhost:4021/my-api")
 print("→ requesting", url)
 
 with x402_requests(client) as session:

@@ -18,8 +18,8 @@ A **TestNet buyer account** with:
 ## Run
 
 Start [`../express-server`](../express-server/) first. Copy `.env.example` to
-`.env` and set `AVM_PRIVATE_KEY` (`RESOURCE_URL` is the paid endpoint,
-`http://localhost:4021/my-api` by default), then:
+`.env` and set `AVM_PRIVATE_KEY` (`RESOURCE_SERVER_URL` is the paid endpoint's
+full URL, `http://localhost:4021/my-api` by default), then:
 
 ```bash
 npm install

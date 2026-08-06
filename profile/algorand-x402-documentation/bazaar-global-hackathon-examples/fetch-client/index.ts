@@ -10,7 +10,7 @@ console.log("buyer account:", signer.address);
 
 const client = new x402Client().register(ALGORAND_TESTNET, new ExactAvmScheme(signer));
 
-const url = process.env.RESOURCE_URL || "http://localhost:4021/my-api";
+const url = process.env.RESOURCE_SERVER_URL || "http://localhost:4021/my-api";
 console.log("→ requesting", url);
 
 const paidFetch = wrapFetchWithPayment(fetch, client);

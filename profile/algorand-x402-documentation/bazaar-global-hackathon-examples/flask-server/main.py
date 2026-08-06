@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask, jsonify
+from x402 import AssetAmount
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
@@ -31,9 +32,12 @@ routes = {
         accepts=[PaymentOption(
             scheme="exact",
             network=ALGORAND_TESTNET,
-            price="$0.01",                     # USDC — resolved per network
+            # $0.01 USDC, spec form. The Challenge tag travels in the price
+            # extra — the Python SDK does not yet propagate PaymentOption.extra.
+            price=AssetAmount(asset="10458941", amount="10000",
+                              extra={"name": "USDC", "decimals": 6,
+                                     "tag": "x402-global-challenge"}),
             pay_to=os.environ["AVM_ADDRESS"],  # your merchant account (.env)
-            extra={"tag": "x402-global-challenge"},  # ← the Challenge tag
         )],
         description=(
             "Example x402-paid API from the GoPlausible guide — premium JSON for "

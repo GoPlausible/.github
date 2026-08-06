@@ -54,12 +54,12 @@ print("buyer account:", signer.address)
 client = x402Client()
 register_exact_avm_client(client, signer)
 
-url = os.getenv("RESOURCE_URL", "http://localhost:4021/my-api")
+url = os.getenv("RESOURCE_SERVER_URL", "http://localhost:4021/my-api")
 print("→ requesting", url)
 
 
 async def main() -> None:
-    async with x402HttpxClient(client, base_url="http://localhost:4021") as http:
+    async with x402HttpxClient(client) as http:
         res = await http.get(url)
         print("←", res.status_code)
         print("body:", (await res.aread()).decode())  # paid, verified, settled — one call
