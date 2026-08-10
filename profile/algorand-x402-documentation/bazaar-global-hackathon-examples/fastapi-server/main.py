@@ -27,6 +27,30 @@ server = (
 )
 server.register(ALGORAND_TESTNET, ExactAvmServerScheme())
 
+# REQUIRED for Bazaar discovery: this block is what gets you listed — your
+# first settled payment auto-catalogs the resource AND your merchant
+# identity. Without it you get paid but stay unlisted.
+BAZAAR_EXT = {
+    "info": {"input": {"type": "http", "queryParams": {}},
+             "output": {"type": "json", "example": {"ok": True, "premium": "data"}}},
+    "schema": {"$schema": "https://json-schema.org/draft/2020-12/schema",
+               "type": "object", "required": ["input"],
+               "properties": {
+                   "input": {"type": "object", "additionalProperties": False,
+                             "required": ["type", "method"],
+                             "properties": {"type": {"type": "string", "const": "http"},
+                                            "method": {"type": "string", "enum": ["GET", "HEAD", "DELETE"]},
+                                            "queryParams": {"type": "object", "properties": {}}}},
+                   "output": {"type": "object", "required": ["type"],
+                              "properties": {"type": {"type": "string"}, "example": {"type": "object"}}}}},
+}
+MERCHANT_EXT = {
+    "info": {"name": "My API Co",  # ← your public identity
+             "website": "https://my-api.example.com",
+             "logo": "https://my-api.example.com/logo.png",
+             "categories": ["api", "algorand", "x402"]},
+}
+
 routes = {
     "GET /my-api": RouteConfig(
         accepts=[PaymentOption(
@@ -44,6 +68,7 @@ routes = {
             "$0.01 USDC on Algorand TestNet, settled by facilitator.goplausible.xyz"
         ),
         mime_type="application/json",
+        extensions={"bazaar": BAZAAR_EXT, "x402-merchant": MERCHANT_EXT},
     ),
 }
 

@@ -3,6 +3,7 @@ import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
+import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 
 const ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
 
@@ -44,6 +45,22 @@ app.use(paymentMiddleware({
     description:
       "Example x402-paid API from the GoPlausible guide — premium JSON for $0.01 USDC on Algorand TestNet, settled by facilitator.goplausible.xyz",
     mimeType: "application/json",
+    // REQUIRED for Bazaar discovery: this block is what gets you listed —
+    // your first settled payment auto-catalogs the resource AND your
+    // merchant identity. Without it you get paid but stay unlisted.
+    extensions: {
+      ...declareDiscoveryExtension({
+        output: { example: { ok: true, premium: "data" } },
+      }),
+      "x402-merchant": {
+        info: {
+          name: "My API Co",                        // ← your public identity
+          website: "https://my-api.example.com",
+          logo: "https://my-api.example.com/logo.png",
+          categories: ["api", "algorand", "x402"],
+        },
+      },
+    },
   },
 }, server));
 
