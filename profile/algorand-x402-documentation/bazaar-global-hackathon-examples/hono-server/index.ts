@@ -60,6 +60,18 @@ app.use(paymentMiddleware({
           logo: "https://my-api.example.com/logo.png",
           categories: ["api", "algorand", "x402"],
         },
+        // x402 v2 spec: extensions carry BOTH info and a JSON Schema for it.
+        schema: {
+          $schema: "https://json-schema.org/draft/2020-12/schema",
+          type: "object",
+          required: ["name"],
+          properties: {
+            name: { type: "string" },
+            website: { type: "string" },
+            logo: { type: "string" },
+            categories: { type: "array", items: { type: "string" } },
+          },
+        },
       },
     },
   },
