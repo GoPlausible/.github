@@ -27,9 +27,12 @@ server = (
 )
 server.register(ALGORAND_TESTNET, ExactAvmServerScheme())
 
-# REQUIRED for Bazaar discovery: this block is what gets you listed — your
-# first settled payment auto-catalogs the resource AND your merchant
-# identity. Without it you get paid but stay unlisted.
+# BAZAAR_EXT is REQUIRED for discovery: it's what gets you listed (the first
+# settled payment auto-catalogs the resource). Without it you get paid but
+# stay unlisted.
+# MERCHANT_EXT is OPTIONAL: declare it to CONTROL your name/website/logo/
+# categories. Omit it and they're read from your endpoint's domain metadata
+# (OpenGraph tags, llms.txt, agent-card.json) instead.
 BAZAAR_EXT = {
     "info": {"input": {"type": "http", "queryParams": {}},
              "output": {"type": "json", "example": {"ok": True, "premium": "data"}}},

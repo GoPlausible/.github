@@ -45,9 +45,12 @@ app.use(paymentMiddleware({
     description:
       "Example x402-paid API from the GoPlausible guide — premium JSON for $0.01 USDC on Algorand TestNet, settled by facilitator.goplausible.xyz",
     mimeType: "application/json",
-    // REQUIRED for Bazaar discovery: this block is what gets you listed —
-    // your first settled payment auto-catalogs the resource AND your
-    // merchant identity. Without it you get paid but stay unlisted.
+    // `bazaar` — REQUIRED for discovery: this is what gets you listed (the
+    // first settled payment auto-catalogs the resource). Without it you get
+    // paid but stay unlisted.
+    // `x402-merchant` — OPTIONAL identity: declare it to CONTROL your name,
+    // website, logo and categories. Omit it and they're read from your
+    // endpoint's domain metadata (OpenGraph, llms.txt, agent-card.json).
     extensions: {
       ...declareDiscoveryExtension({
         output: { example: { ok: true, premium: "data" } },
