@@ -58,7 +58,7 @@ app.use(paymentMiddleware({
       }),
       "x402-merchant": {
         info: {
-          name: "My API Co",                        // ← your public identity
+          name: "EXAMPLE API",                        // ← your public identity
           website: "https://my-api.example.com",
           logo: "https://my-api.example.com/logo.png",
           categories: ["api", "algorand", "x402"],

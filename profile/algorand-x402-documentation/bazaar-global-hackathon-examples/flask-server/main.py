@@ -48,7 +48,7 @@ BAZAAR_EXT = {
                               "properties": {"type": {"type": "string"}, "example": {"type": "object"}}}}},
 }
 MERCHANT_EXT = {
-    "info": {"name": "My API Co",  # ← your public identity
+    "info": {"name": "EXAMPLE API",  # ← your public identity
              "website": "https://my-api.example.com",
              "logo": "https://my-api.example.com/logo.png",
              "categories": ["api", "algorand", "x402"]},
