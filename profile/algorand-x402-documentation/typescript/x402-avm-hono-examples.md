@@ -25,15 +25,17 @@ including Algorand (AVM) blockchain payments and Cloudflare Workers deployment.
 ## Installation
 
 ```bash
-npm install @x402/hono @x402/avm @x402/core hono
+npm install @x402/hono @x402/avm @x402/core hono@^4.13.13
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **hono version:** use `hono` >= 4.13.11 (`hono@^4.13.13` above). Earlier 4.x releases have published security advisories, e.g. CVE-2026-111757 (`serveStatic` path re-decoding) and CVE-2026-84364 (`parseBody` memory exhaustion).
+
+> **Note:** `@x402/avm` uses `@algorandfoundation/algokit-utils` v10 (`10.0.0-alpha.46` in `@x402/avm` 2.28.0) internally, not `algosdk`. If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from an `algosdk`-based setup, switch to the upstream `@x402/*` packages, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
 
 For Node.js server deployment:
 
 ```bash
-npm install @x402/hono @x402/avm @x402/core hono @hono/node-server
+npm install @x402/hono @x402/avm @x402/core hono@^4.13.13 @hono/node-server
 ```
 
 ---
@@ -41,34 +43,42 @@ npm install @x402/hono @x402/avm @x402/core hono @hono/node-server
 ## Quick Start with paymentMiddlewareFromConfig
 
 The simplest way to add x402 payment gating to a Hono app.
-`paymentMiddlewareFromConfig` creates the `x402ResourceServer` internally.
+`paymentMiddlewareFromConfig` creates the `x402ResourceServer` internally; you pass the
+scheme servers to register as its third argument.
 
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
 // Route configuration
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: "ALGORAND_ADDRESS_HERE_58_CHARS_AAAAAAAAAAAAAAAAAAAAAAAAAA",
-      price: "$0.01",
+      price: "$0.01", // USD price, paid in USDC (ASA) on Algorand
     },
     description: "Current weather data",
   },
 };
 
-// Create facilitator client
-const facilitatorClient = new HTTPFacilitatorClient();
+// Create facilitator client. Without a url it defaults to https://x402.org/facilitator,
+// which lists Algorand TestNet only; the GoPlausible facilitator serves MainNet and TestNet.
+const facilitatorClient = new HTTPFacilitatorClient({ url: "https://facilitator.goplausible.xyz" });
 
-// Apply middleware (returns MiddlewareHandler)
-app.use(paymentMiddlewareFromConfig(routes, facilitatorClient));
+// Apply middleware (returns MiddlewareHandler).
+// The third argument registers the AVM exact scheme server for all Algorand networks.
+app.use(
+  paymentMiddlewareFromConfig(routes, facilitatorClient, [
+    { network: "algorand:*", server: new ExactAvmScheme() },
+  ]),
+);
 
 // Protected route
 app.get("/api/weather", (c) => {
@@ -120,24 +130,24 @@ server across different middleware.
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
 // Create and configure the resource server
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: "https://x402.org/facilitator",
+  url: "https://facilitator.goplausible.xyz",
 });
 
 const server = new x402ResourceServer(facilitatorClient);
 
 // Register AVM exact payment scheme (wildcard for all Algorand networks)
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 // Define routes
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium/*": {
     accepts: {
       scheme: "exact",
@@ -192,8 +202,8 @@ import {
   x402ResourceServer,
   x402HTTPResourceServer,
 } from "@x402/hono";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
@@ -201,9 +211,9 @@ const app = new Hono();
 // Create resource server with AVM support
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -251,19 +261,22 @@ export default app;
 
 ## Route Configuration
 
-Routes use the same `RoutesConfig` type as Express. The configuration maps
-`"METHOD /path"` patterns to `RouteConfig` objects.
+Routes use the same `RoutesConfig` type (from `@x402/core/server`) as Express. The
+configuration maps `"METHOD /path"` patterns to `RouteConfig` objects. Annotating your
+route objects with `RoutesConfig` keeps literal values such as `network` typed as CAIP-2
+identifiers.
 
 ### Route Pattern Examples
 
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
   USDC_TESTNET_ASA_ID,
 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   // Exact match
   "GET /api/weather": {
     accepts: {
@@ -297,7 +310,8 @@ const routes = {
     description: "Resource CRUD",
   },
 
-  // Multiple payment options (Algorand or EVM)
+  // Multiple payment options (Algorand or EVM).
+  // EVM also needs server.register("eip155:*", new ExactEvmScheme()) from "@x402/evm/exact/server".
   "GET /api/cross-chain": {
     accepts: [
       {
@@ -316,14 +330,13 @@ const routes = {
     description: "Cross-chain endpoint",
   },
 
-  // USDC payments
+  // Explicit USDC amount (base units, 6 decimals)
   "GET /api/usdc-only": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
-      price: "$5.00",
-      extra: { asset: USDC_TESTNET_ASA_ID },
+      price: { amount: "5000000", asset: USDC_TESTNET_ASA_ID }, // 5.00 USDC
     },
     description: "USDC-only endpoint",
   },
@@ -335,7 +348,9 @@ const routes = {
 When all routes share the same payment config:
 
 ```typescript
-const singleRoute = {
+import type { RouteConfig } from "@x402/core/server";
+
+const singleRoute: RouteConfig = {
   accepts: {
     scheme: "exact",
     network: ALGORAND_TESTNET_CAIP2,
@@ -345,44 +360,58 @@ const singleRoute = {
   description: "All routes use this config",
 };
 
-app.use(paymentMiddlewareFromConfig(singleRoute, facilitatorClient));
+app.use(
+  paymentMiddlewareFromConfig(singleRoute, facilitatorClient, [
+    { network: "algorand:*", server: new ExactAvmScheme() },
+  ]),
+);
 ```
 
 ---
 
 ## Algorand Payment Routes
 
-### Native ALGO Payments
+The AVM `exact` scheme pays with an Algorand Standard Asset transfer (`axfer`). A USD
+price such as `"$0.01"` resolves to USDC (ASA `10458941` on TestNet, `31566704` on
+MainNet, 6 decimals); native ALGO payments are not part of the `exact` scheme in
+`@x402/avm` 2.28.0.
+
+### USD Price (Default Asset: USDC)
 
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS",
-      price: "$0.01",  // USD price, resolved to ALGO at payment time
+      price: "$0.01",  // USD price, converted to USDC base units (10000)
     },
-    description: "Data paid in ALGO",
+    description: "Data paid in USDC",
   },
 };
 ```
 
 ### USDC (ASA) Payments
 
+To name the asset explicitly, pass an `AssetAmount` (`{ amount, asset }`) as the
+price. `amount` is in the asset's base units (USDC has 6 decimals).
+
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS",
-      price: "$0.50",
-      extra: {
+      price: {
+        amount: "500000",            // 0.50 USDC (6 decimals)
         asset: USDC_TESTNET_ASA_ID,  // "10458941"
       },
     },
@@ -394,16 +423,19 @@ const routes = {
 ### Mainnet Deployment
 
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_MAINNET_CAIP2, USDC_MAINNET_ASA_ID } from "@x402/avm";
 
-const routes = {
+// Use a facilitator whose /supported lists Algorand MainNet
+// (for example https://facilitator.goplausible.xyz).
+const routes: RoutesConfig = {
   "GET /api/production": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_MAINNET_CAIP2,
       payTo: "YOUR_MAINNET_ADDRESS",
-      price: "$1.00",
-      extra: {
+      price: {
+        amount: "1000000",           // 1.00 USDC (6 decimals)
         asset: USDC_MAINNET_ASA_ID,  // "31566704"
       },
     },
@@ -419,14 +451,15 @@ const routes = {
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from "@x402/avm";
 
 const app = new Hono();
 const PAY_TO = "YOUR_ALGORAND_ADDRESS";
 const facilitatorClient = new HTTPFacilitatorClient();
 
-const routes = {
+const routes: RoutesConfig = {
   // Tier 1: cheap lookups
   "GET /api/lookup/:id": {
     accepts: {
@@ -460,20 +493,23 @@ const routes = {
     description: "AI content generation",
   },
 
-  // USDC payments for high-value endpoints
+  // Explicit USDC amount for high-value endpoints
   "GET /api/report/full": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: PAY_TO,
-      price: "$10.00",
-      extra: { asset: USDC_TESTNET_ASA_ID },
+      price: { amount: "10000000", asset: USDC_TESTNET_ASA_ID }, // 10.00 USDC
     },
     description: "Full analytics report (USDC)",
   },
 };
 
-app.use(paymentMiddlewareFromConfig(routes, facilitatorClient));
+app.use(
+  paymentMiddlewareFromConfig(routes, facilitatorClient, [
+    { network: "algorand:*", server: new ExactAvmScheme() },
+  ]),
+);
 
 // Route handlers
 app.get("/api/lookup/:id", (c) => {
@@ -524,10 +560,12 @@ x402-avm payment-gated API on the edge.
 name = "x402-avm-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
+# @x402/hono uses Node's Buffer when it settles a payment
+compatibility_flags = ["nodejs_compat"]
 
 [vars]
 PAY_TO = "YOUR_ALGORAND_ADDRESS"
-FACILITATOR_URL = "https://x402.org/facilitator"
+FACILITATOR_URL = "https://facilitator.goplausible.xyz"
 ```
 
 ### src/index.ts
@@ -536,7 +574,8 @@ FACILITATOR_URL = "https://x402.org/facilitator"
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 type Bindings = {
@@ -549,9 +588,13 @@ const app = new Hono<{ Bindings: Bindings }>();
 // CORS for cross-origin requests
 app.use("*", cors());
 
-// Setup payment middleware using env vars from wrangler.toml
+// Setup payment middleware using env vars from wrangler.toml.
+// Bindings are only available per request, so the middleware is built inside the
+// request; with the default syncFacilitatorOnStart (true) it fetches the facilitator's
+// /supported within that request. See the static alternative below to avoid the
+// per-request setup.
 app.use("*", async (c, next) => {
-  const routes = {
+  const routes: RoutesConfig = {
     "GET /api/data": {
       accepts: {
         scheme: "exact",
@@ -576,14 +619,10 @@ app.use("*", async (c, next) => {
     url: c.env.FACILITATOR_URL,
   });
 
-  // Disable facilitator sync on start for serverless (cold start optimization)
   const middleware = paymentMiddlewareFromConfig(
     routes,
     facilitatorClient,
-    undefined,  // schemes
-    undefined,  // paywallConfig
-    undefined,  // paywall
-    false,       // syncFacilitatorOnStart = false for Workers
+    [{ network: "algorand:*", server: new ExactAvmScheme() }], // schemes
   );
 
   return middleware(c, next);
@@ -619,14 +658,19 @@ export default app;
 
 ### Alternative: Static Route Config (avoids per-request creation)
 
+With `syncFacilitatorOnStart = false` the middleware makes no facilitator request while
+the module loads, but it also does not initialize the resource server itself. Call
+`initialize()` once, inside the first request, before the middleware runs.
+
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Static configuration (created once at module level)
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -639,20 +683,30 @@ const routes = {
 };
 
 const facilitatorClient = new HTTPFacilitatorClient();
+const resourceServer = new x402ResourceServer(facilitatorClient);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
 const app = new Hono();
 
 // Apply once at module scope
-app.use(
-  paymentMiddlewareFromConfig(
-    routes,
-    facilitatorClient,
-    undefined,
-    undefined,
-    undefined,
-    false,  // syncFacilitatorOnStart = false
-  ),
+const x402 = paymentMiddleware(
+  routes,
+  resourceServer,
+  undefined,
+  undefined,
+  false,  // syncFacilitatorOnStart = false
 );
+
+// Fetch the facilitator's /supported once, on the first request
+let initialized: Promise<void> | undefined;
+app.use(async (c, next) => {
+  initialized ??= resourceServer.initialize().catch((error) => {
+    initialized = undefined; // retry on the next request
+    throw error;
+  });
+  await initialized;
+  return x402(c, next);
+});
 
 app.get("/api/data", (c) => c.json({ data: "content" }));
 app.get("/", (c) => c.json({ status: "ok" }));
@@ -670,12 +724,13 @@ export default app;
 // src/index.ts
 import { Hono } from "hono";
 import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -687,7 +742,11 @@ const routes = {
   },
 };
 
-app.use(paymentMiddlewareFromConfig(routes, new HTTPFacilitatorClient()));
+app.use(
+  paymentMiddlewareFromConfig(routes, new HTTPFacilitatorClient(), [
+    { network: "algorand:*", server: new ExactAvmScheme() },
+  ]),
+);
 
 app.get("/api/data", (c) => c.json({ data: "content" }));
 app.get("/", (c) => c.json({ status: "ok" }));
@@ -702,15 +761,16 @@ export default {
 ### Deno
 
 ```typescript
-// main.ts
-import { Hono } from "https://deno.land/x/hono/mod.ts";
-import { paymentMiddlewareFromConfig } from "@x402/hono";
-import { HTTPFacilitatorClient } from "@x402/core/server";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+// main.ts -- npm: specifiers so Hono and @x402/hono share the same hono package
+import { Hono } from "npm:hono";
+import { paymentMiddlewareFromConfig } from "npm:@x402/hono";
+import { ExactAvmScheme } from "npm:@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "npm:@x402/core/server";
+import { ALGORAND_TESTNET_CAIP2 } from "npm:@x402/avm";
 
 const app = new Hono();
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -722,7 +782,11 @@ const routes = {
   },
 };
 
-app.use(paymentMiddlewareFromConfig(routes, new HTTPFacilitatorClient()));
+app.use(
+  paymentMiddlewareFromConfig(routes, new HTTPFacilitatorClient(), [
+    { network: "algorand:*", server: new ExactAvmScheme() },
+  ]),
+);
 
 app.get("/api/data", (c) => c.json({ data: "content" }));
 
@@ -740,7 +804,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
 import { x402Facilitator } from "@x402/core/facilitator";
-import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
 import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
@@ -750,6 +814,7 @@ app.use("*", cors());
 
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
   testnetUrl: process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
+  algodToken: process.env.ALGOD_TOKEN,
 });
 
 const facilitatorAddress = signer.getAddresses()[0];
@@ -757,10 +822,7 @@ const facilitatorAddress = signer.getAddresses()[0];
 // ---- Facilitator ----
 
 const facilitator = new x402Facilitator();
-registerExactAvmScheme(facilitator, {
-  signer,
-  networks: ALGORAND_TESTNET_CAIP2,
-});
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer));
 
 // ---- Endpoints ----
 
@@ -814,8 +876,8 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { serve } from "@hono/node-server";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
@@ -830,13 +892,13 @@ app.use("*", logger());
 // Setup x402
 const PAY_TO = process.env.PAY_TO || "YOUR_ALGORAND_ADDRESS";
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
+  url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/:city": {
     accepts: {
       scheme: "exact",
@@ -858,8 +920,7 @@ const routes = {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: PAY_TO,
-      price: "$0.50",
-      extra: { asset: USDC_TESTNET_ASA_ID },
+      price: { amount: "500000", asset: USDC_TESTNET_ASA_ID }, // 0.50 USDC
     },
     description: "Analytics (USDC)",
   },
@@ -917,9 +978,9 @@ app.get("/", (c) => {
     name: "x402-avm Hono Demo",
     version: "2.0.0",
     endpoints: {
-      weather: "GET /api/weather/:city ($0.01 ALGO)",
-      analytics: "GET /api/analytics/* ($0.50 USDC)",
-      generate: "POST /api/ai/generate ($1.00 ALGO)",
+      weather: "GET /api/weather/:city ($0.01 USDC)",
+      analytics: "GET /api/analytics/* (0.50 USDC)",
+      generate: "POST /api/ai/generate ($1.00 USDC)",
     },
   });
 });
@@ -942,7 +1003,7 @@ serve({ fetch: app.fetch, port }, (info) => {
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `PAY_TO` | Algorand address to receive payments | `ABC...XYZ` (58 chars) |
-| `FACILITATOR_URL` | URL of the facilitator server | `https://x402.org/facilitator` |
+| `FACILITATOR_URL` | URL of the facilitator server | `https://facilitator.goplausible.xyz` |
 | `AVM_PRIVATE_KEY` | Base64-encoded 64-byte key (facilitator only) | `base64string...` |
 | `ALGOD_SERVER` | Algorand node URL | `https://testnet-api.algonode.cloud` |
 | `ALGOD_TOKEN` | Algorand node API token | `""` |
@@ -952,8 +1013,15 @@ serve({ fetch: app.fetch, port }, (info) => {
 
 | Network | CAIP-2 Identifier | Constant |
 |---------|-------------------|----------|
-| Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` | `ALGORAND_TESTNET_CAIP2` |
-| Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` | `ALGORAND_MAINNET_CAIP2` |
+| Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` | `ALGORAND_TESTNET_CAIP2` |
+| Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k` | `ALGORAND_MAINNET_CAIP2` |
+
+Use the constants from `@x402/avm` (>= 2.20.0) rather than string literals. The legacy
+full-hash form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`,
+`algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=`) is not valid CAIP-2; `@x402/avm`
+still accepts it on input during the transition, and the GoPlausible facilitator's
+`/supported` lists it after the canonical ids until it is switched off with notice. See
+[V2 CAIP-2 Network Identifiers](../README.md#v2-caip-2-network-identifiers).
 
 ### USDC ASA IDs
 

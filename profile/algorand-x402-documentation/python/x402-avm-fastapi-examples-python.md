@@ -70,8 +70,8 @@ from x402.schemas import AssetAmount, Network        # Type helpers
 
 # AVM-specific imports
 from x402.mechanisms.avm import (
-    ALGORAND_TESTNET_CAIP2,         # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-    ALGORAND_MAINNET_CAIP2,         # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
+    ALGORAND_TESTNET_CAIP2,         # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe" (see note below)
+    ALGORAND_MAINNET_CAIP2,         # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k" (see note below)
     USDC_TESTNET_ASA_ID,            # 10458941
     USDC_MAINNET_ASA_ID,            # 31566704
 )
@@ -80,6 +80,10 @@ from x402.mechanisms.avm.exact import (
     register_exact_avm_server,      # Registration helper
 )
 ```
+
+> **Network ids**: the canonical CAIP-2 values shown above are the constant values in x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` for TestNet), which facilitator.goplausible.xyz still accepts during the transition. Always use `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` in code instead of hardcoded strings.
+>
+> **Facilitator**: the examples use the GoPlausible facilitator, `https://facilitator.goplausible.xyz` (Algorand MainNet/TestNet, Base / Base Sepolia, Solana MainNet/Devnet). Its `/supported` response lists the canonical Algorand ids first and, during the transition, the legacy full-hash ids too; both are accepted on `/verify` and `/settle`. The fee payer address the server adds to `extra.feePayer` comes from that `/supported` response.
 
 ---
 
@@ -95,17 +99,18 @@ from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.fastapi import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = FastAPI()
 
 # 1. Configure facilitator client and resource server (async variants)
-facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServer(facilitator)
 
 # 2. Register AVM scheme on the server
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -114,7 +119,7 @@ routes = {
     "GET /api/data/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -160,7 +165,7 @@ routes = {
     "GET /api/weather": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price="$0.01",  # Automatically converted to 10000 microUSDC
         ),
@@ -177,7 +182,7 @@ routes = {
     "GET /api/premium/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price=AssetAmount(
                 amount="10000",         # 10000 microUSDC = $0.01
@@ -220,15 +225,19 @@ routes = {
     "GET /api/weather/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-            "maxAmountRequired": "10000",
-            "asset": "10458941",
-            "payTo": "RECEIVER_ALGORAND_ADDRESS",
-            "resource": "https://api.example.com/api/weather",
-        }
+            "network": ALGORAND_TESTNET_CAIP2,
+            "payTo": "RECEIVER_ALGORAND_ADDRESS",   # or "pay_to"
+            "price": "$0.01",                       # or {"amount": "10000", "asset": "10458941"}
+            "maxTimeoutSeconds": 60,                # optional
+        },
+        "resource": "https://api.example.com/api/weather",  # optional, route level
+        "description": "Weather data API",                  # optional
+        "mimeType": "application/json",                     # optional
     }
 }
 ```
+
+Each `accepts` entry is read with the `PaymentOption` keys (`scheme`, `payTo`/`pay_to`, `price`, `network`, `maxTimeoutSeconds`, `extra`); V1 fields such as `maxAmountRequired` are not read, so the amount always goes in `price`.
 
 ---
 
@@ -242,15 +251,16 @@ from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = FastAPI()
 
 # Setup server
-facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServer(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -261,7 +271,7 @@ routes = {
             scheme="exact",
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
         ),
         mime_type="application/json",
         description="Weather report",
@@ -293,20 +303,23 @@ The `PaymentMiddlewareASGI` constructor accepts:
 The `payment_middleware_from_config` function is a convenience wrapper that creates the `x402ResourceServer` internally.
 
 ```python
+from fastapi import FastAPI
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig
 from x402.http.middleware.fastapi import payment_middleware_from_config
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
-facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
+app = FastAPI()
+
+facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 
 routes = {
     "GET /api/data/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "payTo": "YOUR_ALGORAND_ADDRESS",
-            "maxAmountRequired": "10000",
-            "asset": "10458941",
+            "price": {"amount": "10000", "asset": "10458941"},  # 0.01 USDC (TestNet ASA)
         }
     }
 }
@@ -316,7 +329,7 @@ mw = payment_middleware_from_config(
     facilitator_client=facilitator,
     schemes=[
         {
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "server": ExactAvmServerScheme(),
         },
     ],
@@ -337,8 +350,10 @@ This is a full, runnable example of a FastAPI resource server that gates endpoin
 
 ```env
 AVM_ADDRESS=YOUR_ALGORAND_RECEIVER_ADDRESS
-FACILITATOR_URL=https://x402.org/facilitator
+FACILITATOR_URL=https://facilitator.goplausible.xyz
 ```
+
+The receiver (`AVM_ADDRESS`) must be opted in to the USDC ASA (TestNet `10458941`), otherwise the facilitator's simulation of the payment fails.
 
 ### `main.py`
 
@@ -354,9 +369,10 @@ from pydantic import BaseModel
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import AssetAmount, Network
+from x402.server import x402ResourceServer
 
 load_dotenv()
 
@@ -368,8 +384,8 @@ AVM_ADDRESS = os.getenv("AVM_ADDRESS")
 if not AVM_ADDRESS:
     raise ValueError("AVM_ADDRESS environment variable is required")
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2  # Algorand TestNet
+FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")
 
 # ---------------------------------------------------------------------------
 # Response Models
@@ -442,10 +458,6 @@ app.add_middleware(PaymentMiddlewareASGI, routes=routes, server=server)
 # ---------------------------------------------------------------------------
 
 
-# Fix: import must be at top
-from x402.server import x402ResourceServer
-
-
 @app.get("/health")
 async def health_check() -> dict[str, str]:
     """Health check endpoint (no payment required)."""
@@ -493,21 +505,25 @@ After the middleware verifies a payment, it stores the payment payload and requi
 
 ```python
 from fastapi import FastAPI, Request
+from x402.mechanisms.avm import decode_base64_transaction
 
 @app.get("/api/paid-resource")
 async def paid_resource(request: Request):
-    # Payment payload (the verified payment from the client)
+    # Payment payload (x402 V2 PaymentPayload: x402_version, accepted, payload, resource, extensions)
     payment_payload = getattr(request.state, "payment_payload", None)
 
     # Payment requirements (the route's payment config that was matched)
     payment_requirements = getattr(request.state, "payment_requirements", None)
 
     if payment_payload:
-        # Access payment details
-        payer_address = payment_payload.payload.get("from", "unknown")
+        # AVM payload: {"paymentGroup": [base64 msgpack txns], "paymentIndex": int}
+        avm = payment_payload.payload
+        payment_txn = decode_base64_transaction(avm["paymentGroup"][avm["paymentIndex"]])
         return {
             "data": "premium content",
-            "paid_by": payer_address,
+            "paid_by": payment_txn.sender,       # payer's Algorand address
+            "amount": payment_txn.asset_amount,  # atomic units of the ASA
+            "network": payment_payload.accepted.network,
         }
 
     return {"data": "premium content"}
@@ -515,15 +531,15 @@ async def paid_resource(request: Request):
 
 ### How the middleware flow works
 
-1. Client sends request with `X-Payment` or `Payment-Signature` header
+1. Client sends the request with a `PAYMENT-SIGNATURE` header (base64-encoded V2 `PaymentPayload`); the V1 `X-PAYMENT` header is not read by the V2 server
 2. Middleware checks if the route requires payment via `requires_payment(context)`
 3. On first protected request, facilitator support is synchronized (lazy init)
 4. `process_http_request(context)` verifies the payment:
    - `"no-payment-required"` -- route not protected, passes through
-   - `"payment-error"` -- returns 402 response (JSON or HTML paywall)
+   - `"payment-error"` -- returns 402 response (JSON with a `PAYMENT-REQUIRED` header, or an HTML paywall for browsers)
    - `"payment-verified"` -- stores on `request.state`, calls route handler
-5. If route handler returns a successful (2xx) response, settlement is processed
-6. Settlement headers are added to the response
+5. If the route handler returns a non-error response (status < 400), settlement is processed. The facilitator's settle waits for on-chain confirmation (about 3-6 s end to end on Algorand), so clients should use a request timeout of around 30 s (for example `x402HttpxClient(client, timeout=30.0)`)
+6. On success, the `PAYMENT-RESPONSE` header (base64-encoded settlement response with the transaction id) is added to the response
 
 ---
 
@@ -595,7 +611,7 @@ routes = {
                 scheme="exact",
                 pay_to=AVM_ADDRESS,
                 price="$0.01",
-                network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+                network=AVM_NETWORK,  # ALGORAND_TESTNET_CAIP2
             ),
             # EVM option (Base Sepolia)
             PaymentOption(
@@ -613,7 +629,7 @@ routes = {
 
 ## Multi-Network Support (AVM + EVM + SVM)
 
-This example shows how to register all three blockchain networks on a single FastAPI server, matching the pattern used in the official examples.
+This example shows how to register all three blockchain networks on a single FastAPI server, matching the pattern used in the official examples. It needs the EVM and SVM extras as well: `pip install "x402-avm[fastapi,avm,evm,svm]"`.
 
 ```python
 import os
@@ -624,11 +640,11 @@ from fastapi import FastAPI
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.mechanisms.evm.exact import ExactEvmServerScheme
 from x402.mechanisms.svm.exact import ExactSvmServerScheme
-from x402.schemas import AssetAmount, Network
+from x402.schemas import Network
 from x402.server import x402ResourceServer
 
 load_dotenv()
@@ -637,10 +653,10 @@ load_dotenv()
 EVM_ADDRESS = os.getenv("EVM_ADDRESS")
 SVM_ADDRESS = os.getenv("SVM_ADDRESS")
 AVM_ADDRESS = os.getenv("AVM_ADDRESS")
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-EVM_NETWORK: Network = "eip155:84532"
-SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
-FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2  # Algorand TestNet
+EVM_NETWORK: Network = "eip155:84532"  # Base Sepolia
+SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"  # Solana Devnet
+FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")
 
 app = FastAPI()
 
@@ -678,7 +694,7 @@ async def get_weather():
 
 ### Payment errors (402 responses)
 
-When a client sends a request without a valid payment, the middleware returns a 402 response automatically. The response body contains payment requirements the client needs to fulfill.
+When a client sends a request without a valid payment, the middleware returns a 402 response automatically. For API clients the body is an empty JSON object (`{}`, or the route's `unpaid_response_body`), and the `PaymentRequired` object (`x402Version: 2`, `error`, `resource`, `accepts`, `extensions`) is sent base64-encoded in the `PAYMENT-REQUIRED` response header. Browsers (an `Accept: text/html` request from a `Mozilla` user agent) get the HTML paywall instead. The same 402 + `PAYMENT-REQUIRED` response is returned when verification fails, with the reason in its `error` field.
 
 ### Settlement failures
 
@@ -752,7 +768,7 @@ app.add_middleware(
 
 ### `PaymentMiddlewareASGI`
 
-Starlette `BaseHTTPMiddleware` subclass. Accepts the same parameters as `payment_middleware` via `app.add_middleware()`.
+Starlette `BaseHTTPMiddleware` subclass. Accepts the same parameters as `payment_middleware` (except `sync_facilitator_on_start`, which is always on) via `app.add_middleware()`.
 
 ### `FastAPIAdapter`
 
@@ -785,8 +801,8 @@ Implements the `HTTPAdapter` protocol for FastAPI/Starlette requests. Used inter
 
 | Constant | Value | Import |
 |----------|-------|--------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | `x402.mechanisms.avm` |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | `x402.mechanisms.avm` |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` (x402-avm >= 2.0.3, see note) | `x402.mechanisms.avm` |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` (x402-avm >= 2.0.3, see note) | `x402.mechanisms.avm` |
 | `USDC_TESTNET_ASA_ID` | `10458941` | `x402.mechanisms.avm` |
 | `USDC_MAINNET_ASA_ID` | `31566704` | `x402.mechanisms.avm` |
 

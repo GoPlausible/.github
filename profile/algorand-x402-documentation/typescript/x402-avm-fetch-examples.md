@@ -27,7 +27,7 @@ Comprehensive guide for using `@x402/fetch` to make automatic payments over HTTP
 npm install @x402/fetch @x402/avm
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **Note on `algosdk`:** `@x402/avm` does not depend on `algosdk`; it is built on `@algorandfoundation/algokit-utils` v10 (`@x402/avm` 2.28.0 pins `10.0.0-alpha.46`). A signer only has to implement `ClientAvmSigner` (see below). If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from an algosdk-based signer, switch to the upstream `@x402/*` packages and the signer code shown below. Browser wallet libraries such as `@txnlab/use-wallet` and `@perawallet/connect` still declare `algosdk` v3 as their own peer dependency, so browser apps that use them keep `algosdk` installed.
 
 Or with other package managers:
 
@@ -44,15 +44,15 @@ The simplest way to get started with x402-avm fetch is a 10-line setup:
 
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { toClientAvmSigner } from "@x402/avm";
 
 // 1. Create a signer (see detailed examples below)
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
-// 2. Create and configure the client
+// 2. Create and configure the client ("algorand:*" matches MainNet and TestNet)
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // 3. Wrap fetch
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
@@ -73,11 +73,12 @@ console.log(data);
 
 1. The wrapped fetch makes the initial HTTP request normally.
 2. If the server responds with `402 Payment Required`, the wrapper:
-   - Parses payment requirements from the response (headers for V2, body for V1).
-   - Selects a suitable payment method based on registered schemes.
+   - Parses payment requirements from the response (the base64 `PAYMENT-REQUIRED` header for V2, the JSON body for V1).
+   - Selects a suitable payment method based on registered schemes, spend controls and policies.
    - Creates a payment payload by signing a transaction group.
    - Retries the request with the `PAYMENT-SIGNATURE` header.
 3. If the response is anything other than 402, it is returned as-is.
+4. The response to the paid retry is returned as-is, including a 402 when the server rejects the payment; the wrapper does not pay a second time (unless an `onPaymentResponse` hook returns `{ recovered: true }`, which triggers exactly one retry with a fresh payload).
 
 ### Signature
 
@@ -92,11 +93,11 @@ function wrapFetchWithPayment(
 
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 // Assume `signer` is a ClientAvmSigner (see implementation sections below)
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
@@ -135,13 +136,14 @@ import {
   wrapFetchWithPaymentFromConfig,
   type x402ClientConfig,
 } from "@x402/fetch";
-import { ExactAvmScheme } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Assume `signer` is a ClientAvmSigner
 const config: x402ClientConfig = {
   schemes: [
     {
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+      network: ALGORAND_TESTNET_CAIP2, // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
       client: new ExactAvmScheme(signer),
     },
   ],
@@ -170,6 +172,8 @@ const config: x402ClientConfig = {
   ],
 };
 ```
+
+> The wildcard also matches servers that still advertise the legacy full-genesis-hash ids (for example `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`) during the CAIP-2 transition. An exact registration such as `ALGORAND_TESTNET_CAIP2` matches only the canonical id `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe`.
 
 ---
 
@@ -219,17 +223,16 @@ function useAvmSigner(): ClientAvmSigner | null {
 ```tsx
 import React, { useMemo, useCallback } from "react";
 import { useWallet, WalletProvider } from "@txnlab/use-wallet-react";
-import { WalletId } from "@txnlab/use-wallet";
+import { WalletId, WalletManager, NetworkId } from "@txnlab/use-wallet";
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 
-// Configure wallet providers
-const walletProviders = [
-  { id: WalletId.PERA },
-  { id: WalletId.DEFLY },
-  { id: WalletId.LUTE },
-];
+// Configure wallets (@txnlab/use-wallet v4)
+const walletManager = new WalletManager({
+  wallets: [WalletId.PERA, WalletId.DEFLY, WalletId.LUTE],
+  defaultNetwork: NetworkId.TESTNET,
+});
 
 function PaidContentViewer() {
   const { activeAccount, signTransactions } = useWallet();
@@ -249,7 +252,7 @@ function PaidContentViewer() {
   const fetchWithPay = useMemo(() => {
     if (!signer) return null;
     const client = new x402Client();
-    registerExactAvmScheme(client, { signer });
+    client.register("algorand:*", new ExactAvmScheme(signer));
     return wrapFetchWithPayment(fetch, client);
   }, [signer]);
 
@@ -277,7 +280,7 @@ function PaidContentViewer() {
       {!activeAccount && <p>Connect your Algorand wallet to access paid content.</p>}
       {activeAccount && (
         <button onClick={loadContent}>
-          Load Premium Content (pay with ALGO/USDC)
+          Load Premium Content (pay with USDC)
         </button>
       )}
     </div>
@@ -287,7 +290,7 @@ function PaidContentViewer() {
 // App wrapper with wallet provider
 export default function App() {
   return (
-    <WalletProvider wallets={walletProviders}>
+    <WalletProvider manager={walletManager}>
       <PaidContentViewer />
     </WalletProvider>
   );
@@ -298,8 +301,9 @@ export default function App() {
 
 ```typescript
 import { PeraWalletConnect } from "@perawallet/connect";
+import { decodeUnsignedTransaction } from "algosdk"; // peer dependency of @perawallet/connect
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 
 const peraWallet = new PeraWalletConnect();
@@ -313,9 +317,10 @@ async function setupPaymentFetch(): Promise<typeof fetch> {
   const signer: ClientAvmSigner = {
     address,
     signTransactions: async (txns: Uint8Array[], indexesToSign?: number[]) => {
-      // Pera expects transactions in a specific format
+      // Pera's signTransaction expects SignerTransaction[][] ({ txn: algosdk.Transaction, signers? }),
+      // so decode the raw transaction bytes; signers: [] tells Pera to skip a transaction
       const txnGroup = txns.map((txn, i) => ({
-        txn,
+        txn: decodeUnsignedTransaction(txn),
         signers: indexesToSign && !indexesToSign.includes(i) ? [] : [address],
       }));
 
@@ -330,7 +335,7 @@ async function setupPaymentFetch(): Promise<typeof fetch> {
 
   // Build client
   const client = new x402Client();
-  registerExactAvmScheme(client, { signer });
+  client.register("algorand:*", new ExactAvmScheme(signer));
 
   return wrapFetchWithPayment(fetch, client);
 }
@@ -367,8 +372,8 @@ console.log("Signer address:", signer.address);
 
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
-import { toClientAvmSigner } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 async function main() {
   // Create signer from private key
@@ -376,13 +381,15 @@ async function main() {
 
   // Configure x402 client
   const client = new x402Client();
-  registerExactAvmScheme(client, {
-    signer,
-    algodConfig: {
-      // Optional: custom Algod endpoint (defaults to AlgoNode)
+  client.register(
+    // A custom algodUrl is used for every request the scheme builds (no per-network
+    // auto-detection), so register it for the matching network only
+    ALGORAND_TESTNET_CAIP2,
+    new ExactAvmScheme(signer, {
+      // Optional: custom Algod endpoint (without it, AlgoNode TestNet/MainNet is picked per network)
       algodUrl: process.env.ALGOD_TESTNET_URL || "https://testnet-api.algonode.cloud",
-    },
-  });
+    }),
+  );
 
   // Wrap fetch
   const fetchWithPay = wrapFetchWithPayment(fetch, client);
@@ -417,19 +424,22 @@ main().catch(console.error);
 
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
+client.register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(signer, {
     algodUrl: process.env.ALGOD_SERVER || "https://testnet-api.algonode.cloud",
     algodToken: process.env.ALGOD_TOKEN || "",
-  },
-});
+  }),
+);
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 ```
+
+`ExactAvmScheme`'s second argument is a `ClientAvmConfig`: `{ algorandClient?, algodUrl?, algodToken? }`. A pre-configured `AlgorandClient` (from `@algorandfoundation/algokit-utils`) takes precedence over `algodUrl`/`algodToken`.
 
 ---
 
@@ -437,11 +447,13 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
 Policies filter and transform payment requirements before a selection is made. They are applied in order.
 
+> **Spend controls run before policies.** By default an `x402Client` accepts only assets its schemes recognize as default assets (on Algorand: USDC, ASA `31566704` on MainNet and `10458941` on TestNet) and caps each payment at `$1`. A policy cannot raise that cap; change it with `client.setSpendControls({ maxAmountPerPayment: "$5" })` (or `spendControls` in `x402ClientConfig`), opt other assets in with `allowedAssets`, or pass `false` to disable spend controls.
+
 ### Prefer Algorand Network
 
 ```typescript
 import { wrapFetchWithPayment, x402Client, type PaymentPolicy } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 // Policy: prefer Algorand networks over EVM/SVM
 const preferAlgorand: PaymentPolicy = (version, reqs) => {
@@ -451,7 +463,7 @@ const preferAlgorand: PaymentPolicy = (version, reqs) => {
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 client.registerPolicy(preferAlgorand);
 
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
@@ -463,7 +475,7 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 // Policy: reject payments over 1 USDC (1,000,000 microunits)
 const maxAmount: PaymentPolicy = (version, reqs) => {
   return reqs.filter((r) => {
-    const amount = BigInt(r.amount ?? r.maxAmountRequired ?? "0");
+    const amount = BigInt(r.amount ?? "0"); // V2: atomic units of the asset
     return amount <= BigInt("1000000"); // 1 USDC
   });
 };
@@ -474,10 +486,11 @@ client.registerPolicy(maxAmount);
 ### Prefer Testnet
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { isTestnetNetwork } from "@x402/avm";
 
+// isTestnetNetwork() accepts the canonical id (ALGORAND_TESTNET_CAIP2) and the legacy full-hash form
 const preferTestnet: PaymentPolicy = (version, reqs) => {
-  const testnetReqs = reqs.filter((r) => r.network === ALGORAND_TESTNET_CAIP2);
+  const testnetReqs = reqs.filter((r) => isTestnetNetwork(r.network));
   return testnetReqs.length > 0 ? testnetReqs : reqs;
 };
 
@@ -488,7 +501,7 @@ client.registerPolicy(preferTestnet);
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // Policies are applied in order
 client
@@ -518,10 +531,10 @@ const fetchWithPay = wrapFetchWithPaymentFromConfig(fetch, config);
 
 ```typescript
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
 try {
@@ -530,27 +543,36 @@ try {
   if (response.ok) {
     const data = await response.json();
     console.log("Success:", data);
+  } else if (response.status === 402) {
+    // The paid retry was refused (verification or settlement failed). The wrapper returns
+    // this response instead of throwing; the PAYMENT-REQUIRED header's `error` has the reason.
+    console.error("Payment was rejected by the server");
   } else {
-    // Non-402 error from server (after payment succeeded or was not required)
+    // Other HTTP error from the server
     console.error(`Server error: ${response.status} ${response.statusText}`);
   }
 } catch (error) {
   if (error instanceof Error) {
+    // Errors raised while building the payment are wrapped as
+    // "Failed to create payment payload: <reason>", so test the specific reasons first.
     if (error.message.includes("Failed to parse payment requirements")) {
       // Server returned 402 but with invalid payment requirements
       console.error("Invalid payment requirements from server");
-    } else if (error.message.includes("Failed to create payment payload")) {
-      // Could not create the transaction (insufficient balance, wrong network, etc.)
-      console.error("Could not create payment:", error.message);
-    } else if (error.message.includes("Payment already attempted")) {
-      // Server returned 402 even after payment was sent
-      console.error("Payment was rejected by the server");
     } else if (error.message.includes("No network/scheme registered")) {
       // Server requires a network/scheme we don't support
       console.error("Unsupported payment network requested");
+    } else if (error.message.includes("rejected by spendControls")) {
+      // Asset not allowed, or amount above the spend cap ($1 by default)
+      console.error("Payment blocked by spend controls:", error.message);
     } else if (error.message.includes("Payment creation aborted")) {
       // A beforePaymentCreation hook aborted the payment
-      console.error("Payment was blocked by policy");
+      console.error("Payment was blocked by a hook:", error.message);
+    } else if (error.message.includes("Failed to create payment payload")) {
+      // Could not create the transaction (insufficient balance, Algod error, etc.)
+      console.error("Could not create payment:", error.message);
+    } else if (error.message.includes("Payment already attempted")) {
+      // The request you passed in already carried a PAYMENT-SIGNATURE (or X-PAYMENT) header
+      console.error("Request already contained a payment header");
     } else {
       console.error("Unexpected error:", error.message);
     }
@@ -562,7 +584,7 @@ try {
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // Log before each payment
 client.onBeforePaymentCreation(async (context) => {
@@ -596,20 +618,21 @@ const fetchWithPay = wrapFetchWithPayment(fetch, client);
 ### Reading Payment Response Headers
 
 ```typescript
-const response = await fetchWithPay("https://api.example.com/paid-endpoint");
-
-// The server includes a payment response header after settlement
 import { decodePaymentResponseHeader } from "@x402/fetch";
 
-const paymentResponseHeader =
-  response.headers.get("PAYMENT-RESPONSE") ||
-  response.headers.get("X-PAYMENT-RESPONSE");
+const response = await fetchWithPay("https://api.example.com/paid-endpoint");
+
+// After settlement the server adds a PAYMENT-RESPONSE header (base64-encoded settlement response)
+const paymentResponseHeader = response.headers.get("PAYMENT-RESPONSE");
 
 if (paymentResponseHeader) {
   const receipt = decodePaymentResponseHeader(paymentResponseHeader);
-  console.log("Transaction settled:", receipt);
+  // { success, transaction, network, payer?, errorReason?, ... }
+  console.log("Transaction settled:", receipt.transaction, "on", receipt.network);
 }
 ```
+
+`new x402HTTPClient(client).getPaymentSettleResponse((name) => response.headers.get(name))` does the same lookup (it also falls back to the V1 `X-PAYMENT-RESPONSE` header) and throws if no payment response header is present.
 
 ---
 
@@ -621,19 +644,18 @@ if (paymentResponseHeader) {
 // app.tsx
 import React, { useState, useMemo, useCallback } from "react";
 import { WalletProvider, useWallet } from "@txnlab/use-wallet-react";
-import { WalletId } from "@txnlab/use-wallet";
+import { WalletId, WalletManager, NetworkId } from "@txnlab/use-wallet";
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 
-const WALLET_PROVIDERS = [
-  { id: WalletId.PERA },
-  { id: WalletId.DEFLY },
-  { id: WalletId.LUTE },
-];
+const WALLET_MANAGER = new WalletManager({
+  wallets: [WalletId.PERA, WalletId.DEFLY, WalletId.LUTE],
+  defaultNetwork: NetworkId.TESTNET,
+});
 
 function PaidApiDemo() {
-  const { activeAccount, signTransactions, providers } = useWallet();
+  const { activeAccount, signTransactions, wallets } = useWallet();
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
@@ -650,14 +672,14 @@ function PaidApiDemo() {
   const fetchWithPay = useMemo(() => {
     if (!signer) return null;
     const client = new x402Client();
-    registerExactAvmScheme(client, { signer });
+    client.register("algorand:*", new ExactAvmScheme(signer));
     return wrapFetchWithPayment(fetch, client);
   }, [signer]);
 
   const handleConnect = useCallback(async () => {
-    const pera = providers?.find((p) => p.metadata.id === WalletId.PERA);
+    const pera = wallets.find((w) => w.id === WalletId.PERA);
     if (pera) await pera.connect();
-  }, [providers]);
+  }, [wallets]);
 
   const handleFetch = useCallback(async () => {
     if (!fetchWithPay) return;
@@ -699,7 +721,7 @@ function PaidApiDemo() {
 
 export default function App() {
   return (
-    <WalletProvider wallets={WALLET_PROVIDERS}>
+    <WalletProvider manager={WALLET_MANAGER}>
       <PaidApiDemo />
     </WalletProvider>
   );
@@ -711,7 +733,7 @@ export default function App() {
 ```typescript
 // cli-paid-api.ts
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 async function main() {
@@ -727,19 +749,17 @@ async function main() {
   const signer = toClientAvmSigner(privateKey);
   console.log(`Using address: ${signer.address}`);
 
-  // Configure client with policies
+  // Configure client (TestNet only, because a TestNet Algod URL is pinned)
   const client = new x402Client();
-  registerExactAvmScheme(client, {
-    signer,
-    algodConfig: {
+  client.register(
+    ALGORAND_TESTNET_CAIP2,
+    new ExactAvmScheme(signer, {
       algodUrl: process.env.ALGOD_TESTNET_URL || "https://testnet-api.algonode.cloud",
-    },
-  });
+    }),
+  );
 
-  // Safety policy: max $5 USDC per request
-  client.registerPolicy((version, reqs) => {
-    return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("5000000"));
-  });
+  // Safety limit: max $5 USDC per request (spend controls default to $1)
+  client.setSpendControls({ maxAmountPerPayment: "$5" });
 
   // Logging hooks
   client.onBeforePaymentCreation(async ({ selectedRequirements }) => {
@@ -761,6 +781,9 @@ async function main() {
   try {
     const response = await fetchWithPay(url);
     console.log(`Status: ${response.status} ${response.statusText}`);
+    if (response.status === 402) {
+      console.error("Payment was rejected by the server (see the PAYMENT-REQUIRED header)");
+    }
 
     // Print response headers of interest
     const paymentResponse = response.headers.get("PAYMENT-RESPONSE");
@@ -806,8 +829,10 @@ AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.co
 | `x402HTTPClient` | Class | HTTP-level payment client |
 | `decodePaymentResponseHeader` | Function | Decodes the PAYMENT-RESPONSE header |
 | `PaymentPolicy` | Type | Policy function type for filtering requirements |
+| `SelectPaymentRequirements` | Type | Selector function type (`new x402Client(selector)`) |
 | `SchemeRegistration` | Type | Scheme registration configuration |
-| `x402ClientConfig` | Type | Configuration object type |
+| `x402ClientConfig` | Type | Configuration object type (`schemes`, `policies?`, `spendControls?`, `paymentRequirementsSelector?`) |
+| `HTTPResourceResponse` | Type | Result of `x402HTTPClient.processResponse()` |
 | `PaymentRequired` | Type | 402 response structure |
 | `PaymentRequirements` | Type | Individual payment requirement |
 | `PaymentPayload` | Type | Signed payment payload |
@@ -818,16 +843,17 @@ AVM_PRIVATE_KEY="your-base64-key" npx tsx cli-paid-api.ts https://api.example.co
 
 | Export | Type | Description |
 |--------|------|-------------|
-| `ExactAvmScheme` | Class | Algorand exact payment scheme (client) |
+| `ExactAvmScheme` | Class | Algorand exact payment scheme (client; same class as `@x402/avm/exact/client`) |
+| `toClientAvmSigner` | Function | Creates a `ClientAvmSigner` from a Base64-encoded 64-byte private key |
 | `ClientAvmSigner` | Interface | Signer interface for client wallets |
-| `ClientAvmConfig` | Interface | Algod client configuration |
-| `ALGORAND_TESTNET_CAIP2` | Constant | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` |
-| `ALGORAND_MAINNET_CAIP2` | Constant | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` |
+| `ClientAvmConfig` | Interface | Algod client configuration (`algorandClient?`, `algodUrl?`, `algodToken?`) |
+| `ALGORAND_TESTNET_CAIP2` | Constant | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` |
+| `ALGORAND_MAINNET_CAIP2` | Constant | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` |
+| `isTestnetNetwork` | Function | True for Algorand TestNet (canonical or legacy full-hash id) |
 | `isAvmSignerWallet` | Function | Type guard for ClientAvmSigner |
 
 ### Exports from `@x402/avm/exact/client`
 
 | Export | Type | Description |
 |--------|------|-------------|
-| `registerExactAvmScheme` | Function | Registers AVM schemes (V1 + V2) to an x402Client |
-| `AvmClientConfig` | Interface | Configuration for AVM client registration |
+| `ExactAvmScheme` | Class | Client scheme: `new ExactAvmScheme(signer, config?: ClientAvmConfig)`, registered with `client.register(network, scheme)` |

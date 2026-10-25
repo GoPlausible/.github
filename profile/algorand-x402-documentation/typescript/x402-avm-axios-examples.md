@@ -27,7 +27,7 @@ Comprehensive guide for using `@x402/axios` to make automatic payments over HTTP
 npm install @x402/axios @x402/avm axios
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **Note on `algosdk`:** `@x402/avm` does not depend on `algosdk`; it is built on `@algorandfoundation/algokit-utils` v10 (`@x402/avm` 2.28.0 pins `10.0.0-alpha.46`). A signer only has to implement `ClientAvmSigner` (see below). If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from an algosdk-based signer, switch to the upstream `@x402/*` packages and the signer code shown below. Browser wallet libraries such as `@txnlab/use-wallet` still declare `algosdk` v3 as their own peer dependency. `@x402/axios` 2.28.0 declares `axios` (`^1.7.9`) as a peer dependency.
 
 Or with other package managers:
 
@@ -43,15 +43,15 @@ yarn add @x402/axios @x402/avm axios
 ```typescript
 import axios from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { toClientAvmSigner } from "@x402/avm";
 
 // 1. Create signer
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
-// 2. Create and configure the x402 client
+// 2. Create and configure the x402 client ("algorand:*" matches MainNet and TestNet)
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // 3. Wrap an axios instance
 const api = wrapAxiosWithPayment(axios.create(), client);
@@ -83,16 +83,16 @@ The function returns the same Axios instance (mutated with the interceptor), so 
 ```typescript
 import axios from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
-// Create a signer (see below for full implementation)
+// Assume `signer` is a ClientAvmSigner (see below for full implementation)
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // Wrap an existing Axios instance
 const api = wrapAxiosWithPayment(axios.create({
   baseURL: "https://api.example.com",
-  timeout: 30000,
+  timeout: 30000, // the paid retry waits for on-chain settlement (typically a few seconds)
   headers: { Accept: "application/json" },
 }), client);
 
@@ -122,10 +122,10 @@ You can wrap the global axios instance directly:
 ```typescript
 import axios from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // Wrap the default axios instance
 wrapAxiosWithPayment(axios, client);
@@ -157,15 +157,19 @@ import {
   wrapAxiosWithPaymentFromConfig,
   type x402ClientConfig,
 } from "@x402/axios";
-import { ExactAvmScheme } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const config: x402ClientConfig = {
   schemes: [
     {
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+      network: ALGORAND_TESTNET_CAIP2, // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
       client: new ExactAvmScheme(signer),
     },
   ],
+  // Spend controls run before policies and cap each payment at $1 by default;
+  // raise the cap so the policy below is the effective limit
+  spendControls: { maxAmountPerPayment: "$5" },
   policies: [
     // Only allow payments under 5 USDC
     (version, reqs) => reqs.filter((r) => BigInt(r.amount ?? "0") < BigInt("5000000")),
@@ -190,6 +194,8 @@ const config: x402ClientConfig = {
   ],
 };
 ```
+
+> The wildcard also matches servers that still advertise the legacy full-genesis-hash ids during the CAIP-2 transition; an exact registration such as `ALGORAND_TESTNET_CAIP2` matches only the canonical id `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe`.
 
 ---
 
@@ -259,28 +265,34 @@ Server Response
            +-- Already retried? (__is402Retry) --> Reject with error
            |
            +-- Parse PaymentRequired from response
-           |     (headers for V2, body for V1)
+           |     (PAYMENT-REQUIRED header for V2, body for V1)
            |
-           +-- Run payment hooks (optional)
+           +-- Run onPaymentRequired hooks (optional; a hook may supply
+           |     headers for a retry without payment)
            |
            +-- Create payment payload via x402Client
            |     (builds atomic transaction group, signs with wallet)
            |
            +-- Encode PAYMENT-SIGNATURE header
            |
-           +-- Mark request as __is402Retry = true
+           +-- Copy the request config, mark it __is402Retry = true,
+           |     and treat 402 as a non-error status for this retry
            |
            +-- Retry original request with payment header
            |
+           +-- Run onPaymentResponse hooks
+           |     (a hook returning { recovered: true } triggers one
+           |      more retry with a fresh payload)
+           |
            v
-        Return retried response
+        Return retried response (may itself have status 402)
 ```
 
 ### Key Details
 
-1. **Single retry**: The interceptor only retries once. If the retry also returns 402, the error is propagated to the caller.
+1. **Single paid retry**: The interceptor pays once. The retry config treats 402 as a non-error status, so if the paid retry still returns 402 (verification or settlement failed) the call **resolves** with that 402 response instead of throwing; check `response.status`. The only exception is an `onPaymentResponse` hook that returns `{ recovered: true }`, which triggers exactly one more retry with a fresh payload.
 
-2. **Request mutation**: The interceptor modifies the original request config and retries using `axiosInstance.request()`. This means all other interceptors (request interceptors, other response interceptors) also apply to the retry.
+2. **Request copy**: The interceptor copies the original request config (headers are cloned) and retries using `axiosInstance.request()`. This means all other interceptors (request interceptors, other response interceptors) also apply to the retry.
 
 3. **Error propagation**: Non-402 errors pass through untouched. Payment-specific errors are wrapped with descriptive messages.
 
@@ -288,7 +300,7 @@ Server Response
 
 ### Interceptor Order
 
-If you have other interceptors, the payment interceptor should generally be added last (which `wrapAxiosWithPayment` ensures):
+If you have other interceptors, register them first and call `wrapAxiosWithPayment` last (it adds its response interceptor at the moment it is called):
 
 ```typescript
 const api = axios.create();
@@ -318,31 +330,35 @@ wrapAxiosWithPayment(api, client);
 ### Custom Algod Endpoint
 
 ```typescript
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
+// A custom algodUrl is used for every transaction the scheme builds (no per-network
+// auto-detection), so register it only for the network that node serves
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
+client.register(
+  ALGORAND_MAINNET_CAIP2,
+  new ExactAvmScheme(signer, {
     algodUrl: "https://your-private-node.example.com",
     algodToken: "your-api-token",
-  },
-});
+  }),
+);
 ```
 
-### Pre-Configured Algod URL
+### Pre-Configured AlgorandClient
+
+`ExactAvmScheme` also accepts a pre-configured `AlgorandClient` from `@algorandfoundation/algokit-utils` (install the same version `@x402/avm` uses, `10.0.0-alpha.46` for 2.28.0); it takes precedence over `algodUrl`/`algodToken`:
 
 ```typescript
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { AlgorandClient } from "@algorandfoundation/algokit-utils/algorand-client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
-    algodUrl: "https://your-node.example.com",
-    algodToken: "your-token",
-  },
-});
+client.register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(signer, { algorandClient: AlgorandClient.testNet() }),
+);
 ```
 
 ### Specific Network Registration
@@ -350,21 +366,21 @@ registerExactAvmScheme(client, {
 Instead of the wildcard `algorand:*`, register for specific networks:
 
 ```typescript
-import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  networks: [ALGORAND_TESTNET_CAIP2],  // Only testnet
-});
+client.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(signer)); // Only testnet
 ```
 
 ### Payment Policies
 
+Spend controls run before policies: by default only default assets (on Algorand: USDC, ASA `31566704` on MainNet and `10458941` on TestNet) are accepted, capped at `$1` per payment. Use `client.setSpendControls(...)` to change the cap or allow other assets.
+
 ```typescript
-import type { PaymentPolicy } from "@x402/axios";
-import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { isTestnetNetwork } from "@x402/avm";
 
 // Prefer Algorand when multiple networks are available
 const preferAlgorand: PaymentPolicy = (version, reqs) => {
@@ -377,14 +393,15 @@ const maxPayment: PaymentPolicy = (version, reqs) => {
   return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("2000000")); // 2 USDC max
 };
 
-// Prefer testnet
+// Prefer testnet (isTestnetNetwork accepts the canonical and the legacy full-hash id)
 const preferTestnet: PaymentPolicy = (version, reqs) => {
-  const testnet = reqs.filter((r) => r.network === ALGORAND_TESTNET_CAIP2);
+  const testnet = reqs.filter((r) => isTestnetNetwork(r.network));
   return testnet.length > 0 ? testnet : reqs;
 };
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
+client.setSpendControls({ maxAmountPerPayment: "$2" }); // default cap is $1
 client
   .registerPolicy(preferAlgorand)
   .registerPolicy(preferTestnet)
@@ -396,24 +413,27 @@ const api = wrapAxiosWithPayment(axios.create(), client);
 ### Custom Payment Requirements Selector
 
 ```typescript
+import { x402Client, type SelectPaymentRequirements } from "@x402/axios";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+
 // Custom selector: pick the cheapest option
-const cheapestFirst = (version: number, reqs: PaymentRequirements[]) => {
-  return reqs.sort((a, b) => {
-    const amountA = BigInt(a.amount ?? a.maxAmountRequired ?? "0");
-    const amountB = BigInt(b.amount ?? b.maxAmountRequired ?? "0");
+const cheapestFirst: SelectPaymentRequirements = (version, reqs) => {
+  return [...reqs].sort((a, b) => {
+    const amountA = BigInt(a.amount);
+    const amountB = BigInt(b.amount);
     return amountA < amountB ? -1 : amountA > amountB ? 1 : 0;
   })[0];
 };
 
 const client = new x402Client(cheapestFirst);
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 ```
 
 ### Lifecycle Hooks
 
 ```typescript
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 
 // Before payment: log and optionally abort
 client.onBeforePaymentCreation(async ({ selectedRequirements }) => {
@@ -447,20 +467,25 @@ client.onPaymentCreationFailure(async ({ error }) => {
 
 ### Axios Error Handling Pattern
 
-Axios throws errors for non-2xx responses. The payment interceptor catches 402 errors internally, but other errors and failed payment retries will still throw.
+Axios throws errors for non-2xx responses. The payment interceptor catches the initial 402 internally; other HTTP errors and payment-creation failures still throw. A paid retry that is answered with 402 does not throw: it resolves with `status === 402`.
 
 ```typescript
 import axios, { AxiosError } from "axios";
 import { wrapAxiosWithPayment, x402Client } from "@x402/axios";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 
 const client = new x402Client();
-registerExactAvmScheme(client, { signer });
+client.register("algorand:*", new ExactAvmScheme(signer));
 const api = wrapAxiosWithPayment(axios.create(), client);
 
 try {
   const response = await api.get("https://api.example.com/paid-content");
-  console.log("Success:", response.data);
+  if (response.status === 402) {
+    // The paid retry was refused (verification or settlement failed)
+    console.error("Payment was rejected by the server");
+  } else {
+    console.log("Success:", response.data);
+  }
 } catch (error) {
   if (error instanceof AxiosError) {
     // Axios HTTP error (non-payment related)
@@ -472,15 +497,18 @@ try {
       console.error("Request setup error:", error.message);
     }
   } else if (error instanceof Error) {
-    // Payment-specific errors
+    // Payment-specific errors. Errors raised while building the payment are wrapped as
+    // "Failed to create payment payload: <reason>", so test the specific reasons first.
     if (error.message.includes("Failed to parse payment requirements")) {
       console.error("Server sent invalid 402 response");
-    } else if (error.message.includes("Failed to create payment payload")) {
-      console.error("Could not sign payment:", error.message);
     } else if (error.message.includes("No network/scheme registered")) {
       console.error("Server requires a payment network we don't support");
+    } else if (error.message.includes("rejected by spendControls")) {
+      console.error("Payment blocked by spend controls ($1 cap / default assets by default)");
     } else if (error.message.includes("All payment requirements were filtered out")) {
       console.error("All payment options were rejected by our policies");
+    } else if (error.message.includes("Failed to create payment payload")) {
+      console.error("Could not sign payment:", error.message);
     } else {
       console.error("Unexpected error:", error.message);
     }
@@ -490,17 +518,19 @@ try {
 
 ### Retry Behavior
 
-If the server returns 402 after payment was submitted, the interceptor does NOT retry again (preventing infinite loops). The original AxiosError is rejected:
+If the server returns 402 after the payment was sent, the interceptor does NOT pay again (preventing infinite loops). Because the retry treats 402 as a non-error status, the call resolves with the 402 response; the decoded `PAYMENT-REQUIRED` header carries the server's `error` reason:
 
 ```typescript
-try {
-  await api.get("https://api.example.com/always-402");
-} catch (error) {
-  // This will be an AxiosError with status 402
-  // The payment was sent but the server still refused
-  if (error instanceof AxiosError && error.response?.status === 402) {
-    console.error("Payment was rejected after submission");
-  }
+// @x402/core is a dependency of @x402/axios; add it to your own dependencies to import it directly
+import { decodePaymentRequiredHeader } from "@x402/core/http";
+
+const response = await api.get("https://api.example.com/always-402");
+
+// The payment was sent but the server still refused
+if (response.status === 402) {
+  const header = response.headers["payment-required"];
+  const reason = typeof header === "string" ? decodePaymentRequiredHeader(header).error : undefined;
+  console.error("Payment was rejected after submission:", reason);
 }
 ```
 
@@ -508,12 +538,12 @@ try {
 
 ```typescript
 try {
-  // This will fail if no schemes are registered
+  // This will fail on the first 402 if no schemes are registered
   const emptyClient = new x402Client();
   const api = wrapAxiosWithPayment(axios.create(), emptyClient);
   await api.get("https://api.example.com/paid");
 } catch (error) {
-  // "No client registered for x402 version: 2"
+  // "Failed to create payment payload: No client registered for x402 version: 2"
   console.error(error);
 }
 ```
@@ -528,7 +558,7 @@ try {
 // paid-api-client.ts
 import axios, { AxiosError } from "axios";
 import { wrapAxiosWithPayment, x402Client, type PaymentPolicy } from "@x402/axios";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // ---- Signer Setup ----
@@ -537,15 +567,18 @@ const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
 // ---- Client Configuration ----
 
+// TestNet only, because a TestNet Algod URL is pinned
 const client = new x402Client();
-registerExactAvmScheme(client, {
-  signer,
-  algodConfig: {
+client.register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(signer, {
     algodUrl: process.env.ALGOD_TESTNET_URL || "https://testnet-api.algonode.cloud",
-  },
-});
+  }),
+);
 
-// Add safety policies
+// Safety limits: spend controls cap each payment ($1 by default), then policies filter
+client.setSpendControls({ maxAmountPerPayment: "$5" });
+
 const maxPaymentPolicy: PaymentPolicy = (version, reqs) => {
   return reqs.filter((r) => BigInt(r.amount ?? "0") <= BigInt("5000000")); // Max 5 USDC
 };
@@ -559,7 +592,8 @@ client.onBeforePaymentCreation(async ({ selectedRequirements }) => {
 });
 
 client.onAfterPaymentCreation(async () => {
-  console.log("[x402] Transaction signed and submitted");
+  // The facilitator submits the group to the network when the server settles
+  console.log("[x402] Payment transaction group signed");
 });
 
 // ---- API Client ----
@@ -567,7 +601,7 @@ client.onAfterPaymentCreation(async () => {
 const api = wrapAxiosWithPayment(
   axios.create({
     baseURL: "https://api.example.com",
-    timeout: 30000,
+    timeout: 30000, // the paid retry waits for on-chain settlement
     headers: {
       Accept: "application/json",
       "User-Agent": "x402-avm-client/1.0",
@@ -581,6 +615,12 @@ const api = wrapAxiosWithPayment(
 async function fetchPremiumContent(contentId: string) {
   try {
     const response = await api.get(`/premium/content/${contentId}`);
+
+    // A refused paid retry resolves with status 402 (it is not thrown)
+    if (response.status === 402) {
+      console.error("Payment failed -- server rejected our payment");
+      return null;
+    }
     console.log("Content:", response.data);
 
     // Check payment response header
@@ -592,9 +632,7 @@ async function fetchPremiumContent(contentId: string) {
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      if (error.response?.status === 402) {
-        console.error("Payment failed -- server rejected our payment");
-      } else if (error.response?.status === 404) {
+      if (error.response?.status === 404) {
         console.error("Content not found");
       } else {
         console.error(`API error: ${error.response?.status}`, error.response?.data);
@@ -651,8 +689,10 @@ main().catch((err) => {
 | `x402HTTPClient` | Class | HTTP-level payment client |
 | `decodePaymentResponseHeader` | Function | Decodes the PAYMENT-RESPONSE header |
 | `PaymentPolicy` | Type | Policy function type for filtering requirements |
+| `SelectPaymentRequirements` | Type | Selector function type (`new x402Client(selector)`) |
 | `SchemeRegistration` | Type | Scheme registration configuration |
-| `x402ClientConfig` | Type | Configuration object type |
+| `x402ClientConfig` | Type | Configuration object type (`schemes`, `policies?`, `spendControls?`, `paymentRequirementsSelector?`) |
+| `HTTPResourceResponse` | Type | Parsed result type of `x402HTTPClient` response helpers |
 | `PaymentRequired` | Type | 402 response structure |
 | `PaymentRequirements` | Type | Individual payment requirement |
 | `PaymentPayload` | Type | Signed payment payload |

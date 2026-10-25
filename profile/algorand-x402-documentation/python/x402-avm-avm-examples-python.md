@@ -2,7 +2,7 @@
 
 Comprehensive examples for the `x402-avm[avm]` Python package covering signer protocols, constants, utilities, transaction handling, and fee abstraction.
 
-> **TypeScript examples**: See [x402-avm-avm-examples](../typescript/x402-avm-avm-examples.md) for TypeScript (`@x402-avm/avm`) examples.
+> **TypeScript examples**: See [x402-avm-avm-examples](../typescript/x402-avm-avm-examples.md) for TypeScript (`@x402/avm`) examples.
 
 ## Table of Contents
 
@@ -209,6 +209,7 @@ from x402.mechanisms.avm.constants import (
 )
 from algosdk import encoding, transaction
 from algosdk.v2client import algod
+from algosdk.v2client.models import SimulateRequest, SimulateRequestTransactionGroup
 
 
 class AlgorandFacilitatorSigner:
@@ -291,13 +292,13 @@ class AlgorandFacilitatorSigner:
             else:
                 stxns.append(obj)
 
-        request = transaction.SimulateRequest(
+        request = SimulateRequest(
             txn_groups=[
-                transaction.SimulateRequestTransactionGroup(txns=stxns)
+                SimulateRequestTransactionGroup(txns=stxns)
             ],
             allow_empty_signatures=True,
         )
-        result = client.simulate_raw_transactions(request)
+        result = client.simulate_transactions(request)
 
         # Check for failures
         for group in result.get("txn-groups", []):
@@ -345,26 +346,29 @@ print(f"Fee payer addresses: {signer.get_addresses()}")
 
 ```python
 from x402.mechanisms.avm.constants import (
-    # V2 CAIP-2 identifiers
-    ALGORAND_MAINNET_CAIP2,     # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
-    ALGORAND_TESTNET_CAIP2,     # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-    SUPPORTED_NETWORKS,          # [MAINNET_CAIP2, TESTNET_CAIP2]
+    # V2 CAIP-2 identifiers (see the note below for the value in each release)
+    ALGORAND_MAINNET_CAIP2,     # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"
+    ALGORAND_TESTNET_CAIP2,     # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
+    SUPPORTED_NETWORKS,          # [ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2]
 
-    # Genesis hashes
+    # Genesis hashes (full hash, as used in the transaction "gh" field)
     MAINNET_GENESIS_HASH,  # "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
     TESTNET_GENESIS_HASH,  # "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
 
     # V1 identifiers
     V1_NETWORKS,           # ["algorand-mainnet", "algorand-testnet"]
-    V1_TO_V2_NETWORK_MAP,  # {"algorand-mainnet": CAIP2, ...}
-    V2_TO_V1_NETWORK_MAP,  # {CAIP2: "algorand-mainnet", ...}
+    V1_TO_V2_NETWORK_MAP,  # {"algorand-mainnet": ALGORAND_MAINNET_CAIP2, ...}
+    V2_TO_V1_NETWORK_MAP,  # {ALGORAND_MAINNET_CAIP2: "algorand-mainnet", ...}
 )
 ```
+
+> **Network id values**: the canonical CAIP-2 ids shown above (`algorand:` + the first 32 characters of the URL-safe base64 genesis hash) are the constant values in x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form (`algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=`, `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`), which facilitator.goplausible.xyz still accepts during the transition. The 2.0.2 network helpers (`normalize_network`, `is_valid_network`, `get_network_config`, ...) only recognize the ids in `NETWORK_CONFIGS`, so always pass the package constants instead of hardcoded strings. During the transition, `https://facilitator.goplausible.xyz/supported` lists the canonical ids first and the legacy full-hash ids as well; both are accepted on `/verify` and `/settle`, and the legacy form will be switched off with notice.
 
 ### USDC Configuration
 
 ```python
 from x402.mechanisms.avm.constants import (
+    ALGORAND_TESTNET_CAIP2,
     USDC_MAINNET_ASA_ID,  # 31566704 (int)
     USDC_TESTNET_ASA_ID,  # 10458941 (int)
     DEFAULT_DECIMALS,      # 6
@@ -394,8 +398,9 @@ from x402.mechanisms.avm.constants import (
 
 ```python
 from x402.mechanisms.avm.constants import (
-    MAX_GROUP_SIZE,  # 16
-    MIN_TXN_FEE,     # 1000
+    MAX_GROUP_SIZE,      # 16
+    MIN_TXN_FEE,         # 1000
+    MAX_REASONABLE_FEE,  # 16000 -- cap on the fee payer transaction fee (MAX_GROUP_SIZE * MIN_TXN_FEE)
 )
 ```
 
@@ -417,8 +422,8 @@ is_valid = bool(re.match(AVM_ADDRESS_REGEX, some_address))
 ```python
 from x402.mechanisms.avm.utils import is_valid_address
 
-is_valid_address("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-# => True
+is_valid_address("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY5HFKQ")
+# => True (format and checksum are both checked)
 
 is_valid_address("invalid")
 # => False
@@ -483,6 +488,7 @@ encoded = encode_transaction_group([raw_bytes_1, raw_bytes_2])
 ### Network Utilities
 
 ```python
+from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.utils import (
     normalize_network,
     is_valid_network,
@@ -492,16 +498,16 @@ from x402.mechanisms.avm.utils import (
     network_from_genesis_hash,
 )
 
-# Normalize to CAIP-2
+# Normalize to CAIP-2 (V1 names map to the package constants)
 normalize_network("algorand-testnet")
-# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+# => ALGORAND_TESTNET_CAIP2 ("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"; see the note under Network Identifiers)
 
-normalize_network("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
-# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=" (no-op)
+normalize_network(ALGORAND_TESTNET_CAIP2)
+# => ALGORAND_TESTNET_CAIP2 (no-op)
 
 # Validate
 is_valid_network("algorand-testnet")        # True
-is_valid_network("algorand:SGO1GKSz...")    # True
+is_valid_network(ALGORAND_TESTNET_CAIP2)    # True
 is_valid_network("some-unknown-network")    # False
 
 # Get full config
@@ -518,23 +524,33 @@ config = get_network_config("algorand-testnet")
 get_usdc_asa_id("algorand-testnet")  # 10458941
 get_usdc_asa_id(ALGORAND_MAINNET_CAIP2)  # 31566704
 
-# Genesis hash lookup
+# Genesis hash lookup (takes the full genesis hash)
+get_genesis_hash(ALGORAND_TESTNET_CAIP2)
+# => "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+
 network_from_genesis_hash("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
-# => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+# => ALGORAND_TESTNET_CAIP2
 ```
 
 ### Security Validation
 
 ```python
 from x402.mechanisms.avm.utils import (
+    decode_transaction_bytes,
     validate_no_security_risks,
+    validate_rekey_operations,
     validate_fee_payer_transaction,
     is_blocked_transaction_type,
 )
 
-# Validate security (rekey, close-to, blocked types)
+# Per-transaction security checks (close-to, blocked types)
 info = decode_transaction_bytes(txn_bytes)
 error_code = validate_no_security_risks(info)
+if error_code:
+    raise ValueError(f"Security risk: {error_code}")
+
+# Rekeys are checked at group level: only a balanced rekey-and-back pair is allowed
+error_code = validate_rekey_operations([info])  # pass every decoded txn of the group
 if error_code:
     raise ValueError(f"Security risk: {error_code}")
 
@@ -609,12 +625,32 @@ def create_fee_abstracted_payment(
     fee_payer: str,
     amount: int,
 ) -> dict:
-    """Create a fee-abstracted USDC transfer (2-txn atomic group)."""
+    """Create a fee-abstracted USDC transfer (2-txn atomic group).
+
+    Same layout as ExactAvmScheme builds it:
+    [0] fee payer self-payment (left unsigned), [1] USDC transfer (paymentIndex = 1).
+    """
     config = NETWORK_CONFIGS[ALGORAND_TESTNET_CAIP2]
     client = algod.AlgodClient("", config["algod_url"])
     params = client.suggested_params()
 
-    # Transaction 0: USDC transfer (fee = 0)
+    # Transaction 0: Fee payer (self-payment, covers both fees)
+    fee_params = transaction.SuggestedParams(
+        fee=MIN_TXN_FEE * 2,  # 2000 microAlgos for 2 transactions
+        first=params.first,
+        last=params.last,
+        gh=params.gh,
+        gen=params.gen,
+        flat_fee=True,
+    )
+    fee_payer_txn = transaction.PaymentTxn(
+        sender=fee_payer,
+        sp=fee_params,
+        receiver=fee_payer,  # Self-payment
+        amt=0,               # No value transfer
+    )
+
+    # Transaction 1: USDC transfer (fee = 0)
     payment_params = transaction.SuggestedParams(
         fee=0,
         first=params.first,
@@ -631,35 +667,21 @@ def create_fee_abstracted_payment(
         index=USDC_TESTNET_ASA_ID,
     )
 
-    # Transaction 1: Fee payer (self-payment, covers both fees)
-    fee_params = transaction.SuggestedParams(
-        fee=MIN_TXN_FEE * 2,  # 2000 microAlgos for 2 transactions
-        first=params.first,
-        last=params.last,
-        gh=params.gh,
-        gen=params.gen,
-        flat_fee=True,
-    )
-    fee_payer_txn = transaction.PaymentTxn(
-        sender=fee_payer,
-        sp=fee_params,
-        receiver=fee_payer,  # Self-payment
-        amt=0,               # No value transfer
-    )
-
     # Assign group ID
-    gid = transaction.calculate_group_id([payment_txn, fee_payer_txn])
-    payment_txn.group = gid
+    gid = transaction.calculate_group_id([fee_payer_txn, payment_txn])
     fee_payer_txn.group = gid
+    payment_txn.group = gid
 
     # Encode to bytes
-    payment_bytes = base64.b64decode(encoding.msgpack_encode(payment_txn))
     fee_payer_bytes = base64.b64decode(encoding.msgpack_encode(fee_payer_txn))
+    payment_bytes = base64.b64decode(encoding.msgpack_encode(payment_txn))
 
+    # The client still signs rawBytes[1] (ClientAvmSigner.sign_transactions with
+    # indexes_to_sign=[1]) before sending; rawBytes[0] stays unsigned for the facilitator.
     return {
-        "paymentGroup": encode_transaction_group([payment_bytes, fee_payer_bytes]),
-        "paymentIndex": 0,
-        "rawBytes": [payment_bytes, fee_payer_bytes],
+        "paymentGroup": encode_transaction_group([fee_payer_bytes, payment_bytes]),
+        "paymentIndex": 1,
+        "rawBytes": [fee_payer_bytes, payment_bytes],
     }
 ```
 
@@ -673,38 +695,53 @@ In x402-avm, fee abstraction allows the **facilitator** to pay transaction fees 
 
 **Flow:**
 
-1. Client creates a 2-transaction atomic group:
-   - Transaction 0: USDC transfer from client to resource owner (fee = 0)
-   - Transaction 1: Self-payment by fee payer (fee covers both transactions)
-2. Client signs Transaction 0 (their USDC transfer)
-3. Transaction 1 is left unsigned (for the facilitator to sign)
-4. Client sends both in the `paymentGroup` array
-5. Facilitator verifies, signs Transaction 1, and submits the atomic group
+1. The server's 402 `PaymentRequirements` carry the facilitator's fee payer address in `extra.feePayer` (taken from the facilitator's `/supported` response)
+2. Client creates a 2-transaction atomic group:
+   - Transaction 0: Self-payment by the fee payer, amount 0, note `x402-fee-payer-<time_ns>`, flat pooled fee of min fee x 2 (covers both transactions)
+   - Transaction 1: USDC transfer from client to `payTo`, fee 0, note `x402-payment-<time_ns>`
+3. Client signs Transaction 1 (their USDC transfer)
+4. Transaction 0 is left unsigned (for the facilitator to sign)
+5. Client sends both in the `paymentGroup` array with `paymentIndex: 1`
+6. Facilitator verifies, signs Transaction 0, simulates, submits the atomic group, and waits for confirmation before reporting settlement
 
 **Security guarantees:**
 - Fee payer transaction is validated to be a self-payment with amount=0
-- No rekey, close-to, or other dangerous operations
-- Fee is capped at a reasonable maximum
+- No close-to, no unbalanced rekey, no `keyreg` transactions
+- Fee payer transaction fee is capped (`MAX_REASONABLE_FEE` = 16,000 microAlgos in x402-avm 2.0.2)
 - Atomic group ensures all-or-nothing execution
 
 ### Client-Side Fee Abstraction
 
 ```python
+import asyncio
+import os
+
 from x402 import x402Client
+from x402.http.clients import x402HttpxClient
 from x402.mechanisms.avm.exact import register_exact_avm_client
 
 # Fee abstraction is automatic in the ExactAvmScheme
-# The client only needs to provide a signer
+# The client only needs to provide a signer (PrivateKeySigner from above)
 
-signer = MyClientSigner(os.environ["AVM_PRIVATE_KEY"])
+signer = PrivateKeySigner(os.environ["AVM_PRIVATE_KEY"])
 client = x402Client()
 register_exact_avm_client(client, signer)
 
-# When PaymentRequirements include feePayer info, the scheme handles everything:
-# - Creates 2-txn atomic group
+# When PaymentRequirements include extra.feePayer, the scheme handles everything:
+# - Creates the 2-txn atomic group [fee payer txn, USDC transfer]
 # - Signs only the client's payment transaction
 # - Leaves the fee payer transaction unsigned for the facilitator
-response = await client.fetch("https://api.example.com/paid-resource")
+
+
+async def main() -> None:
+    # Settlement waits for on-chain confirmation (~3-6 s end to end), so raise
+    # httpx's 5 s default timeout.
+    async with x402HttpxClient(client, timeout=30.0) as http:
+        response = await http.get("https://api.example.com/paid-resource")
+        print(response.status_code, response.headers.get("PAYMENT-RESPONSE"))
+
+
+asyncio.run(main())
 ```
 
 ---
@@ -725,10 +762,14 @@ register_exact_avm_client(client, signer)
 
 ```python
 from x402 import x402ResourceServer
+from x402.http import FacilitatorConfig, HTTPFacilitatorClient
 from x402.mechanisms.avm.exact import register_exact_avm_server
 
-server = x402ResourceServer(facilitator_url="https://facilitator.example.com")
-register_exact_avm_server(server)
+facilitator = HTTPFacilitatorClient(
+    FacilitatorConfig(url="https://facilitator.goplausible.xyz")
+)
+server = x402ResourceServer(facilitator)
+register_exact_avm_server(server)  # registers "algorand:*" (or pass networks=[...])
 ```
 
 ### Facilitator Registration
@@ -759,16 +800,27 @@ register_exact_avm_facilitator(
 # facilitator_service.py
 import os
 import base64
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from x402 import x402Facilitator
 from x402.mechanisms.avm.exact import register_exact_avm_facilitator
 from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2
 from x402.mechanisms.avm.constants import NETWORK_CONFIGS
+from x402.schemas import parse_payment_payload, parse_payment_requirements
 from algosdk import encoding, transaction
 from algosdk.v2client import algod
+from algosdk.v2client.models import SimulateRequest, SimulateRequestTransactionGroup
 
-app = FastAPI(title="x402-avm Facilitator Service")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Facilitator service started")
+    print(f"Fee payer address: {ADDRESS}")
+    print("Networks: Testnet + Mainnet")
+    yield
+
+
+app = FastAPI(title="x402-avm Facilitator Service", lifespan=lifespan)
 
 # Build signer
 SECRET_KEY = base64.b64decode(os.environ["AVM_PRIVATE_KEY"])
@@ -812,11 +864,11 @@ class FacilitatorSigner:
                 stxns.append(obj)
             else:
                 stxns.append(transaction.SignedTransaction(obj, None))
-        req = transaction.SimulateRequest(
-            txn_groups=[transaction.SimulateRequestTransactionGroup(txns=stxns)],
+        req = SimulateRequest(
+            txn_groups=[SimulateRequestTransactionGroup(txns=stxns)],
             allow_empty_signatures=True,
         )
-        result = client.simulate_raw_transactions(req)
+        result = client.simulate_transactions(req)
         for group in result.get("txn-groups", []):
             if group.get("failure-message"):
                 raise Exception(f"Simulation failed: {group['failure-message']}")
@@ -844,17 +896,20 @@ register_exact_avm_facilitator(
 
 @app.get("/supported")
 async def supported():
-    return facilitator.get_supported_networks()
+    return facilitator.get_supported().model_dump(by_alias=True, exclude_none=True)
 
 
+# Request body (x402 V2): {"x402Version": 2, "paymentPayload": {...}, "paymentRequirements": {...}}
 @app.post("/verify")
 async def verify(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.verify(
-            body["paymentPayload"], body["paymentRequirements"]
+        payload = parse_payment_payload(body["paymentPayload"])
+        requirements = parse_payment_requirements(
+            payload.x402_version, body["paymentRequirements"]
         )
-        return result
+        result = await facilitator.verify(payload, requirements)
+        return result.model_dump(by_alias=True, exclude_none=True)
     except Exception as e:
         return JSONResponse(
             status_code=400, content={"error": str(e)}
@@ -865,21 +920,17 @@ async def verify(request: Request):
 async def settle(request: Request):
     body = await request.json()
     try:
-        result = await facilitator.settle(
-            body["paymentPayload"], body["paymentRequirements"]
+        payload = parse_payment_payload(body["paymentPayload"])
+        requirements = parse_payment_requirements(
+            payload.x402_version, body["paymentRequirements"]
         )
-        return result
+        # Returns after the group is confirmed on-chain (instant finality)
+        result = await facilitator.settle(payload, requirements)
+        return result.model_dump(by_alias=True, exclude_none=True)
     except Exception as e:
         return JSONResponse(
             status_code=400, content={"error": str(e)}
         )
-
-
-@app.on_event("startup")
-async def startup():
-    print(f"Facilitator service started")
-    print(f"Fee payer address: {ADDRESS}")
-    print(f"Networks: Testnet + Mainnet")
 
 
 # Run: uvicorn facilitator_service:app --port 4000
@@ -889,13 +940,13 @@ async def startup():
 
 ## algosdk Encoding Notes
 
-The Python `algosdk` (v2.11.1) has different encoding conventions than the TypeScript version. This is the most common source of bugs:
+The Python `algosdk` (v2.11.1) has different encoding conventions than the TypeScript `@x402/avm` package, which is built on `@algorandfoundation/algokit-utils` v10 (not algosdk). This is the most common source of bugs:
 
-| Operation | Python algosdk | TypeScript algosdk |
+| Operation | Python algosdk | TypeScript (`@x402/avm`, algokit-utils v10) |
 |-----------|---------------|-------------------|
-| `msgpack_decode(s)` | Expects **base64 string** | N/A (uses `decodeUnsignedTransaction(Uint8Array)`) |
-| `msgpack_encode(obj)` | Returns **base64 string** | N/A (uses `txn.toByte()` returning `Uint8Array`) |
-| `Transaction.sign(key)` | Expects **base64 string** key | `signTransaction(txn, Uint8Array)` |
+| `msgpack_decode(s)` | Expects **base64 string** | N/A (uses `decodeTransaction(Uint8Array)` / `decodeSignedTransaction(Uint8Array)` from `@algorandfoundation/algokit-utils/transact`) |
+| `msgpack_encode(obj)` | Returns **base64 string** | N/A (uses `encodeTransactionRaw(txn)` returning `Uint8Array`) |
+| `Transaction.sign(key)` | Expects **base64 string** key | Signer from `toClientAvmSigner(privateKeyBase64)` / `toFacilitatorAvmSigner(...)` (algokit-utils `generateAddressWithSigners`) |
 | SDK protocol | Passes **raw msgpack bytes** | Passes **raw `Uint8Array`** |
 
 **Boundary conversion patterns:**
@@ -923,7 +974,7 @@ raw_bytes = base64.b64decode(b64_string)
 | Package | `x402-avm[avm]` (`pip install "x402-avm[avm]"`) |
 | Client Signer | `ClientAvmSigner` Protocol |
 | Facilitator Signer | `FacilitatorAvmSigner` Protocol |
-| Network Constants | `ALGORAND_TESTNET_CAIP2` |
+| Network Constants | `ALGORAND_TESTNET_CAIP2`, `ALGORAND_MAINNET_CAIP2` (use the constants, never literals) |
 | USDC Config | `NETWORK_CONFIGS[network]["default_asset"]` |
 | Address Validation | `is_valid_address(addr)` |
 | Amount Conversion | `to_atomic_amount(1.5)` |

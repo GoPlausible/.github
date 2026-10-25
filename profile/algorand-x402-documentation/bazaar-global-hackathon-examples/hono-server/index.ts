@@ -1,4 +1,6 @@
 import "dotenv/config";
+// hono >= 4.13.11: earlier 4.x releases have published security advisories
+// (e.g. CVE-2026-111757 serveStatic path re-decoding, CVE-2026-84364 parseBody memory exhaustion)
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";

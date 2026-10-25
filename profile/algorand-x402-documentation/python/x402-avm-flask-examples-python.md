@@ -2,7 +2,7 @@
 
 This guide covers the `x402-avm[flask]` extra for protecting Flask endpoints with x402 payment requirements on the Algorand Virtual Machine (AVM). All examples focus on Algorand (AVM) use cases.
 
-> **Package naming**: Install with `pip install "x402-avm[flask,avm]"` but import as `from x402...` (the Python import name is `x402`, not `x402_avm`).
+> **Package naming**: Install with `pip install "x402-avm[flask,avm,httpx]"` but import as `from x402...` (the Python import name is `x402`, not `x402_avm`).
 
 > **Critical**: Flask uses **synchronous** variants of the x402 core classes. Use `x402ResourceServerSync` and `HTTPFacilitatorClientSync` -- not their async counterparts.
 
@@ -30,8 +30,8 @@ This guide covers the `x402-avm[flask]` extra for protecting Flask endpoints wit
 ## Installation
 
 ```bash
-# Flask middleware + Algorand mechanism
-pip install "x402-avm[flask,avm]"
+# Flask middleware + Algorand mechanism + httpx (used by the facilitator client)
+pip install "x402-avm[flask,avm,httpx]"
 
 # Also install dotenv for environment variable management (optional)
 pip install python-dotenv
@@ -43,6 +43,9 @@ The `flask` extra installs:
 The `avm` extra installs:
 - `py-algorand-sdk>=2.0.0`
 
+The `httpx` extra installs:
+- `httpx>=0.28.1` -- `HTTPFacilitatorClientSync` uses `httpx.Client` to call the facilitator; the `flask` extra does not pull it in
+
 ---
 
 ## Key Imports
@@ -52,7 +55,7 @@ The `avm` extra installs:
 from x402.http.middleware.flask import (
     PaymentMiddleware,               # WSGI middleware class (recommended)
     payment_middleware,              # Factory function (returns PaymentMiddleware)
-    payment_middleware_from_config,  # Middleware from config (creates server internally)
+    payment_middleware_from_config,  # Middleware from config (raises TypeError in 2.0.2, see below)
     FlaskAdapter,                   # HTTPAdapter implementation for Flask requests
 )
 
@@ -72,8 +75,8 @@ from x402.schemas import AssetAmount, Network          # Type helpers
 
 # AVM-specific imports
 from x402.mechanisms.avm import (
-    ALGORAND_TESTNET_CAIP2,         # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-    ALGORAND_MAINNET_CAIP2,         # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
+    ALGORAND_TESTNET_CAIP2,         # "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
+    ALGORAND_MAINNET_CAIP2,         # "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"
     USDC_TESTNET_ASA_ID,            # 10458941
     USDC_MAINNET_ASA_ID,            # 31566704
 )
@@ -82,6 +85,8 @@ from x402.mechanisms.avm.exact import (
     register_exact_avm_server,      # Registration helper
 )
 ```
+
+> **Network ids**: Always use the `ALGORAND_TESTNET_CAIP2` / `ALGORAND_MAINNET_CAIP2` constants in code. The values shown are the canonical CAIP-2 ids (x402-avm >= 2.0.3); 2.0.2 and earlier use the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition. Its `/supported` endpoint lists the canonical ids first and, for now, the legacy ids as well; the legacy ids will be switched off with notice.
 
 ---
 
@@ -97,17 +102,18 @@ from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.flask import PaymentMiddleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
 
 # 1. Configure facilitator client and resource server (SYNC variants!)
-facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServerSync(facilitator)
 
 # 2. Register AVM scheme on the server
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -116,7 +122,7 @@ routes = {
     "GET /api/data/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
         ),
@@ -151,11 +157,13 @@ Routes define which endpoints require payment. The key format is `"METHOD /path/
 ### Simple string price (auto-converts to USDC)
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 routes = {
     "GET /api/weather": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price="$0.01",  # Automatically converted to 10000 microUSDC
         ),
@@ -166,13 +174,14 @@ routes = {
 ### Explicit AssetAmount (full control)
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.schemas import AssetAmount
 
 routes = {
     "GET /api/premium/*": RouteConfig(
         accepts=PaymentOption(
             scheme="exact",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
             pay_to="RECEIVER_ALGORAND_ADDRESS",
             price=AssetAmount(
                 amount="10000",         # 10000 microUSDC = $0.01
@@ -203,25 +212,35 @@ RouteConfig(
     resource="https://api.example.com/api/weather",  # Optional: resource URL
     description="Weather data API",      # Optional: description
     mime_type="application/json",        # Optional: response MIME type
+    custom_paywall_html=None,            # Optional: custom HTML for browser 402 responses
+    unpaid_response_body=None,           # Optional: callable(context) -> UnpaidResponseResult (custom 402 body)
+    extensions=None,                     # Optional: x402 extensions (e.g. {"bazaar": {...}})
 )
 ```
 
 ### Dict-based route config (alternative to RouteConfig)
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 routes = {
     "GET /api/weather/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-            "maxAmountRequired": "10000",
-            "asset": "10458941",
+            "network": ALGORAND_TESTNET_CAIP2,
             "payTo": "RECEIVER_ALGORAND_ADDRESS",
-            "resource": "https://api.example.com/api/weather",
-        }
+            "price": {
+                "amount": "10000",      # 10000 microUSDC = $0.01
+                "asset": "10458941",    # USDC ASA ID on testnet
+                "extra": {"name": "USDC", "decimals": 6},
+            },
+        },
+        "resource": "https://api.example.com/api/weather",
     }
 }
 ```
+
+Each `accepts` entry is converted to a `PaymentOption` and reads `scheme`, `network`, `payTo` (or `pay_to`), `price` (a money string such as `"$0.01"` or an `{"amount", "asset", "extra"}` dict) and `maxTimeoutSeconds` (or `max_timeout_seconds`). `resource`, `description` and `mimeType` (or `mime_type`) sit at the route level, next to `accepts`. V1 field names such as `maxAmountRequired` are not read.
 
 ---
 
@@ -235,14 +254,15 @@ from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig, PaymentOption
 from x402.http.types import RouteConfig
 from x402.http.middleware.flask import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
 
-facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServerSync(facilitator)
 server.register(
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+    ALGORAND_TESTNET_CAIP2,
     ExactAvmServerScheme(),
 )
 
@@ -252,7 +272,7 @@ routes = {
             scheme="exact",
             pay_to="YOUR_ALGORAND_ADDRESS",
             price="$0.01",
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            network=ALGORAND_TESTNET_CAIP2,
         ),
         mime_type="application/json",
         description="Weather report",
@@ -271,41 +291,46 @@ def get_weather():
 
 ## Middleware from Config
 
-The `payment_middleware_from_config` function creates the `x402ResourceServer` internally, simplifying setup when you do not need to hold a reference to the server.
+The `payment_middleware_from_config` function is meant to create the resource server internally, from a facilitator client and a list of `{"network": ..., "server": ...}` scheme registrations.
+
+> **Known issue in x402-avm 2.0.2**: `payment_middleware_from_config` builds the **async** `x402ResourceServer` internally, and the Flask middleware requires the sync variant, so the call always raises `TypeError: x402HTTPResourceServerSync requires a sync server, but got x402ResourceServer which has async methods. ...` -- whichever facilitator client you pass. Until this is fixed, build an `x402ResourceServerSync` yourself and use `payment_middleware` (or `PaymentMiddleware`). The setup below is the working equivalent and keeps the same config shapes:
 
 ```python
 from flask import Flask
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig
-from x402.http.middleware.flask import payment_middleware_from_config
+from x402.http.middleware.flask import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
+from x402.server import x402ResourceServerSync
 
 app = Flask(__name__)
 
-facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 
 routes = {
     "GET /api/data/*": {
         "accepts": {
             "scheme": "exact",
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "network": ALGORAND_TESTNET_CAIP2,
             "payTo": "YOUR_ALGORAND_ADDRESS",
-            "maxAmountRequired": "10000",
-            "asset": "10458941",
+            "price": {"amount": "10000", "asset": "10458941"},  # $0.01 USDC on testnet
         }
     }
 }
 
-payment_middleware_from_config(
-    app,
-    routes=routes,
-    facilitator_client=facilitator,
-    schemes=[
-        {
-            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-            "server": ExactAvmServerScheme(),
-        },
-    ],
-)
+schemes = [
+    {
+        "network": ALGORAND_TESTNET_CAIP2,
+        "server": ExactAvmServerScheme(),
+    },
+]
+
+# What payment_middleware_from_config would do, with the sync server Flask needs
+server = x402ResourceServerSync(facilitator)
+for registration in schemes:
+    server.register(registration["network"], registration["server"])
+
+payment_middleware(app, routes=routes, server=server)
 
 @app.route("/api/data/weather")
 def get_weather():
@@ -318,11 +343,13 @@ def get_weather():
 
 This is a full, runnable example of a Flask resource server that gates endpoints behind Algorand USDC payments.
 
+It uses the GoPlausible facilitator (`https://facilitator.goplausible.xyz`), which supports Algorand MainNet and TestNet and returns its fee payer address in `/supported` (`extra.feePayer`), so clients do not pay Algorand network fees. The facilitator must list the exact network id your x402-avm version uses: with x402-avm 2.0.2 (legacy full-hash ids), a facilitator that lists only the canonical Algorand ids makes the first protected request fail route validation with `RouteConfigurationError: ... Facilitator doesn't support "exact" on "algorand:..."`.
+
 ### `.env` file
 
 ```env
 AVM_ADDRESS=YOUR_ALGORAND_RECEIVER_ADDRESS
-FACILITATOR_URL=https://x402.org/facilitator
+FACILITATOR_URL=https://facilitator.goplausible.xyz
 ```
 
 ### `main.py`
@@ -338,7 +365,7 @@ from flask import Flask, g, jsonify
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import AssetAmount, Network
 from x402.server import x402ResourceServerSync
@@ -353,8 +380,8 @@ AVM_ADDRESS = os.getenv("AVM_ADDRESS")
 if not AVM_ADDRESS:
     raise ValueError("AVM_ADDRESS environment variable is required")
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
+FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")
 
 # ---------------------------------------------------------------------------
 # App & Middleware
@@ -459,7 +486,7 @@ flask --app main run --host 0.0.0.0 --port 4021
 After the middleware verifies a payment, it stores the payment payload and requirements on Flask's `g` object. You can access this information inside your route handlers.
 
 ```python
-from flask import g
+from flask import g, jsonify
 
 @app.route("/api/paid-resource")
 def paid_resource():
@@ -481,17 +508,17 @@ def paid_resource():
 
 ### How the middleware flow works
 
-1. Client sends request with `X-Payment` or `Payment-Signature` header
+1. Client sends the request; a paying client sends the base64-encoded V2 `PaymentPayload` in the `PAYMENT-SIGNATURE` header (the V1 `X-PAYMENT` header is not read as a payment)
 2. The WSGI middleware intercepts the request within a Flask request context
 3. Middleware checks if the route requires payment via `requires_payment(context)`
-4. On first protected request, facilitator support is synchronized (lazy init)
+4. On first protected request, facilitator support is fetched (`GET /supported`) and the routes are validated (lazy init); a route whose scheme/network is not registered on the server or not listed by the facilitator raises `RouteConfigurationError`
 5. `process_http_request(context)` verifies the payment **synchronously**:
    - `"no-payment-required"` -- route not protected, passes through to `original_wsgi`
-   - `"payment-error"` -- returns 402 response (JSON or HTML paywall)
+   - `"payment-error"` -- returns 402 response (JSON with a `PAYMENT-REQUIRED` header, or HTML paywall)
    - `"payment-verified"` -- stores on `flask.g`, calls original WSGI app
-6. If the WSGI app returns a successful (2xx) response, settlement is processed **synchronously**
-7. Settlement headers are added to the buffered response via `ResponseWrapper`
-8. The buffered response (with settlement headers) is sent to the client
+6. If the WSGI app returns a successful (2xx) response, settlement is processed **synchronously** (the facilitator's `/settle` call returns once the transaction is confirmed on-chain)
+7. The `PAYMENT-RESPONSE` header (base64-encoded settlement response) is added to the buffered response via `ResponseWrapper`
+8. The buffered response (with the settlement header) is sent to the client
 
 ### Key difference from FastAPI
 
@@ -557,6 +584,8 @@ routes = {
 ### Multiple payment options per route (multi-network)
 
 ```python
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+
 routes = {
     "GET /api/data/*": RouteConfig(
         accepts=[
@@ -564,7 +593,7 @@ routes = {
                 scheme="exact",
                 pay_to=AVM_ADDRESS,
                 price="$0.01",
-                network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+                network=ALGORAND_TESTNET_CAIP2,
             ),
             PaymentOption(
                 scheme="exact",
@@ -581,7 +610,7 @@ routes = {
 
 ## Multi-Network Support (AVM + EVM + SVM)
 
-This example shows how to register all three blockchain networks on a single Flask server, matching the pattern used in the official examples.
+This example shows how to register all three blockchain networks on a single Flask server, matching the pattern used in the official examples. It also needs the EVM and SVM extras: `pip install "x402-avm[flask,avm,evm,svm,httpx]"`.
 
 ```python
 import os
@@ -592,11 +621,11 @@ from flask import Flask, jsonify
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
-from x402.mechanisms.avm import USDC_TESTNET_ASA_ID
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.mechanisms.evm.exact import ExactEvmServerScheme
 from x402.mechanisms.svm.exact import ExactSvmServerScheme
-from x402.schemas import AssetAmount, Network
+from x402.schemas import Network
 from x402.server import x402ResourceServerSync
 
 load_dotenv()
@@ -605,10 +634,10 @@ load_dotenv()
 EVM_ADDRESS = os.getenv("EVM_ADDRESS")
 SVM_ADDRESS = os.getenv("SVM_ADDRESS")
 AVM_ADDRESS = os.getenv("AVM_ADDRESS")
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-EVM_NETWORK: Network = "eip155:84532"
-SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"
-FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2                      # Algorand TestNet
+EVM_NETWORK: Network = "eip155:84532"                              # Base Sepolia
+SVM_NETWORK: Network = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1"   # Solana Devnet
+FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")
 
 app = Flask(__name__)
 
@@ -664,11 +693,13 @@ from flask import Flask, g, jsonify
 from x402.server import x402ResourceServerSync
 from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig
 from x402.http.middleware.flask import payment_middleware
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = Flask(__name__)
-facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServerSync(facilitator)
-server.register(AVM_NETWORK, ExactAvmServerScheme())
+server.register(ALGORAND_TESTNET_CAIP2, ExactAvmServerScheme())
 payment_middleware(app, routes=routes, server=server)
 
 @app.route("/weather")
@@ -683,11 +714,13 @@ from fastapi import FastAPI, Request
 from x402.server import x402ResourceServer
 from x402.http import HTTPFacilitatorClient, FacilitatorConfig
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
+from x402.mechanisms.avm.exact import ExactAvmServerScheme
 
 app = FastAPI()
-facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://x402.org/facilitator"))
+facilitator = HTTPFacilitatorClient(FacilitatorConfig(url="https://facilitator.goplausible.xyz"))
 server = x402ResourceServer(facilitator)
-server.register(AVM_NETWORK, ExactAvmServerScheme())
+server.register(ALGORAND_TESTNET_CAIP2, ExactAvmServerScheme())
 app.add_middleware(PaymentMiddlewareASGI, routes=routes, server=server)
 
 @app.get("/weather")
@@ -702,13 +735,35 @@ async def get_weather(request: Request):
 
 ### Payment errors (402 responses)
 
-When a client sends a request without a valid payment, the middleware returns a 402 response automatically. For JSON clients:
+When a client sends a request without a valid payment, the middleware returns a 402 response automatically. For API (non-browser) clients the JSON body is empty (`{}`, unless the route sets `unpaid_response_body`) and the payment requirements travel in the `PAYMENT-REQUIRED` response header as base64-encoded JSON. Decoded, it looks like this:
 
 ```json
-{"error": "Payment required"}
+{
+    "x402Version": 2,
+    "error": "Payment required",
+    "resource": {"url": "http://localhost:4021/weather", "description": "Weather report", "mimeType": "application/json"},
+    "accepts": [
+        {
+            "scheme": "exact",
+            "network": "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe",
+            "asset": "10458941",
+            "amount": "10000",
+            "payTo": "YOUR_ALGORAND_ADDRESS",
+            "maxTimeoutSeconds": 300,
+            "extra": {
+                "decimals": 6,
+                "feePayer": "<facilitator fee payer address, from /supported>",
+                "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+                "genesisId": "testnet-v1.0"
+            }
+        }
+    ]
+}
 ```
 
-For HTML clients (when `is_html` is true), the middleware returns an HTML paywall page.
+(`network` is the value of `ALGORAND_TESTNET_CAIP2`: the canonical id shown here is x402-avm >= 2.0.3; 2.0.2 and earlier emit the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition. `extra.genesisHash` is the full genesis hash, not a CAIP-2 reference.) When a payment was sent but is invalid or does not match the route, the 402 carries the same header with `error` set to the reason.
+
+For browser requests (an `Accept` header containing `text/html` and a `User-Agent` containing `Mozilla`), the middleware returns an HTML paywall page instead.
 
 ### Settlement failures
 
@@ -755,6 +810,8 @@ PaymentMiddleware(
 )
 ```
 
+`PaywallConfig` fields: `app_name`, `app_logo`, `session_token_endpoint`, `current_url`, `testnet`. Per route, `RouteConfig.custom_paywall_html` replaces the browser paywall HTML and `RouteConfig.unpaid_response_body` replaces the JSON 402 body.
+
 ---
 
 ## API Reference Summary
@@ -791,7 +848,7 @@ Factory function. Accepts the same parameters as `PaymentMiddleware` and returns
 
 ### `payment_middleware_from_config(app, routes, ...)`
 
-Convenience function that creates the `x402ResourceServer` internally.
+Convenience function that creates the `x402ResourceServer` internally. In x402-avm 2.0.2 it creates the **async** `x402ResourceServer`, so it raises `TypeError` with Flask (see [Middleware from Config](#middleware-from-config)); use `payment_middleware` with an `x402ResourceServerSync` instead.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -848,10 +905,12 @@ Internal class that captures and buffers the WSGI response for settlement proces
 
 | Constant | Value | Import |
 |----------|-------|--------|
-| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` | `x402.mechanisms.avm` |
-| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="` | `x402.mechanisms.avm` |
+| `ALGORAND_TESTNET_CAIP2` | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"` | `x402.mechanisms.avm` |
+| `ALGORAND_MAINNET_CAIP2` | `"algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"` | `x402.mechanisms.avm` |
 | `USDC_TESTNET_ASA_ID` | `10458941` | `x402.mechanisms.avm` |
 | `USDC_MAINNET_ASA_ID` | `31566704` | `x402.mechanisms.avm` |
+
+The CAIP-2 values are x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition. Use the constants rather than string literals.
 
 ---
 
@@ -860,5 +919,5 @@ Internal class that captures and buffers the WSGI response for settlement proces
 - **FastAPI middleware (Python)**: See `x402-avm-fastapi-examples-python.md` in this directory for the async FastAPI equivalent.
 - **AVM mechanism details (Python)**: See `x402-avm-avm-examples-python.md` in this directory for client-side signer implementation, facilitator setup, and low-level AVM mechanism usage.
 - **TypeScript examples**: See `../typescript/` directory for Express/Next.js middleware examples with Algorand.
-- **Source code**: Flask middleware implementation is at `python/x402/http/middleware/flask.py`.
-- **Official example server**: `examples/python/servers/flask/main.py` shows a multi-network Flask server.
+- **Source code**: Flask middleware implementation is at `python/x402/http/middleware/flask.py` in the [GoPlausible/x402-avm](https://github.com/GoPlausible/x402-avm) repository (branch `branch-v2-algorand-publish`, the source of the `x402-avm` PyPI package).
+- **Official example server**: `examples/python/servers/flask/main.py` (same repository and branch) shows a multi-network Flask server.

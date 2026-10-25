@@ -48,7 +48,7 @@ npm install @x402/next
 npm install @x402/paywall @x402/avm @x402/core @x402/express
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **Note on `algosdk`:** `@x402/avm` and `@x402/paywall` do not depend on `algosdk`; they are built on `@algorandfoundation/algokit-utils` v10 (2.28.0 pins `10.0.0-alpha.46`). If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from an algosdk-based signer, switch to the upstream `@x402/*` packages and the code shown below. Browser wallet libraries such as `@txnlab/use-wallet` still declare `algosdk` v3 as their own peer dependency. `@x402/paywall` 2.28.0 declares `react` and `react-dom` `^19` as peer dependencies.
 
 ---
 
@@ -58,15 +58,15 @@ The x402 paywall system has two sides:
 
 **Server side** (your API/website):
 - Middleware intercepts requests to protected routes.
-- If no payment header is present, it returns a `402 Payment Required` response.
+- If no payment header is present, it returns a `402 Payment Required` response with the base64 `PAYMENT-REQUIRED` header.
 - For browser requests, it returns an HTML paywall page instead of raw JSON.
-- After payment, middleware verifies and settles the transaction.
+- After payment, middleware verifies and settles the transaction (settlement waits for on-chain confirmation) and adds the `PAYMENT-RESPONSE` header.
 
 **Client side** (the paywall HTML page):
 - The paywall HTML page is served to browsers when payment is required.
 - It embeds the payment configuration in `window.x402`.
 - It connects to Algorand wallets (Pera, Defly, Lute) via `@txnlab/use-wallet`.
-- After the user pays, it retries the original request with the payment header.
+- After the user pays, it retries the original request with the `PAYMENT-SIGNATURE` header.
 
 ### Architecture
 
@@ -79,10 +79,11 @@ Browser Request
      +-- Has PAYMENT-SIGNATURE header?
      |     |
      |     +-- Yes: Verify payment, settle transaction, return content
-     |     +-- No: Is this a browser request (Accept: text/html)?
+     |     +-- No: Is this a browser request
+     |           (Accept contains text/html AND User-Agent contains Mozilla)?
      |           |
      |           +-- Yes: Return paywall HTML page (402)
-     |           +-- No: Return JSON 402 response
+     |           +-- No: Return JSON 402 response (PAYMENT-REQUIRED header)
      |
      v
 [Paywall HTML Page]
@@ -92,7 +93,8 @@ Browser Request
      +-- User connects wallet (Pera/Defly/Lute)
      +-- User approves payment
      +-- Retries request with PAYMENT-SIGNATURE header
-     +-- Redirects to paid content
+     +-- Shows the paid content (an HTML response replaces the page;
+         other content types are opened as a blob URL)
 ```
 
 ---
@@ -133,7 +135,7 @@ const paywall = new PaywallBuilder()
     appName: "Premium API",
     appLogo: "https://cdn.example.com/logo.svg",
     currentUrl: "https://api.example.com",
-    testnet: false,  // Use mainnet
+    testnet: false,  // Mainnet mode (the AVM paywall follows the requirement's network)
   })
 
   // Build the provider
@@ -159,7 +161,8 @@ interface PaywallConfig {
   appName?: string;      // App name shown in wallet connection modal
   appLogo?: string;      // App logo URL
   currentUrl?: string;   // URL of the content being accessed
-  testnet?: boolean;     // Whether to use testnet (default: true)
+  testnet?: boolean;     // Testnet mode flag (default: true)
+  faucetUrls?: Record<string, string>; // Per-network (CAIP-2 keyed) testnet faucet link override
 }
 ```
 
@@ -173,9 +176,10 @@ The `avmPaywall` handler is responsible for generating Algorand-specific paywall
 
 ```typescript
 import { avmPaywall } from "@x402/paywall/avm";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // The handler checks if it supports the requirement
-avmPaywall.supports({ network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", ... });
+avmPaywall.supports({ network: ALGORAND_TESTNET_CAIP2, ... }); // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
 // Returns: true (network starts with "algorand:")
 
 avmPaywall.supports({ network: "eip155:84532", ... });
@@ -205,24 +209,28 @@ The `avmPaywall.generateHtml()` method produces a full HTML page that:
    window.x402 = {
      amount: 0.01,           // Amount in USDC (human-readable)
      paymentRequired: {...},  // Full PaymentRequired response
-     testnet: true,           // Network mode
+     testnet: true,           // From PaywallConfig.testnet
      currentUrl: "...",       // URL to retry after payment
      config: { chainConfig: {} },
      appName: "My App",
      appLogo: "https://...",
+     faucetUrls: undefined,   // Optional per-network faucet override
    };
    ```
 
 2. Provides a React-based UI with:
-   - Wallet selection (discovers wallets via `@wallet-standard/app`).
+   - Wallet selection (the wallets configured in a `@txnlab/use-wallet` v4 `WalletManager`).
    - Automatic balance checking (USDC ASA balance on Algorand).
    - Transaction signing flow.
    - Payment submission and retry.
+   - A faucet link when the requirement's network is TestNet.
 
-3. Supports Algorand wallets that implement the `algorand:signTransaction` wallet-standard feature, including:
+3. Supports the Algorand wallets registered in that `WalletManager`:
    - **Pera Wallet** -- Most popular Algorand mobile wallet.
    - **Defly Wallet** -- DeFi-focused Algorand wallet.
    - **Lute Wallet** -- Desktop browser extension wallet.
+
+The network (Algod endpoint, wallet network, faucet link) is taken from the first payment requirement, `paymentRequired.accepts[0].network`; it accepts the canonical CAIP-2 id and the legacy full-hash form.
 
 ### Handler Interface
 
@@ -249,6 +257,8 @@ import {
   paymentMiddleware,
   x402ResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
@@ -256,14 +266,13 @@ const app = express();
 
 // ---- Route Configuration ----
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/premium-content": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",           // USDC ASA ID on testnet
+      network: ALGORAND_TESTNET_CAIP2,  // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
       payTo: "YOUR_ALGORAND_ADDRESS_HERE",
-      price: "$0.01",             // 0.01 USDC
+      price: "$0.01",             // 0.01 USDC (default asset: ASA 10458941 on TestNet)
       maxTimeoutSeconds: 300,
     },
     description: "Access to premium content",
@@ -285,8 +294,11 @@ const paywall = createPaywall()
 // ---- Server Setup ----
 
 // Create resource server (facilitator handles verification/settlement)
-const facilitatorUrl = process.env.FACILITATOR_URL || "https://facilitator.example.com";
-const server = new x402ResourceServer({ url: facilitatorUrl });
+const facilitatorUrl = process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz";
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: facilitatorUrl }))
+  // The AVM server scheme copies the facilitator's fee payer (/supported extra.feePayer)
+  // into each requirement's extra.feePayer, so the client builds a sponsored group
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 // Apply middleware
 app.use(paymentMiddleware(routes, server, { testnet: true }, paywall));
@@ -320,10 +332,13 @@ import {
   x402ResourceServer,
   x402HTTPResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 // Create and configure the resource server
-const resourceServer = new x402ResourceServer({ url: facilitatorUrl });
+const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: facilitatorUrl }))
+  .register("algorand:*", new ExactAvmScheme());
 
 // Create HTTP server with hooks
 const httpServer = new x402HTTPResourceServer(resourceServer, routes)
@@ -344,12 +359,11 @@ app.use(paymentMiddlewareFromHTTPServer(httpServer, { testnet: true }, paywall))
 ### Multiple Protected Routes
 
 ```typescript
-const routes = {
+const routes: RoutesConfig = {
   "/api/weather": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.001",        // 0.001 USDC per weather query
       maxTimeoutSeconds: 60,
@@ -360,8 +374,7 @@ const routes = {
   "/api/analytics": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.05",         // 0.05 USDC per analytics report
       maxTimeoutSeconds: 300,
@@ -372,8 +385,7 @@ const routes = {
   "/api/ai-summary": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ADDRESS",
       price: "$0.10",         // 0.10 USDC per AI summary
       maxTimeoutSeconds: 600,
@@ -384,6 +396,8 @@ const routes = {
 };
 ```
 
+A `price` given as a dollar string uses the network's default asset (USDC, 6 decimals). To set the asset explicitly, pass an asset amount instead, e.g. `price: { amount: "10000", asset: "10458941" }` (atomic units; 0.01 USDC on TestNet). Route `accepts` entries have no separate `asset` field. Note that `@x402/core` clients accept non-default assets only when their spend controls allow them.
+
 ---
 
 ## Hono Integration
@@ -393,16 +407,18 @@ const routes = {
 ```typescript
 import { Hono } from "hono";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const app = new Hono();
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS",
       price: "$0.01",
       maxTimeoutSeconds: 300,
@@ -417,7 +433,9 @@ const paywall = createPaywall()
   .withConfig({ appName: "Hono API", testnet: true })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 // Apply payment middleware
 app.use("*", paymentMiddleware(routes, server, { testnet: true }, paywall));
@@ -439,8 +457,11 @@ export default app;
 
 ```typescript
 import { Hono } from "hono";
-import { paymentMiddlewareFromConfig, x402ResourceServer } from "@x402/hono";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 type Env = {
   FACILITATOR_URL: string;
@@ -449,13 +470,15 @@ type Env = {
 
 const app = new Hono<{ Bindings: Env }>();
 
+// Bindings are only available per request, so the middleware is built inside the handler.
+// (Every newly built middleware fetches the facilitator's /supported again; cache it per
+// isolate if that matters for your traffic.)
 app.use("*", async (c, next) => {
-  const routes = {
+  const routes: RoutesConfig = {
     "/api/data": {
       accepts: {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: c.env.PAYTO_ADDRESS,
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -470,7 +493,9 @@ app.use("*", async (c, next) => {
     .withConfig({ appName: "Worker API", testnet: true })
     .build();
 
-  const server = new x402ResourceServer({ url: c.env.FACILITATOR_URL });
+  const server = new x402ResourceServer(
+    new HTTPFacilitatorClient({ url: c.env.FACILITATOR_URL }),
+  ).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
   const middleware = paymentMiddleware(routes, server, { testnet: true }, paywall);
   return middleware(c, next);
@@ -487,20 +512,24 @@ export default app;
 
 ## Next.js Integration
 
-### Middleware Approach (middleware.ts)
+### Middleware Approach (proxy.ts)
+
+`@x402/next` 2.28.0 requires Next.js 16 (peer `next >= 16.2.6`), where the `middleware.ts` file convention is deprecated in favour of `proxy.ts` (exporting `proxy`).
 
 ```typescript
-// middleware.ts
+// proxy.ts
 import { paymentProxy, x402ResourceServer } from "@x402/next";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { NextRequest, NextResponse } from "next/server";
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/premium": {
     accepts: {
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: ALGORAND_TESTNET_CAIP2,
       payTo: process.env.PAYTO_ADDRESS!,
       price: "$0.01",
       maxTimeoutSeconds: 300,
@@ -519,14 +548,16 @@ const paywall = createPaywall()
   })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
-const proxy = paymentProxy(routes, server, { testnet: true }, paywall);
+const x402Proxy = paymentProxy(routes, server, { testnet: true }, paywall);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Only apply to /api/premium routes
   if (request.nextUrl.pathname.startsWith("/api/premium")) {
-    return proxy(request);
+    return x402Proxy(request);
   }
   return NextResponse.next();
 }
@@ -541,23 +572,26 @@ export const config = {
 ```typescript
 // app/api/premium/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402/next";
+import { withX402, x402ResourceServer, type RouteConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { createPaywall, avmPaywall } from "@x402/paywall";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const server = new x402ResourceServer({
-  url: process.env.FACILITATOR_URL!,
-});
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)
   .withConfig({ appName: "Next.js App", testnet: true })
   .build();
 
-const routeConfig = {
+// A single RouteConfig applies to this handler (a path-keyed map is also accepted)
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
-    network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    asset: "10458941",
+    network: ALGORAND_TESTNET_CAIP2,
     payTo: process.env.PAYTO_ADDRESS!,
     price: "$0.01",
     maxTimeoutSeconds: 300,
@@ -581,67 +615,70 @@ export const GET = withX402(handler, routeConfig, server, { testnet: true }, pay
 
 ## Wallet Integration
 
-The AVM paywall HTML page uses `@wallet-standard/app` to discover Algorand wallets and `@txnlab/use-wallet` ecosystem patterns for transaction signing.
+The AVM paywall HTML page uses `@txnlab/use-wallet` (v4, `WalletManager`) to connect Algorand wallets and to sign transactions.
 
 ### Supported Wallets
 
-| Wallet | Type | Feature |
-|--------|------|---------|
-| Pera Wallet | Mobile + WalletConnect | `algorand:signTransaction` |
-| Defly Wallet | Mobile + WalletConnect | `algorand:signTransaction` |
-| Lute Wallet | Browser Extension | `algorand:signTransaction` |
+| Wallet | Type | use-wallet ID |
+|--------|------|---------------|
+| Pera Wallet | Mobile + WalletConnect | `WalletId.PERA` |
+| Defly Wallet | Mobile + WalletConnect | `WalletId.DEFLY` |
+| Lute Wallet | Browser Extension | `WalletId.LUTE` |
 
 ### Wallet Discovery
 
-The paywall page discovers wallets using the wallet-standard API:
+The paywall page creates a `WalletManager` with these three wallets, on the network of the first payment requirement:
 
 ```typescript
-import { getWallets } from "@wallet-standard/app";
+import { WalletManager, WalletId, NetworkId } from "@txnlab/use-wallet";
 
-const walletsApi = getWallets();
-const algorandWallets = walletsApi.get().filter((wallet) => {
-  return "algorand:signTransaction" in wallet.features;
+// isTestnet is derived from paymentRequired.accepts[0].network
+const networkKey = isTestnet ? NetworkId.TESTNET : NetworkId.MAINNET;
+
+const walletManager = new WalletManager({
+  wallets: [WalletId.PERA, WalletId.DEFLY, WalletId.LUTE],
+  defaultNetwork: networkKey,
+  networks: {
+    [networkKey]: {
+      algod: {
+        baseServer: isTestnet
+          ? "https://testnet-api.algonode.cloud"
+          : "https://mainnet-api.algonode.cloud",
+        token: "",
+        port: "",
+      },
+    },
+  },
 });
 ```
 
 ### Signer Derivation
 
-Once a wallet is connected, the paywall derives a `ClientAvmSigner`:
+Once a wallet is connected, the paywall wraps it as a `ClientAvmSigner` and builds the payment:
 
 ```typescript
 import type { ClientAvmSigner } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { x402Client } from "@x402/core/client";
 
-// The paywall internally creates this signer from the connected wallet
+// The paywall internally creates this signer from the active use-wallet wallet
 const signer: ClientAvmSigner = {
   address: activeAccount.address,
-  async signTransactions(txns: Uint8Array[], indexesToSign?: number[]) {
-    const signFeature = wallet.features["algorand:signTransaction"];
-    return signFeature.signTransaction({ txns, indexesToSign });
-  },
+  signTransactions: (txns: Uint8Array[], indexesToSign?: number[]) =>
+    activeWallet.signTransactions(txns, indexesToSign),
 };
+
+const client = new x402Client();
+client.setSpendControls(false); // the paywall UI already shows the amount to the user
+client.register("algorand:*", new ExactAvmScheme(signer, { algorandClient }));
+
+const paymentPayload = await client.createPaymentPayload(paymentRequired);
+// Sent base64-encoded as the PAYMENT-SIGNATURE header when re-requesting window.x402.currentUrl
 ```
 
-### React Hooks (Used Internally by Paywall)
+### Wallet-Standard Helper Hooks (Not Exported)
 
-The paywall template uses several React hooks internally. These are not public API but are useful for understanding and custom implementations:
-
-```typescript
-// useAlgorandWalletOptions -- discovers Algorand-capable wallets
-import { useAlgorandWalletOptions } from "@x402/paywall/avm/algorand/useAlgorandWalletOptions";
-const walletOptions = useAlgorandWalletOptions();
-
-// useAlgorandSigner -- derives ClientAvmSigner from connected wallet
-import { useAlgorandSigner } from "@x402/paywall/avm/algorand/useAlgorandSigner";
-const signer = useAlgorandSigner({ activeWallet, activeAccount });
-
-// useAlgorandBalance -- tracks USDC balance for connected account
-import { useAlgorandBalance } from "@x402/paywall/avm/algorand/useAlgorandBalance";
-const { usdcBalance, formattedBalance, refreshBalance } = useAlgorandBalance({
-  activeAccount,
-  paymentRequired,
-  onStatus: (msg) => console.log(msg),
-});
-```
+The `@x402/paywall` source also contains wallet-standard helper hooks under `src/avm/algorand/` (`useAlgorandWalletOptions`, `useAlgorandSigner`, `useAlgorandBalance`, based on `@wallet-standard/app` and the `algorand:signTransaction` feature). In 2.28.0 they are not part of the public API: the package `exports` map exposes only `.`, `./evm`, `./svm` and `./avm`, so paths such as `@x402/paywall/avm/algorand/...` cannot be imported, and the AVM paywall itself uses `@txnlab/use-wallet` as shown above. Treat them as reference code only.
 
 ### Custom Wallet Integration (Outside Paywall)
 
@@ -650,7 +687,7 @@ If you need to build a custom payment UI instead of using the built-in paywall:
 ```typescript
 import { useWallet } from "@txnlab/use-wallet-react";
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 
 function CustomPaymentUI() {
@@ -665,7 +702,7 @@ function CustomPaymentUI() {
     };
 
     const client = new x402Client();
-    registerExactAvmScheme(client, { signer });
+    client.register("algorand:*", new ExactAvmScheme(signer));
     const fetchWithPay = wrapFetchWithPayment(fetch, client);
 
     const response = await fetchWithPay(url);
@@ -686,10 +723,13 @@ function CustomPaymentUI() {
 interface PaywallConfig {
   appName?: string;      // Shown in wallet connection modal title
   appLogo?: string;      // Logo URL shown in the paywall header
-  currentUrl?: string;   // URL the paywall should retry after payment
-  testnet?: boolean;     // Network mode (affects AlgoNode endpoint)
+  currentUrl?: string;   // URL the paywall should retry after payment (fallback when paymentRequired.resource.url is absent)
+  testnet?: boolean;     // Written to window.x402.testnet (default: true); see note below
+  faucetUrls?: Record<string, string>; // CAIP-2 keyed override for the testnet faucet link
 }
 ```
+
+For Algorand, the AVM paywall takes the network (Algod endpoint, wallet network, faucet link) from `paymentRequired.accepts[0].network`, not from `testnet`; in the AVM handler `testnet` only enables a debug `console.log` of `window.x402`. `faucetUrls` is set with `createPaywall().withConfig()`: the middleware's `paywallConfig` argument is typed with `@x402/core`'s `PaywallConfig` (`appName`, `appLogo`, `sessionTokenEndpoint`, `currentUrl`, `testnet`).
 
 ### Setting Config at Build Time
 
@@ -699,7 +739,7 @@ const paywall = createPaywall()
   .withConfig({
     appName: "My Premium API",
     appLogo: "https://cdn.example.com/logo.svg",
-    testnet: false,  // Production: mainnet
+    testnet: false,  // Production (the Algorand network itself comes from the route's `network`)
   })
   .build();
 ```
@@ -736,11 +776,12 @@ window.x402 = {
     x402Version: 2,
     accepts: [{
       scheme: "exact",
-      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-      asset: "10458941",
+      network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe",  // ALGORAND_TESTNET_CAIP2
+      asset: "10458941",         // USDC ASA on TestNet
       payTo: "ALGO_ADDRESS...",
-      amount: "10000",
+      amount: "10000",           // atomic units (0.01 USDC)
       maxTimeoutSeconds: 300,
+      extra: { feePayer: "FACILITATOR_FEE_PAYER_ADDRESS..." }, // from the facilitator's /supported
     }],
     resource: {
       url: "https://api.example.com/premium",
@@ -749,7 +790,7 @@ window.x402 = {
     },
   },
 
-  // Whether to use testnet Algod endpoints
+  // PaywallConfig.testnet (the AVM paywall derives the network from accepts[0].network)
   testnet: true,
 
   // URL to retry with payment header
@@ -761,6 +802,9 @@ window.x402 = {
   // Branding
   appName: "My App",
   appLogo: "https://example.com/logo.png",
+
+  // Optional CAIP-2 keyed faucet override (undefined when not configured)
+  faucetUrls: undefined,
 };
 ```
 
@@ -890,14 +934,19 @@ You can configure your server to accept payments on multiple networks and let th
 ### Server: Accept Multiple Networks
 
 ```typescript
-const routes = {
+import { x402ResourceServer, HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+
+const routes: RoutesConfig = {
   "/api/premium": {
     // Accept payment on EITHER Algorand testnet or EVM Base Sepolia
+    // ("$0.01" resolves to USDC on each network: ASA 10458941 / 0x036CbD53842c5426634e7929541eC2318f3dCF7e)
     accepts: [
       {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: "ALGO_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -905,7 +954,6 @@ const routes = {
       {
         scheme: "exact",
         network: "eip155:84532",
-        asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
         payTo: "0xEVM_ADDRESS_HERE",
         price: "$0.01",
         maxTimeoutSeconds: 30,
@@ -915,6 +963,11 @@ const routes = {
     mimeType: "application/json",
   },
 };
+
+// Register a server scheme for every network the routes use
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }))
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme())
+  .register("eip155:84532", new ExactEvmScheme());
 ```
 
 ### Paywall: Register Multiple Network Handlers
@@ -964,6 +1017,9 @@ import {
   paymentMiddleware,
   x402ResourceServer,
 } from "@x402/express";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
 const app = express();
@@ -972,27 +1028,22 @@ app.use(express.json());
 
 // ---- Configuration ----
 
-const FACILITATOR_URL = process.env.FACILITATOR_URL || "https://facilitator.example.com";
+const FACILITATOR_URL = process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz";
 const PAYTO_ADDRESS = process.env.PAYTO_ADDRESS || "YOUR_ALGORAND_ADDRESS";
 const PORT = parseInt(process.env.PORT || "3000");
 const IS_TESTNET = process.env.NODE_ENV !== "production";
 
-const ALGORAND_TESTNET_NETWORK = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
-const ALGORAND_MAINNET_NETWORK = "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=";
-const USDC_TESTNET_ASA = "10458941";
-const USDC_MAINNET_ASA = "31566704";
-
-const network = IS_TESTNET ? ALGORAND_TESTNET_NETWORK : ALGORAND_MAINNET_NETWORK;
-const usdcAsset = IS_TESTNET ? USDC_TESTNET_ASA : USDC_MAINNET_ASA;
+// "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe" (TestNet) / "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k" (MainNet)
+const network = IS_TESTNET ? ALGORAND_TESTNET_CAIP2 : ALGORAND_MAINNET_CAIP2;
+// Dollar prices resolve to USDC: ASA 10458941 (TestNet) / 31566704 (MainNet)
 
 // ---- Route Definitions ----
 
-const routes = {
+const routes: RoutesConfig = {
   "/api/weather": {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$0.001",
       maxTimeoutSeconds: 60,
@@ -1004,7 +1055,6 @@ const routes = {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$0.05",
       maxTimeoutSeconds: 300,
@@ -1016,7 +1066,6 @@ const routes = {
     accepts: {
       scheme: "exact",
       network,
-      asset: usdcAsset,
       payTo: PAYTO_ADDRESS,
       price: "$1.00",
       maxTimeoutSeconds: 600,
@@ -1039,7 +1088,8 @@ const paywall = createPaywall()
 
 // ---- Middleware ----
 
-const server = new x402ResourceServer({ url: FACILITATOR_URL });
+const server = new x402ResourceServer(new HTTPFacilitatorClient({ url: FACILITATOR_URL }))
+  .register(network, new ExactAvmScheme());
 app.use(paymentMiddleware(routes, server, { testnet: IS_TESTNET }, paywall));
 
 // ---- Route Handlers ----
@@ -1111,12 +1161,15 @@ app.listen(PORT, () => {
 ```typescript
 // app/api/premium/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402/next";
+import { withX402, x402ResourceServer, type RouteConfig } from "@x402/next";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall } from "@x402/paywall";
 
-const server = new x402ResourceServer({
-  url: process.env.FACILITATOR_URL!,
-});
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+).register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
 const paywall = createPaywall()
   .withNetwork(avmPaywall)
@@ -1127,11 +1180,10 @@ const paywall = createPaywall()
   })
   .build();
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
-    network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    asset: "10458941",
+    network: ALGORAND_TESTNET_CAIP2,
     payTo: process.env.PAYTO_ADDRESS!,
     price: "$0.01",
     maxTimeoutSeconds: 300,
@@ -1174,7 +1226,8 @@ export default function Home() {
   async function fetchPremium() {
     setLoading(true);
     try {
-      // Direct fetch -- browser will see the paywall HTML on 402
+      // Direct fetch -- a programmatic fetch gets the JSON 402 (the paywall HTML is only
+      // served to browser navigations: Accept contains text/html and User-Agent contains Mozilla)
       const res = await fetch("/api/premium?topic=DeFi");
       if (res.ok) {
         const data = await res.json();
@@ -1219,19 +1272,22 @@ export default function Home() {
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { createPaywall, avmPaywall, evmPaywall } from "@x402/paywall";
 
 const app = new Hono();
 app.use("*", cors());
 
-// Accept payments on BOTH Algorand and Base Sepolia
-const routes = {
+// Accept payments on BOTH Algorand and Base Sepolia ("$0.01" resolves to USDC on each)
+const routes: RoutesConfig = {
   "/api/data": {
     accepts: [
       {
         scheme: "exact",
-        network: "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-        asset: "10458941",
+        network: ALGORAND_TESTNET_CAIP2,
         payTo: process.env.ALGO_PAYTO!,
         price: "$0.01",
         maxTimeoutSeconds: 300,
@@ -1239,7 +1295,6 @@ const routes = {
       {
         scheme: "exact",
         network: "eip155:84532",
-        asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
         payTo: process.env.EVM_PAYTO!,
         price: "$0.01",
         maxTimeoutSeconds: 30,
@@ -1260,7 +1315,11 @@ const paywall = createPaywall()
   })
   .build();
 
-const server = new x402ResourceServer({ url: process.env.FACILITATOR_URL! });
+const server = new x402ResourceServer(
+  new HTTPFacilitatorClient({ url: process.env.FACILITATOR_URL! }),
+)
+  .register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme())
+  .register("eip155:84532", new ExactEvmScheme());
 
 app.use("*", paymentMiddleware(routes, server, { testnet: true }, paywall));
 
@@ -1337,5 +1396,8 @@ export default {
 | `@x402/hono` | `paymentMiddlewareFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Hono (config) |
 | `@x402/next` | `paymentProxy(routes, server, config?, paywall?)` | Next.js middleware proxy |
 | `@x402/next` | `withX402(handler, routeConfig, server, config?, paywall?)` | Next.js route wrapper |
+| `@x402/next` | `withX402FromHTTPServer(handler, httpServer, config?, paywall?)` | Next.js route wrapper (HTTP server) |
 | `@x402/next` | `paymentProxyFromHTTPServer(httpServer, config?, paywall?)` | Next.js (HTTP server) |
 | `@x402/next` | `paymentProxyFromConfig(routes, facilitator?, schemes?, config?, paywall?)` | Next.js (config) |
+
+All of these also take a final optional `syncFacilitatorOnStart` flag (default `true`). The resource server they use must have a server scheme registered for each route network (for Algorand, `ExactAvmScheme` from `@x402/avm/exact/server`); `HTTPFacilitatorClient` and `RoutesConfig` come from `@x402/core/server`.

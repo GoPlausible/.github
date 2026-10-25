@@ -53,7 +53,9 @@ from x402.http.clients.httpx import (
 from x402.http.clients import x402HttpxClient, wrapHttpxWithPayment
 ```
 
-All of these accept either an `x402Client` (async) or an `x402HTTPClient` wrapper.
+All of these except `wrapHttpxWithPaymentFromConfig` (which takes an `x402ClientConfig`) accept either an `x402Client` (async) or an `x402HTTPClient` wrapper.
+
+> **Timeouts**: always pass `timeout=` when you create the httpx client. The paid retry only returns after the server has settled the payment, and the facilitator waits for on-chain confirmation (about 3-6 s end to end), which can exceed httpx's 5-second default. When it does, the paid retry fails with `PaymentError` (cause `httpx.ReadTimeout`) after the payment may already have been submitted. `timeout=30.0` is a safe value.
 
 ---
 
@@ -143,7 +145,8 @@ async def main():
     custom_transport = httpx.AsyncHTTPTransport(retries=3)
     transport = x402_httpx_transport(x402, transport=custom_transport)
 
-    async with httpx.AsyncClient(transport=transport) as client:
+    # Set the timeout on the AsyncClient; it reaches the transport (and the paid retry) per request
+    async with httpx.AsyncClient(transport=transport, timeout=30.0) as client:
         response = await client.get("https://api.example.com/paid-resource")
         print(response.status_code)
 
@@ -169,19 +172,20 @@ If you prefer a declarative configuration object, use `wrapHttpxWithPaymentFromC
 import asyncio
 from x402 import x402ClientConfig, SchemeRegistration
 from x402.http.clients.httpx import wrapHttpxWithPaymentFromConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmClientScheme
 
 config = x402ClientConfig(
     schemes=[
         SchemeRegistration(
-            network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-            client=ExactAvmClientScheme(signer=my_avm_signer),
+            network=ALGORAND_TESTNET_CAIP2,
+            client=ExactAvmClientScheme(signer=my_avm_signer),  # a ClientAvmSigner (see the AlgorandSigner below)
         ),
     ],
 )
 
 async def main():
-    async with wrapHttpxWithPaymentFromConfig(config) as client:
+    async with wrapHttpxWithPaymentFromConfig(config, timeout=30.0) as client:
         response = await client.get("https://api.example.com/paid-resource")
         print(response.text)
 
@@ -327,28 +331,32 @@ if __name__ == "__main__":
 
 1. The `x402HttpxClient` sends a GET request to the resource URL.
 2. If the server returns HTTP 402, the `x402AsyncTransport` intercepts the response.
-3. It parses the `PaymentRequired` data from response headers (V2) or body (V1).
-4. The registered `ExactAvmScheme` creates an atomic transaction group (ASA transfer) and signs it via `AlgorandSigner`.
-5. Payment headers are added to a retry request.
-6. The server validates payment and returns the resource.
+3. It parses the `PaymentRequired` data from the base64 `PAYMENT-REQUIRED` response header (V2) or from the JSON body (V1).
+4. The registered `ExactAvmScheme` builds the Algorand transactions and signs the client's transaction via `AlgorandSigner`. When the requirements carry `extra.feePayer` (the facilitator's fee payer), it builds a two-transaction atomic group: an unsigned zero-amount `pay` transaction from the fee payer to itself that carries the pooled fee for both transactions, followed by the signed USDC `axfer` with fee 0 (`paymentIndex` 1). The facilitator verifies the group and signs the fee payer transaction before submitting it. Without `extra.feePayer` it sends a single signed `axfer` that pays its own fee (`paymentIndex` 0).
+5. The resulting V2 `PaymentPayload` (`{x402Version: 2, resource, accepted, payload: {paymentGroup, paymentIndex}, extensions?}`, where `paymentGroup` holds the base64 msgpack transactions) is base64-encoded and sent in the `PAYMENT-SIGNATURE` header of a single retry request.
+6. The server verifies the payment, serves the resource, settles through the facilitator, and returns the settlement result in the base64 `PAYMENT-RESPONSE` header.
 
 ### Registering with a Specific Network
 
 By default, `register_exact_avm_client` registers the wildcard `"algorand:*"`. To register for a specific network only:
 
 ```python
+from x402.mechanisms.avm import ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2
+
 # Testnet only
-register_exact_avm_client(x402, signer, networks="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_TESTNET_CAIP2)
 
 # Mainnet only
-register_exact_avm_client(x402, signer, networks="algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=")
+register_exact_avm_client(x402, signer, networks=ALGORAND_MAINNET_CAIP2)
 
 # Both explicitly
 register_exact_avm_client(x402, signer, networks=[
-    "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
-    "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+    ALGORAND_TESTNET_CAIP2,
+    ALGORAND_MAINNET_CAIP2,
 ])
 ```
+
+The canonical CAIP-2 values of these constants are `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` (TestNet) and `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k` (MainNet) in x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition. The client pays only on the network ids its own version knows, so x402-avm 2.0.2 cannot pay a server that advertises only the canonical id: with the default wildcard registration the request fails with `PaymentError: Failed to handle payment: Unsupported CAIP-2 network: ...`, and with a specific registration with `No payment requirements match registered schemes`.
 
 ### Using a Custom Algod Endpoint
 
@@ -364,27 +372,32 @@ register_exact_avm_client(
 
 ## Error Handling
 
-The transport raises specific exceptions you can catch:
+The module exports these exception classes:
 
 ```python
 from x402.http.clients.httpx import (
     PaymentError,                   # Base class for all payment errors
-    PaymentAlreadyAttemptedError,   # Payment retry already attempted
-    MissingRequestConfigError,      # Missing request configuration
+    PaymentAlreadyAttemptedError,   # Subclass of PaymentError (exported, not raised by the 2.0.2 transport)
+    MissingRequestConfigError,      # Subclass of PaymentError (exported, not raised by the 2.0.2 transport)
 )
+```
+
+In x402-avm 2.0.2 the transport raises `PaymentError("Failed to handle payment: ...")` whenever handling a 402 fails (unparseable `PAYMENT-REQUIRED` header, no registered scheme for the offered network, signing or Algod errors), and also when the paid retry itself fails with a network error or timeout. The original exception is available as `e.__cause__`. Errors on the first, unpaid request propagate as normal `httpx` exceptions.
+
+```python
+import httpx
+from x402.http.clients.httpx import PaymentError, x402HttpxClient
 
 async with x402HttpxClient(x402, timeout=30.0) as client:
     try:
         response = await client.get("https://api.example.com/paid")
-    except PaymentAlreadyAttemptedError:
-        print("Payment was already attempted but failed")
     except PaymentError as e:
-        print(f"Payment handling failed: {e}")
+        print(f"Payment handling failed: {e} (cause: {e.__cause__!r})")
     except httpx.HTTPError as e:
         print(f"HTTP error: {e}")
 ```
 
-The transport will **not** retry more than once. If the first payment-bearing retry still returns 402, the 402 response is returned as-is.
+The transport will **not** retry more than once. If the first payment-bearing retry still returns 402, the 402 response is returned as-is; its `PAYMENT-REQUIRED` header carries the reason in `error`.
 
 ---
 

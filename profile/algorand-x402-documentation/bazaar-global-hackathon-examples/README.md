@@ -35,9 +35,13 @@ protocol — the part the guide shows as `signer=...`.
 
 Start one server (all use port `4021` — run one at a time) with your TestNet
 merchant address as `AVM_ADDRESS`, then run any client with a funded TestNet
-buyer key as `AVM_PRIVATE_KEY` — clients and servers mix freely across
-platforms. Every project reads its config from `.env` (copy `.env.example`).
-See each project's README.
+buyer key as `AVM_PRIVATE_KEY`. Every project reads its config from `.env`
+(copy `.env.example`). See each project's README.
+
+TypeScript and Python projects mix freely once both sides use the CAIP-2
+Algorand network ids: the TypeScript samples do (`@x402/avm` >= 2.20.0); the
+Python samples do with `x402-avm` >= 2.0.3. With `x402-avm` 2.0.2 (legacy
+full-hash ids) pair TypeScript with TypeScript and Python with Python.
 
 Or run the whole matrix at once — every server against every client, with
 thorough logs under `logs/` (each pair pays a real $0.01 TestNet USDC):

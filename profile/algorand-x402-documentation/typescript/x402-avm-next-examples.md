@@ -1,7 +1,7 @@
 # x402-avm V2: Next.js Middleware Examples
 
 Comprehensive examples for integrating x402-avm payment-gated routes with Next.js,
-including both the proxy pattern (middleware.ts) and route handler wrapper pattern
+including both the proxy pattern (proxy.ts) and route handler wrapper pattern
 (route.ts), with Algorand (AVM) blockchain payments.
 
 ## Table of Contents
@@ -29,7 +29,11 @@ including both the proxy pattern (middleware.ts) and route handler wrapper patte
 npm install @x402/next @x402/avm @x402/core
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **Note:** `@x402/avm` uses `@algorandfoundation/algokit-utils` v10 (`10.0.0-alpha.46` in `@x402/avm` 2.28.0) internally, not `algosdk`. If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from an `algosdk`-based setup, switch to the upstream `@x402/*` packages and **remove `algosdk` from your project dependencies**; see [x402-avm-avm-examples](x402-avm-avm-examples.md) for signer code.
+
+> **Next.js version:** `@x402/next` 2.28.0 requires `next` >= 16.2.6. In Next.js 16 the
+> middleware file convention is `proxy.ts` (exporting a `proxy` function or a default
+> export); `middleware.ts` is deprecated. The examples below use `proxy.ts`.
 
 For paywall UI support:
 
@@ -43,10 +47,10 @@ npm install @x402/next @x402/avm @x402/core @x402/paywall
 
 Next.js offers two distinct patterns for x402 payment protection:
 
-### 1. Proxy Pattern (middleware.ts)
+### 1. Proxy Pattern (proxy.ts)
 
-Uses Next.js middleware (`middleware.ts` at project root) to intercept requests
-before they reach route handlers. Best for:
+Uses the Next.js proxy (`proxy.ts` at project root, formerly `middleware.ts`) to intercept
+requests before they reach route handlers. Best for:
 
 - Protecting multiple routes with a single configuration
 - Path-based payment gating
@@ -68,26 +72,27 @@ Functions: `withX402`, `withX402FromHTTPServer`
 
 ## Proxy Pattern: paymentProxyFromConfig
 
-The simplest setup. Place this in `middleware.ts` at your project root.
-`paymentProxyFromConfig` creates the `x402ResourceServer` internally.
+The simplest setup. Place this in `proxy.ts` at your project root.
+`paymentProxyFromConfig` creates the `x402ResourceServer` internally; you pass the
+scheme servers to register as its third argument.
 
-### middleware.ts
+### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: PAY_TO,
-      price: "$0.01",
+      price: "$0.01", // USD price, paid in USDC (ASA) on Algorand
     },
     description: "Weather data",
   },
@@ -104,13 +109,12 @@ const routes = {
 
 const facilitatorClient = new HTTPFacilitatorClient();
 
-const proxy = paymentProxyFromConfig(routes, facilitatorClient);
+// The third argument registers the AVM exact scheme server for all Algorand networks
+export const proxy = paymentProxyFromConfig(routes, facilitatorClient, [
+  { network: "algorand:*", server: new ExactAvmScheme() },
+]);
 
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
-
-// Only run middleware on API routes
+// Only run the proxy on API routes
 export const config = {
   matcher: "/api/:path*",
 };
@@ -149,28 +153,27 @@ export async function GET() {
 
 Use this when you want more control over the `x402ResourceServer` instance.
 
-### middleware.ts
+### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxy, x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
 // Create and configure the resource server
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
+  url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 
 const server = new x402ResourceServer(facilitatorClient);
 
 // Register AVM exact scheme (wildcard for all Algorand networks)
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/:city": {
     accepts: {
       scheme: "exact",
@@ -192,11 +195,7 @@ const routes = {
 };
 
 // Create proxy with pre-configured server
-const proxy = paymentProxy(routes, server);
-
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxy(routes, server);
 
 export const config = {
   matcher: "/api/:path*",
@@ -209,26 +208,25 @@ export const config = {
 
 The most advanced proxy variant. Use when you need HTTP-level hooks.
 
-### middleware.ts
+### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import {
   paymentProxyFromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
 } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: {
       scheme: "exact",
@@ -261,11 +259,7 @@ httpServer.onProtectedRequest(async (context, routeConfig) => {
   return undefined;
 });
 
-const proxy = paymentProxyFromHTTPServer(httpServer);
-
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxyFromHTTPServer(httpServer);
 
 export const config = {
   matcher: "/api/:path*",
@@ -295,18 +289,18 @@ that payment settlement only occurs after the handler returns a successful respo
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
-import { withX402, x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { withX402, x402ResourceServer, type RouteConfig } from "@x402/next";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Create and configure server (shared across handlers in this file)
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
 // Define route payment config
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
     network: ALGORAND_TESTNET_CAIP2,
@@ -338,17 +332,17 @@ Create a shared configuration module to avoid duplicating server setup.
 
 ```typescript
 import { x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 // Shared x402 server instance
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
+  url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 
 // Shared constants
 export const PAY_TO = process.env.PAY_TO!;
@@ -412,7 +406,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
-const handler = async (request: NextRequest) => {
+// Explicit return type: the handler returns two different JSON shapes
+const handler = async (request: NextRequest): Promise<NextResponse> => {
   const { prompt } = await request.json();
 
   // If generation fails, return 500 -- payment will NOT be settled
@@ -457,16 +452,17 @@ import {
   withX402FromHTTPServer,
   x402ResourceServer,
   x402HTTPResourceServer,
+  type RouteConfig,
 } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
     network: ALGORAND_TESTNET_CAIP2,
@@ -476,8 +472,8 @@ const routeConfig = {
   description: "Protected data",
 };
 
-// withX402FromHTTPServer uses { "*": routeConfig } internally,
-// but we create the httpServer explicitly to attach hooks
+// x402HTTPResourceServer treats a bare RouteConfig as { "*": routeConfig };
+// we create the httpServer explicitly to attach hooks
 const httpServer = new x402HTTPResourceServer(resourceServer, {
   "*": routeConfig,
 });
@@ -504,15 +500,15 @@ export const GET = withX402FromHTTPServer(handler, httpServer);
 
 For protecting HTML pages served by Next.js App Router.
 
-#### middleware.ts
+#### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   // Protect an HTML page
   "GET /premium-article": {
     accepts: {
@@ -536,11 +532,9 @@ const routes = {
   },
 };
 
-const proxy = paymentProxyFromConfig(routes, new HTTPFacilitatorClient());
-
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxyFromConfig(routes, new HTTPFacilitatorClient(), [
+  { network: "algorand:*", server: new ExactAvmScheme() },
+]);
 
 export const config = {
   matcher: ["/premium-article", "/api/data/:path*"],
@@ -591,10 +585,10 @@ async function fetchStats() {
 ```typescript
 // app/api/resource/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withX402 } from "@x402/next";
+import { withX402, type RouteConfig } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
-const routeConfig = {
+const routeConfig: RouteConfig = {
   accepts: {
     scheme: "exact",
     network: NETWORK,
@@ -644,13 +638,13 @@ import {
   x402ResourceServer,
   x402HTTPResourceServer,
 } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const resourceServer = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(resourceServer);
+resourceServer.register("algorand:*", new ExactAvmScheme());
 
 const httpServer = new x402HTTPResourceServer(resourceServer, {
   "*": {
@@ -664,10 +658,10 @@ const httpServer = new x402HTTPResourceServer(resourceServer, {
   },
 });
 
-// Grant free access for basic queries (< 10 results)
+// Grant free access for basic queries (limit <= 10)
 httpServer.onProtectedRequest(async (context) => {
-  const limit = context.adapter.getQueryParam("limit");
-  if (limit && parseInt(limit) <= 10) {
+  const limit = context.adapter.getQueryParam?.("limit");
+  if (typeof limit === "string" && parseInt(limit) <= 10) {
     // Free tier: up to 10 results
     return { grantAccess: true };
   }
@@ -701,17 +695,17 @@ async function performSearch(query: string, limit: number) {
 
 ### Path Parameters
 
-#### middleware.ts
+#### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxyFromConfig } from "@x402/next";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const PAY_TO = process.env.PAY_TO!;
 
-const routes = {
+const routes: RoutesConfig = {
   // Matches /api/users/123, /api/users/abc, etc.
   "GET /api/users/*": {
     accepts: {
@@ -734,11 +728,9 @@ const routes = {
   },
 };
 
-const proxy = paymentProxyFromConfig(routes, new HTTPFacilitatorClient());
-
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxyFromConfig(routes, new HTTPFacilitatorClient(), [
+  { network: "algorand:*", server: new ExactAvmScheme() },
+]);
 
 export const config = {
   matcher: ["/api/users/:path*", "/api/reports/:path*"],
@@ -752,9 +744,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const user = await fetchUser(params.id);
+  const { id } = await params;
+  const user = await fetchUser(id);
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
@@ -773,11 +766,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { year: string; month: string } },
+  { params }: { params: Promise<{ year: string; month: string }> },
 ) {
+  const { year, month } = await params;
   return NextResponse.json({
-    year: params.year,
-    month: params.month,
+    year,
+    month,
     data: "Monthly report data...",
   });
 }
@@ -822,23 +816,26 @@ export const GET = withX402(handler, {
 
 ### Browser Paywall with Proxy Pattern
 
-When a browser (Accept: text/html) hits a protected route, the middleware
-can serve a paywall HTML page.
+When a browser (an `Accept: text/html` request with a browser User-Agent) hits a
+protected route, the proxy can serve a paywall HTML page. Build a paywall provider with
+the Algorand handler (`avmPaywall`) from `@x402/paywall` and pass it as the fourth
+argument; without a provider, browsers get a static "Payment Required" page.
 
-#### middleware.ts
+#### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxy, x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
-import { HTTPFacilitatorClient } from "@x402/core/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { HTTPFacilitatorClient, type RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { createPaywall } from "@x402/paywall";
+import { avmPaywall } from "@x402/paywall/avm";
 
 const facilitatorClient = new HTTPFacilitatorClient();
 const server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(server);
+server.register("algorand:*", new ExactAvmScheme());
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /premium/*": {
     accepts: {
       scheme: "exact",
@@ -851,18 +848,17 @@ const routes = {
   },
 };
 
-// Paywall config for browser UI
+// Paywall config for browser UI (PaywallConfig: appName, appLogo, sessionTokenEndpoint, currentUrl, testnet)
 const paywallConfig = {
-  title: "Premium Content",
-  description: "Pay with Algorand to unlock this content",
-  logoUrl: "/logo.png",
+  appName: "Premium Content",
+  appLogo: "/logo.png",
+  testnet: true,
 };
 
-const proxy = paymentProxy(routes, server, paywallConfig);
+// Algorand paywall UI provider
+const paywall = createPaywall().withNetwork(avmPaywall).build();
 
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxy(routes, server, paywallConfig, paywall);
 
 export const config = {
   matcher: "/premium/:path*",
@@ -872,7 +868,7 @@ export const config = {
 ### Custom Paywall HTML
 
 ```typescript
-const routes = {
+const routes: RoutesConfig = {
   "GET /premium/article": {
     accepts: {
       scheme: "exact",
@@ -906,7 +902,7 @@ const routes = {
 ### Unpaid Response Body (for API clients)
 
 ```typescript
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/article/:id": {
     accepts: {
       scheme: "exact",
@@ -939,12 +935,15 @@ const routes = {
 ### Accept Algorand Testnet and Mainnet
 
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   ALGORAND_MAINNET_CAIP2,
 } from "@x402/avm";
 
-const routes = {
+// Your facilitator must support both networks in its /supported response
+// (https://facilitator.goplausible.xyz lists Algorand MainNet and TestNet).
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -968,9 +967,12 @@ const routes = {
 ### Cross-Chain: Algorand + EVM
 
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const routes = {
+// Also register an EVM scheme server on your x402ResourceServer:
+//   server.register("eip155:*", new ExactEvmScheme()); // from "@x402/evm/exact/server"
+const routes: RoutesConfig = {
   "GET /api/data": {
     accepts: [
       {
@@ -986,27 +988,34 @@ const routes = {
         price: "$0.01",
       },
     ],
-    description: "Cross-chain: ALGO or ETH",
+    description: "Cross-chain: USDC on Algorand or Base Sepolia",
   },
 };
 ```
 
 ### USDC Payments
 
+The AVM `exact` scheme pays with an Algorand Standard Asset transfer (`axfer`): a USD
+price such as `"$0.01"` already resolves to USDC (ASA `10458941` on TestNet, `31566704`
+on MainNet, 6 decimals), and native ALGO payments are not part of the `exact` scheme in
+`@x402/avm` 2.28.0. To name the asset explicitly, pass an `AssetAmount`
+(`{ amount, asset }`, `amount` in base units) as the price:
+
 ```typescript
+import type { RoutesConfig } from "@x402/core/server";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/premium": {
     accepts: {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: "YOUR_ALGORAND_ADDRESS",
-      price: "$5.00",
-      extra: {
+      price: {
+        amount: "5000000",           // 5.00 USDC (6 decimals)
         asset: USDC_TESTNET_ASA_ID,  // "10458941"
       },
     },
@@ -1026,7 +1035,7 @@ const routes = {
 ```
 my-x402-app/
   .env.local
-  middleware.ts
+  proxy.ts
   app/
     page.tsx
     api/
@@ -1042,21 +1051,21 @@ my-x402-app/
 
 ```bash
 PAY_TO=ALGORAND_ADDRESS_HERE_58_CHARS
-FACILITATOR_URL=https://x402.org/facilitator
+FACILITATOR_URL=https://facilitator.goplausible.xyz
 ```
 
-#### middleware.ts
+#### proxy.ts
 
 ```typescript
-import { NextRequest } from "next/server";
 import { paymentProxy } from "@x402/next";
+import type { RoutesConfig } from "@x402/core/server";
 import { x402Server, PAY_TO } from "@/lib/x402";
 import {
   ALGORAND_TESTNET_CAIP2,
   USDC_TESTNET_ASA_ID,
 } from "@x402/avm";
 
-const routes = {
+const routes: RoutesConfig = {
   "GET /api/weather/*": {
     accepts: {
       scheme: "exact",
@@ -1075,8 +1084,7 @@ const routes = {
       scheme: "exact",
       network: ALGORAND_TESTNET_CAIP2,
       payTo: PAY_TO,
-      price: "$0.50",
-      extra: { asset: USDC_TESTNET_ASA_ID },
+      price: { amount: "500000", asset: USDC_TESTNET_ASA_ID }, // 0.50 USDC
     },
     description: "Premium content (USDC)",
   },
@@ -1091,16 +1099,13 @@ const routes = {
   },
 };
 
+// Passed to the paywall provider, if you register one (see Paywall Integration)
 const paywallConfig = {
-  title: "x402-avm Demo",
-  description: "Pay with Algorand to access premium features",
+  appName: "x402-avm Demo",
+  testnet: true,
 };
 
-const proxy = paymentProxy(routes, x402Server, paywallConfig);
-
-export async function middleware(request: NextRequest) {
-  return proxy(request);
-}
+export const proxy = paymentProxy(routes, x402Server, paywallConfig);
 
 export const config = {
   matcher: "/api/:path*",
@@ -1111,17 +1116,17 @@ export const config = {
 
 ```typescript
 import { x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 
 export const PAY_TO = process.env.PAY_TO!;
 
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
+  url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 ```
 
 #### app/api/weather/[city]/route.ts
@@ -1131,10 +1136,11 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { city: string } },
+  { params }: { params: Promise<{ city: string }> },
 ) {
+  const { city } = await params;
   return NextResponse.json({
-    city: params.city,
+    city,
     temperature: Math.floor(Math.random() * 40) + 50,
     condition: ["sunny", "cloudy", "rainy"][Math.floor(Math.random() * 3)],
     humidity: Math.floor(Math.random() * 60) + 30,
@@ -1193,9 +1199,9 @@ export default function Home() {
       <h1>x402-avm Next.js Demo</h1>
       <p>API Endpoints:</p>
       <ul>
-        <li>GET /api/weather/:city -- $0.01 ALGO</li>
-        <li>GET /api/premium/data -- $0.50 USDC</li>
-        <li>POST /api/generate -- $1.00 ALGO</li>
+        <li>GET /api/weather/:city -- $0.01 USDC</li>
+        <li>GET /api/premium/data -- 0.50 USDC</li>
+        <li>POST /api/generate -- $1.00 USDC</li>
         <li>GET /api/health -- Free</li>
       </ul>
     </main>
@@ -1227,7 +1233,7 @@ my-x402-app/
 
 ```typescript
 import { x402ResourceServer } from "@x402/next";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
@@ -1235,11 +1241,11 @@ export const PAY_TO = process.env.PAY_TO!;
 export const NETWORK = ALGORAND_TESTNET_CAIP2;
 
 const facilitatorClient = new HTTPFacilitatorClient({
-  url: process.env.FACILITATOR_URL || "https://x402.org/facilitator",
+  url: process.env.FACILITATOR_URL || "https://facilitator.goplausible.xyz",
 });
 
 export const x402Server = new x402ResourceServer(facilitatorClient);
-registerExactAvmScheme(x402Server);
+x402Server.register("algorand:*", new ExactAvmScheme());
 ```
 
 #### app/api/weather/route.ts
@@ -1289,8 +1295,7 @@ export const GET = withX402(handler, {
     scheme: "exact",
     network: NETWORK,
     payTo: PAY_TO,
-    price: "$0.50",
-    extra: { asset: USDC_TESTNET_ASA_ID },
+    price: { amount: "500000", asset: USDC_TESTNET_ASA_ID }, // 0.50 USDC
   },
   description: "Premium analytics (USDC)",
 }, x402Server);
@@ -1303,7 +1308,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { withX402 } from "@x402/next";
 import { x402Server, PAY_TO, NETWORK } from "@/lib/x402";
 
-const handler = async (request: NextRequest) => {
+// Explicit return type: the handler returns two different JSON shapes
+const handler = async (request: NextRequest): Promise<NextResponse> => {
   try {
     const { prompt } = await request.json();
     const result = await generateContent(prompt);
@@ -1350,7 +1356,7 @@ export async function GET() {
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `PAY_TO` | Algorand address to receive payments | `ABC...XYZ` (58 chars) |
-| `FACILITATOR_URL` | URL of the facilitator server | `https://x402.org/facilitator` |
+| `FACILITATOR_URL` | URL of the facilitator server | `https://facilitator.goplausible.xyz` |
 | `AVM_PRIVATE_KEY` | Base64-encoded 64-byte key (facilitator only) | `base64string...` |
 | `ALGOD_SERVER` | Algorand node URL | `https://testnet-api.algonode.cloud` |
 | `ALGOD_TOKEN` | Algorand node API token | `""` |
@@ -1359,8 +1365,15 @@ export async function GET() {
 
 | Network | CAIP-2 Identifier | Constant |
 |---------|-------------------|----------|
-| Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=` | `ALGORAND_TESTNET_CAIP2` |
-| Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=` | `ALGORAND_MAINNET_CAIP2` |
+| Algorand Testnet | `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` | `ALGORAND_TESTNET_CAIP2` |
+| Algorand Mainnet | `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k` | `ALGORAND_MAINNET_CAIP2` |
+
+Use the constants from `@x402/avm` (>= 2.20.0) rather than string literals. The legacy
+full-hash form (`algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`,
+`algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=`) is not valid CAIP-2; `@x402/avm`
+still accepts it on input during the transition, and the GoPlausible facilitator's
+`/supported` lists it after the canonical ids until it is switched off with notice. See
+[V2 CAIP-2 Network Identifiers](../README.md#v2-caip-2-network-identifiers).
 
 ### USDC ASA IDs
 
@@ -1371,7 +1384,7 @@ export async function GET() {
 
 ### Choosing Between Patterns
 
-| Criteria | Proxy (middleware.ts) | withX402 (route.ts) |
+| Criteria | Proxy (proxy.ts) | withX402 (route.ts) |
 |----------|----------------------|---------------------|
 | Setup complexity | Single file | Per-route setup |
 | Route configuration | Centralized | Distributed |

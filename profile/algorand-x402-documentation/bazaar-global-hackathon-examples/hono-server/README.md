@@ -28,3 +28,7 @@ config anywhere; the middleware learns it from the facilitator's `/supported`.
 
 Uses port `4021` — same as [`../express-server`](../express-server/), so run one
 server at a time. `npm run typecheck` runs `tsc --noEmit` over the sample.
+
+`package.json` requires `hono` `^4.13.13`: releases before 4.13.11 have published
+security advisories (e.g. CVE-2026-111757 `serveStatic` path re-decoding,
+CVE-2026-84364 `parseBody` memory exhaustion), so the floor is set past them.

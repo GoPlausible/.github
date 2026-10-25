@@ -13,7 +13,7 @@ Comprehensive examples for the `@x402/avm` TypeScript package covering signer in
 - [Client Signer Implementations](#client-signer-implementations)
   - [With @txnlab/use-wallet (Browser)](#with-txnlabuse-wallet-browser)
   - [Full React Example](#full-react-example)
-  - [With algosdk Private Key (Server-Side)](#with-algosdk-private-key-server-side)
+  - [With a Private Key (Server-Side)](#with-a-private-key-server-side)
 - [Facilitator Signer Implementation](#facilitator-signer-implementation)
 - [Constants](#constants)
   - [Network Identifiers](#network-identifiers)
@@ -49,13 +49,15 @@ Comprehensive examples for the `@x402/avm` TypeScript package covering signer in
 npm install @x402/avm
 ```
 
-> **Breaking change (v2 → v2.6+):** `algosdk` is no longer a dependency. The packages now use `@algorandfoundation/algokit-utils@10.0.0-alpha.39` internally. If you are upgrading from a previous version, **remove `algosdk` from your project dependencies** and update your signer code as shown below.
+> **No `algosdk`:** `@x402/avm` (on npm since 2.10.0) is built on `@algorandfoundation/algokit-utils` v10 (2.28.0 pins `10.0.0-alpha.46`) and has no `algosdk` dependency. If you are migrating from GoPlausible's earlier `@x402-avm/*` packages or from algosdk-based signer code, remove `algosdk` from your x402 dependencies and update your signer code as shown below. (Browser wallet libraries such as `@txnlab/use-wallet` v4 declare their own `algosdk` peer dependency; that is separate from x402.)
 
 For browser wallet integration:
 
 ```bash
-npm install @x402/avm @txnlab/use-wallet
+npm install @x402/avm @x402/core @x402/fetch @txnlab/use-wallet-react
 ```
+
+`@txnlab/use-wallet-react` v4 also needs its peer dependencies (for example `algosdk` v3 and the connector packages of the wallets you enable).
 
 ---
 
@@ -66,9 +68,7 @@ npm install @x402/avm @txnlab/use-wallet
 The client signer interface is compatible with `@txnlab/use-wallet` and similar wallet libraries.
 
 ```typescript
-import type { ClientAvmSigner } from "@x402/avm";
-
-// Interface definition:
+// Interface definition (exported as: import type { ClientAvmSigner } from "@x402/avm"):
 interface ClientAvmSigner {
   // The Algorand address of the signer
   address: string;
@@ -96,13 +96,17 @@ function checkWallet(wallet: unknown) {
 
 ### FacilitatorAvmSigner
 
-The facilitator signer handles verification, signing, simulation, and settlement.
+The facilitator signer handles signing, simulation, submission and confirmation for the facilitator scheme.
 
 ```typescript
-import type { FacilitatorAvmSigner } from "@x402/avm";
 import type { Network } from "@x402/core/types";
+import type {
+  AlgodClient,
+  SimulateResponse,
+  PendingTransactionResponse,
+} from "@algorandfoundation/algokit-utils/algod-client";
 
-// Interface definition:
+// Interface definition (exported as: import type { FacilitatorAvmSigner } from "@x402/avm"):
 interface FacilitatorAvmSigner {
   // Get all fee payer addresses this facilitator manages
   getAddresses(): readonly string[];
@@ -111,20 +115,21 @@ interface FacilitatorAvmSigner {
   signTransaction(txn: Uint8Array, senderAddress: string): Promise<Uint8Array>;
 
   // Get Algod client for a specific network
-  getAlgodClient(network: Network): unknown; // AlgodClient from @algorandfoundation/algokit-utils
+  getAlgodClient(network: Network): AlgodClient;
 
   // Simulate a transaction group before submission
-  simulateTransactions(txns: Uint8Array[], network: Network): Promise<unknown>;
+  simulateTransactions(txns: Uint8Array[], network: Network): Promise<SimulateResponse>;
 
-  // Submit signed transactions to the network
+  // Submit signed transactions to the network, returns the transaction ID
   sendTransactions(signedTxns: Uint8Array[], network: Network): Promise<string>;
 
   // Wait for transaction confirmation
+  // (toFacilitatorAvmSigner defaults to 5 rounds; the facilitator scheme passes 10 when settling)
   waitForConfirmation(
     txId: string,
     network: Network,
     waitRounds?: number,
-  ): Promise<unknown>;
+  ): Promise<PendingTransactionResponse>;
 }
 ```
 
@@ -134,22 +139,22 @@ interface FacilitatorAvmSigner {
 
 ### With @txnlab/use-wallet (Browser)
 
-The `@txnlab/use-wallet` library provides a `signTransactions` function that is directly compatible with the `ClientAvmSigner` interface.
+The `signTransactions` function from `@txnlab/use-wallet-react` (v4) accepts the same arguments as `ClientAvmSigner.signTransactions` and returns the same result.
 
 ```typescript
 import type { ClientAvmSigner } from "@x402/avm";
-import { useWallet } from "@txnlab/use-wallet";
+import { useWallet } from "@txnlab/use-wallet-react";
 
 // In a React component:
 function PaymentComponent() {
   const { activeAccount, signTransactions } = useWallet();
 
-  // The wallet adapter is already a ClientAvmSigner!
+  // Wrap the wallet as a ClientAvmSigner
   const signer: ClientAvmSigner | null = activeAccount
     ? {
         address: activeAccount.address,
         signTransactions: async (txns, indexesToSign) => {
-          // @txnlab/use-wallet's signTransactions has the same signature
+          // @txnlab/use-wallet's signTransactions takes (txnGroup, indexesToSign)
           return signTransactions(txns, indexesToSign);
         },
       }
@@ -159,18 +164,28 @@ function PaymentComponent() {
 }
 ```
 
+> `@x402/avm` uses Node's `Buffer` for base64 encoding, so browser bundles need a `Buffer` polyfill (the upstream `@x402/paywall` AVM bundle injects one).
+
 ### Full React Example
 
 ```typescript
 import React, { useCallback } from "react";
 import { x402Client } from "@x402/core/client";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
-import { useWallet, WalletProvider, WalletId } from "@txnlab/use-wallet-react";
+import {
+  useWallet,
+  WalletProvider,
+  WalletManager,
+  WalletId,
+  NetworkId,
+} from "@txnlab/use-wallet-react";
 
-const walletConfig = {
+const walletManager = new WalletManager({
   wallets: [WalletId.PERA, WalletId.DEFLY, WalletId.KIBISIS],
-};
+  defaultNetwork: NetworkId.TESTNET,
+});
 
 function PaidContent() {
   const { activeAccount, signTransactions } = useWallet();
@@ -183,10 +198,10 @@ function PaidContent() {
       signTransactions: async (txns, indexes) => signTransactions(txns, indexes),
     };
 
-    const client = new x402Client({ schemes: [] });
-    registerExactAvmScheme(client, { signer });
+    const client = new x402Client().register("algorand:*", new ExactAvmScheme(signer));
+    const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
-    const response = await client.fetch("https://api.example.com/premium");
+    const response = await fetchWithPayment("https://api.example.com/premium");
     if (response.ok) {
       const data = await response.json();
       console.log("Data:", data);
@@ -202,14 +217,14 @@ function PaidContent() {
 
 export default function App() {
   return (
-    <WalletProvider value={walletConfig}>
+    <WalletProvider manager={walletManager}>
       <PaidContent />
     </WalletProvider>
   );
 }
 ```
 
-### With algosdk Private Key (Server-Side)
+### With a Private Key (Server-Side)
 
 ```typescript
 import { toClientAvmSigner } from "@x402/avm";
@@ -234,13 +249,14 @@ Complete, production-ready implementation.
 ```typescript
 import { toFacilitatorAvmSigner } from "@x402/avm";
 
-// Default (uses AlgoNode endpoints automatically):
+// Default (AlgorandClient.testNet() / .mainNet() from algokit-utils, AlgoNode endpoints):
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
 
-// With custom Algod URLs:
-const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+// With custom Algod URLs (FacilitatorAvmSignerConfig):
+const customSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
   testnetUrl: "https://testnet-api.algonode.cloud",
   mainnetUrl: "https://mainnet-api.algonode.cloud",
+  algodToken: "", // optional
 });
 
 console.log("Fee payer addresses:", signer.getAddresses());
@@ -254,25 +270,21 @@ console.log("Fee payer addresses:", signer.getAddresses());
 
 ```typescript
 import {
-  // V2 CAIP-2 identifiers (primary)
-  ALGORAND_MAINNET_CAIP2,     // "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
-  ALGORAND_TESTNET_CAIP2,     // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-  CAIP2_NETWORKS,              // [MAINNET_CAIP2, TESTNET_CAIP2]
+  // V2 CAIP-2 identifiers (URL-safe base64 genesis hash, first 32 chars)
+  ALGORAND_MAINNET_CAIP2,     // "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k"
+  ALGORAND_TESTNET_CAIP2,     // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
+  CAIP2_NETWORKS,             // [ALGORAND_MAINNET_CAIP2, ALGORAND_TESTNET_CAIP2]
 
-  // Genesis hashes (used in transactions)
+  // Full genesis hashes (used in the transaction `gh` field, not as network ids)
   ALGORAND_MAINNET_GENESIS_HASH,  // "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8="
   ALGORAND_TESTNET_GENESIS_HASH,  // "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
 
-  // V1 identifiers (backward compat)
-  V1_ALGORAND_MAINNET,  // "algorand-mainnet"
-  V1_ALGORAND_TESTNET,  // "algorand-testnet"
-  V1_NETWORKS,           // ["algorand-mainnet", "algorand-testnet"]
-
-  // Bidirectional mapping
-  V1_TO_CAIP2,  // { "algorand-mainnet": CAIP2, "algorand-testnet": CAIP2 }
-  CAIP2_TO_V1,  // { CAIP2: "algorand-mainnet", CAIP2: "algorand-testnet" }
+  // Canonical or legacy full-hash id -> canonical id (throws for anything else)
+  normalizeAlgorandNetwork,
 } from "@x402/avm";
 ```
+
+`@x402/avm` >= 2.20.0 exports the canonical ids. Until upstream PR #3894 ships it also accepts the legacy full-hash form (`algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=`, `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`) on input; after that, upstream SDKs reject it. The package has no V1 constants or V1/CAIP-2 mappings; the AVM scheme is V2 only.
 
 ### USDC Configuration
 
@@ -280,51 +292,73 @@ import {
 import {
   USDC_MAINNET_ASA_ID,  // "31566704"
   USDC_TESTNET_ASA_ID,  // "10458941"
-  USDC_DECIMALS,         // 6
-  USDC_CONFIG,           // Record<network, { asaId, name, decimals }>
+  USDC_DECIMALS,        // 6
+  DEFAULT_ASSETS,       // { [CAIP-2 network]: [{ asset, decimals, symbol }] }
+  getDefaultAsset,
+  findDefaultAsset,
+  ALGORAND_MAINNET_CAIP2,
+  ALGORAND_TESTNET_CAIP2,
 } from "@x402/avm";
 
-// Look up USDC config by network
-const testnetUsdc = USDC_CONFIG[ALGORAND_TESTNET_CAIP2];
+// Look up the default (USDC) asset by network; Money prices such as "$0.10" use it
+const testnetUsdc = getDefaultAsset(ALGORAND_TESTNET_CAIP2);
 console.log(testnetUsdc);
-// { asaId: "10458941", name: "USDC", decimals: 6 }
+// { asset: "10458941", decimals: 6, symbol: "USDC" }
+
+// Reverse lookup by ASA id (undefined when the asset is not a default)
+const mainnetUsdc = findDefaultAsset(USDC_MAINNET_ASA_ID, ALGORAND_MAINNET_CAIP2);
+// { asset: "31566704", decimals: 6, symbol: "USDC" }
 ```
 
 ### Algod Endpoints
 
-```typescript
-import {
-  DEFAULT_ALGOD_MAINNET,   // env ALGOD_MAINNET_URL or "https://mainnet-api.algonode.cloud"
-  DEFAULT_ALGOD_TESTNET,   // env ALGOD_TESTNET_URL or "https://testnet-api.algonode.cloud"
-  NETWORK_TO_ALGOD,        // Record<network, url>
-  FALLBACK_ALGOD_MAINNET,  // "https://mainnet-api.algonode.cloud"
-  FALLBACK_ALGOD_TESTNET,  // "https://testnet-api.algonode.cloud"
-} from "@x402/avm";
+`@x402/avm` 2.28.0 exports no Algod endpoint constants and reads no environment variables for endpoints. Network access goes through `AlgorandClient` from `@algorandfoundation/algokit-utils`; by default `AlgorandClient.testNet()` / `AlgorandClient.mainNet()` (AlgoNode public endpoints).
 
-// Override with environment variables:
-// ALGOD_MAINNET_URL=https://my-node.example.com
-// ALGOD_TESTNET_URL=https://my-testnet-node.example.com
+```typescript
+import { AlgorandClient } from "@algorandfoundation/algokit-utils/algorand-client";
+import { toClientAvmSigner, toFacilitatorAvmSigner } from "@x402/avm";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+
+// Facilitator: per-network overrides (FacilitatorAvmSignerConfig)
+const facilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
+  testnetUrl: "https://my-testnet-node.example.com",
+  mainnetUrl: "https://my-node.example.com",
+  algodToken: process.env.ALGOD_TOKEN,
+});
+
+// Client: ClientAvmConfig applies to every network this scheme instance handles
+const clientSigner = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
+const testnetScheme = new ExactAvmScheme(clientSigner, {
+  algorandClient: AlgorandClient.testNet(),
+  // or: algodUrl: "https://my-testnet-node.example.com", algodToken: "..."
+});
 ```
 
 ### Transaction Limits
 
 ```typescript
 import {
-  MAX_ATOMIC_GROUP_SIZE,  // 16 (max transactions per group)
-  MIN_TXN_FEE,            // 1000 (microAlgos)
-  MAX_REASONABLE_FEE,     // 10_000_000 (10 ALGO sanity check)
+  MAX_REASONABLE_FEE_PER_TXN,  // 5000 (µAlgo per transaction in the group)
+  maxReasonableGroupFee,       // (groupSize) => 5000 × groupSize, cap on the fee payer txn fee
+  ALGORAND_MIN_TX_FEE,         // AlgoAmount of 1000 µAlgo (re-exported from algokit-utils)
 } from "@x402/avm";
+
+maxReasonableGroupFee(2);        // => 10000 (µAlgo, [fee payer, payment] group)
+ALGORAND_MIN_TX_FEE.microAlgo;   // => 1000n
+
+// The 16-transaction group limit comes from algokit-utils:
+// import { MAX_TRANSACTION_GROUP_SIZE } from "@algorandfoundation/algokit-utils/common"; // 16
 ```
 
 ### Address Validation
 
 ```typescript
 import {
-  ALGORAND_ADDRESS_REGEX,   // /^[A-Z2-7]{58}$/
-  ALGORAND_ADDRESS_LENGTH,  // 58
+  ALGORAND_ADDRESS_LENGTH,  // 58 (re-exported from algokit-utils)
+  isValidAlgorandAddress,
 } from "@x402/avm";
 
-const isValid = ALGORAND_ADDRESS_REGEX.test(someAddress);
+const isValid = isValidAlgorandAddress(someAddress);  // base32 format + checksum
 ```
 
 ---
@@ -337,8 +371,11 @@ const isValid = ALGORAND_ADDRESS_REGEX.test(someAddress);
 import { isValidAlgorandAddress } from "@x402/avm";
 
 // Full validation (format + checksum)
-isValidAlgorandAddress("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+isValidAlgorandAddress("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY5HFKQ");
 // => true (zero address)
+
+isValidAlgorandAddress("A".repeat(58));
+// => false (bad checksum)
 
 isValidAlgorandAddress("invalid");
 // => false
@@ -356,6 +393,7 @@ convertToTokenAmount("1.50", 6);    // => "1500000"
 convertToTokenAmount("0.10", 6);    // => "100000"
 convertToTokenAmount("100", 6);     // => "100000000"
 convertToTokenAmount("0.000001", 6); // => "1"
+convertToTokenAmount("0.0000001", 6); // => "0" (extra digits are truncated, not rounded)
 
 // Atomic units to decimal
 convertFromTokenAmount("1500000", 6);   // => "1.5"
@@ -384,11 +422,11 @@ const bytes = decodeTransaction(base64Str);
 
 // Decode a signed transaction from base64
 const signedTxn = decodeSignedTransaction(base64Str);
-// => SignedTransaction object
+// => SignedTransaction object (algokit-utils)
 
 // Decode an unsigned transaction from base64
 const unsignedTxn = decodeUnsignedTransaction(base64Str);
-// => Transaction object
+// => Transaction object (algokit-utils)
 ```
 
 ### Network Utilities
@@ -398,51 +436,48 @@ import {
   getNetworkFromCaip2,
   isAlgorandNetwork,
   isTestnetNetwork,
-  v1ToCaip2,
-  caip2ToV1,
-  createAlgodClient,
+  normalizeAlgorandNetwork,
+  toFacilitatorAvmSigner,
+  ALGORAND_MAINNET_CAIP2,
+  ALGORAND_TESTNET_CAIP2,
+  ALGORAND_TESTNET_GENESIS_HASH,
 } from "@x402/avm";
 
-// Determine network type from CAIP-2
-getNetworkFromCaip2("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
+// Determine network type from CAIP-2 (legacy full-hash ids are normalized first)
+getNetworkFromCaip2(ALGORAND_TESTNET_CAIP2);
 // => "testnet"
 
-getNetworkFromCaip2("algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");
+getNetworkFromCaip2(ALGORAND_MAINNET_CAIP2);
 // => "mainnet"
 
 getNetworkFromCaip2("eip155:8453");
 // => null (not Algorand)
 
-// Check if Algorand
-isAlgorandNetwork("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
+// Check if Algorand (CAIP-2 "algorand:" prefix)
+isAlgorandNetwork(ALGORAND_TESTNET_CAIP2);
 // => true
 
 isAlgorandNetwork("algorand-testnet");
-// => true (V1 format also recognized)
+// => false (V1 names are not recognized)
 
 isAlgorandNetwork("eip155:8453");
 // => false
 
 // Check testnet
-isTestnetNetwork("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
+isTestnetNetwork(ALGORAND_TESTNET_CAIP2);
 // => true
 
-// Convert V1 <-> CAIP-2
-v1ToCaip2("algorand-testnet");
-// => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+// Normalize a legacy full-hash id to the canonical CAIP-2 id
+normalizeAlgorandNetwork(`algorand:${ALGORAND_TESTNET_GENESIS_HASH}`);
+// => "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
 
-caip2ToV1("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
-// => "algorand-testnet"
+normalizeAlgorandNetwork("algorand-testnet");
+// throws "Unsupported Algorand network: algorand-testnet"
 
-// Create Algod client
-const algod = createAlgodClient("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=");
-// Uses DEFAULT_ALGOD_TESTNET automatically
-
-const customAlgod = createAlgodClient(
-  "algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
-  "https://my-custom-node.example.com",
-  "my-api-token",
-);
+// Get an Algod client for a network (AlgodClient from algokit-utils)
+const facilitatorSigner = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!);
+const algod = facilitatorSigner.getAlgodClient(ALGORAND_TESTNET_CAIP2);
+// Without a signer: AlgorandClient.testNet().client.algod
 ```
 
 ### Transaction Inspection
@@ -453,25 +488,31 @@ import {
   getTransactionId,
   hasSignature,
   getGenesisHashFromTransaction,
+  decodeUnsignedTransaction,
   validateGroupId,
-  assignGroupId,
 } from "@x402/avm";
+import { groupTransactions } from "@algorandfoundation/algokit-utils/transact";
 
 // Get sender from transaction bytes
-const sender = getSenderFromTransaction(signedTxnBytes, true);  // signed
+const sender = getSenderFromTransaction(signedTxnBytes, true);  // signed (default)
 const senderUnsigned = getSenderFromTransaction(unsignedTxnBytes, false);
 
-// Get transaction ID
+// Get transaction ID (from signed transaction bytes)
 const txId = getTransactionId(signedTxnBytes);
 
-// Check if signed
-const signed = hasSignature(txnBytes);  // true/false
+// Check if signed (sig, msig or lsig present)
+const signed = hasSignature(signedTxnBytes);  // true/false
 
-// Validate group ID consistency
+// Full genesis hash of a transaction (the `gh` field, not the CAIP-2 id)
+const genesisHash = getGenesisHashFromTransaction(decodeUnsignedTransaction(unsignedTxnBase64));
+// => "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=" on TestNet
+
+// Validate group ID consistency (unsigned transaction bytes)
 const allMatch = validateGroupId([txn1Bytes, txn2Bytes, txn3Bytes]);
 
-// Assign group ID to transactions
-const groupedTxns = assignGroupId([txn1, txn2, txn3]);
+// Assign a group ID: @x402/avm has no helper for this; use algokit-utils
+// (takes Transaction objects without a group, returns new grouped Transactions)
+const groupedTxns = groupTransactions([txn1, txn2, txn3]);
 ```
 
 ---
@@ -479,6 +520,8 @@ const groupedTxns = assignGroupId([txn1, txn2, txn3]);
 ## Transaction Group Creation and Signing
 
 ### Simple Payment Group
+
+Without `extra.feePayer` in the payment requirements, `ExactAvmScheme` builds a single-transaction group: the client's asset transfer (`axfer`) to `payTo`, paying its own fee from the node's suggested params, with `paymentIndex` 0.
 
 ### Fee-Abstracted Payment Group
 
@@ -490,14 +533,15 @@ const groupedTxns = assignGroupId([txn1, txn2, txn3]);
 import { toClientAvmSigner } from "@x402/avm";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 import { x402Client } from "@x402/core/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
-const client = new x402Client({ schemes: [] });
-client.register("algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=", new ExactAvmScheme(signer));
+const client = new x402Client().register("algorand:*", new ExactAvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
 // The client automatically builds and signs the correct transaction group
 // (single payment or 2-transaction fee-abstracted group) based on server requirements.
-const response = await client.fetch("https://api.example.com/paid-resource");
+const response = await fetchWithPayment("https://api.example.com/paid-resource");
 ```
 
 ---
@@ -510,38 +554,44 @@ In x402-avm, fee abstraction allows the **facilitator** to pay transaction fees 
 
 **Flow:**
 
-1. Client creates a 2-transaction atomic group:
-   - Transaction 0: USDC transfer from client to resource owner (fee = 0)
-   - Transaction 1: Self-payment by fee payer (fee covers both transactions)
-2. Client signs Transaction 0 (their USDC transfer)
-3. Transaction 1 is left unsigned (for the facilitator to sign)
-4. Client sends both in the `paymentGroup` array
-5. Facilitator verifies, signs Transaction 1, and submits the atomic group
+1. The resource server copies the facilitator's fee payer address (`/supported` → `kinds[].extra.feePayer`) into `PaymentRequirements.extra.feePayer`
+2. Client creates a 2-transaction atomic group:
+   - Transaction 0: fee payer `pay` transaction, sender = receiver = `feePayer`, amount 0, note `x402-fee-payer-<timestamp>`. Its fee covers the whole group: each transaction's fee is `max(fee_per_byte × encoded size, min_fee)`, summed over the group
+   - Transaction 1: USDC `axfer` from the client to `payTo`, fee 0, note `x402-payment-v2-<timestamp>`
+3. Client signs Transaction 1 (their USDC transfer)
+4. Transaction 0 is left unsigned (for the facilitator to sign)
+5. Client sends both in the `paymentGroup` array with `paymentIndex: 1`
+6. Facilitator verifies, signs Transaction 0, simulates, submits the atomic group and waits for on-chain confirmation
 
-**Security guarantees:**
-- Fee payer transaction is validated to be a self-payment with amount=0
-- No rekey, close-to, or other dangerous operations
-- Fee is capped at a reasonable maximum
+**Security guarantees (facilitator checks):**
+- Unsigned transactions are accepted only from the facilitator's own addresses; all transactions must share one group ID; groups larger than 16 are rejected
+- The payer cannot be a facilitator address
+- The payment transaction must be an `axfer` matching `amount`, `payTo` and `asset`, and must be signed (Ed25519 signatures are checked against the sender)
+- Fee payer transaction is validated to be a `pay` self-payment (receiver = sender) with amount=0
+- No `rekeyTo` or `closeRemainderTo` on the fee payer transaction
+- Fee is capped at `maxReasonableGroupFee(groupSize)`: 5000 µAlgo per transaction in the group (10,000 µAlgo for a 2-transaction group)
+- The signed group must pass algod simulation before settlement
 - Atomic group ensures all-or-nothing execution
 
 ### Client-Side Fee Abstraction
 
 ```typescript
-import { toClientAvmSigner, ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
+import { toClientAvmSigner } from "@x402/avm";
 import { x402Client } from "@x402/core/client";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
-const client = new x402Client({ schemes: [] });
-registerExactAvmScheme(client, { signer });
+const client = new x402Client().register("algorand:*", new ExactAvmScheme(signer));
+const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
 // Fee abstraction is handled automatically when the server's
-// PaymentRequirements include a feePayer address. The scheme:
-// 1. Creates a 2-transaction group (payment + fee payer)
+// PaymentRequirements include extra.feePayer. The scheme:
+// 1. Creates a 2-transaction group (fee payer txn at index 0, payment at index 1)
 // 2. Signs only the payment transaction via signer
 // 3. Sends both transactions in the payload
 // The facilitator signs the fee payer transaction during settlement.
-const response = await client.fetch("https://api.example.com/paid-resource");
+const response = await fetchWithPayment("https://api.example.com/paid-resource");
 ```
 
 ---
@@ -552,59 +602,59 @@ const response = await client.fetch("https://api.example.com/paid-resource");
 
 ```typescript
 import { x402Client } from "@x402/core/client";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const client = new x402Client({ schemes: [] });
+const client = new x402Client();
 
-registerExactAvmScheme(client, {
-  signer: myClientSigner,
-  algodConfig: {
-    algodUrl: "https://testnet-api.algonode.cloud",
-  },
-  // Optional: specific networks only
-  networks: ["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="],
-  // Optional: payment policies
-  policies: [preferTestnetPolicy],
-});
+// All Algorand networks (wildcard)
+client.register("algorand:*", new ExactAvmScheme(myClientSigner));
+
+// Or: specific network only, with an optional custom Algod endpoint (ClientAvmConfig)
+client.register(
+  ALGORAND_TESTNET_CAIP2,
+  new ExactAvmScheme(myClientSigner, { algodUrl: "https://testnet-api.algonode.cloud" }),
+);
+
+// Optional: payment policies
+client.registerPolicy(preferTestnetPolicy);
 ```
 
 ### Server Registration
 
 ```typescript
 import { x402ResourceServer } from "@x402/core/server";
-import { registerExactAvmScheme } from "@x402/avm/exact/server";
+import { ExactAvmScheme } from "@x402/avm/exact/server";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
 const server = new x402ResourceServer(facilitatorClient);
 
-registerExactAvmScheme(server, {
-  // Optional: specific networks
-  networks: ["algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="],
-});
+// Specific network
+server.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme());
 
-// Or with wildcard (default)
-registerExactAvmScheme(server);  // registers algorand:*
+// Or with wildcard (all Algorand networks)
+server.register("algorand:*", new ExactAvmScheme());
 ```
+
+The server scheme copies `feePayer` from the facilitator's supported kinds into `PaymentRequirements.extra`, and resolves Money prices (`"$0.10"`) to USDC. Custom conversions can be added with `registerMoneyParser()`.
 
 ### Facilitator Registration
 
 ```typescript
 import { x402Facilitator } from "@x402/core/facilitator";
-import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
 import { ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 const facilitator = new x402Facilitator();
 
 // Single network
-registerExactAvmScheme(facilitator, {
-  signer: myFacilitatorSigner,
-  networks: ALGORAND_TESTNET_CAIP2,
-});
+facilitator.register(ALGORAND_TESTNET_CAIP2, new ExactAvmScheme(myFacilitatorSigner));
 
 // Multiple networks
-registerExactAvmScheme(facilitator, {
-  signer: myFacilitatorSigner,
-  networks: [ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2],
-});
+facilitator.register(
+  [ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2],
+  new ExactAvmScheme(myFacilitatorSigner),
+);
 ```
 
 ---
@@ -613,26 +663,30 @@ registerExactAvmScheme(facilitator, {
 
 ### Browser Client with Wallet
 
-A complete browser application using Pera Wallet to pay for API access.
+A complete browser application using Pera Wallet to pay for API access (`@txnlab/use-wallet-react` v4).
 
 ```typescript
 // app.tsx
 import React, { useState, useCallback } from "react";
 import { x402Client } from "@x402/core/client";
-import { registerExactAvmScheme } from "@x402/avm/exact/client";
+import { wrapFetchWithPayment } from "@x402/fetch";
+import { ExactAvmScheme } from "@x402/avm/exact/client";
 import type { ClientAvmSigner } from "@x402/avm";
 import {
   WalletProvider,
+  WalletManager,
   useWallet,
   WalletId,
+  NetworkId,
 } from "@txnlab/use-wallet-react";
 
-const walletProviders = {
+const walletManager = new WalletManager({
   wallets: [WalletId.PERA, WalletId.DEFLY],
-};
+  defaultNetwork: NetworkId.TESTNET,
+});
 
 function PayForWeather() {
-  const { activeAccount, signTransactions, connect, disconnect } = useWallet();
+  const { wallets, activeWallet, activeAccount, signTransactions } = useWallet();
   const [weather, setWeather] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -647,10 +701,10 @@ function PayForWeather() {
           signTransactions(txns, indexes),
       };
 
-      const client = new x402Client({ schemes: [] });
-      registerExactAvmScheme(client, { signer });
+      const client = new x402Client().register("algorand:*", new ExactAvmScheme(signer));
+      const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
-      const response = await client.fetch(
+      const response = await fetchWithPayment(
         "https://api.example.com/weather"
       );
 
@@ -667,12 +721,14 @@ function PayForWeather() {
     }
   }, [activeAccount, signTransactions]);
 
+  const pera = wallets.find((wallet) => wallet.id === WalletId.PERA);
+
   return (
     <div>
       <h1>Weather API (Paid with USDC on Algorand)</h1>
 
       {!activeAccount ? (
-        <button onClick={() => connect(WalletId.PERA)}>
+        <button onClick={() => pera?.connect()}>
           Connect Pera Wallet
         </button>
       ) : (
@@ -681,7 +737,7 @@ function PayForWeather() {
           <button onClick={fetchWeather} disabled={loading}>
             {loading ? "Paying..." : "Get Weather (0.10 USDC)"}
           </button>
-          <button onClick={disconnect}>Disconnect</button>
+          <button onClick={() => activeWallet?.disconnect()}>Disconnect</button>
         </div>
       )}
 
@@ -694,7 +750,7 @@ function PayForWeather() {
 
 export default function App() {
   return (
-    <WalletProvider value={walletProviders}>
+    <WalletProvider manager={walletManager}>
       <PayForWeather />
     </WalletProvider>
   );
@@ -709,7 +765,8 @@ A complete Express.js facilitator service.
 // facilitator-service.ts
 import express from "express";
 import { x402Facilitator } from "@x402/core/facilitator";
-import { registerExactAvmScheme } from "@x402/avm/exact/facilitator";
+import type { PaymentPayload, PaymentRequirements } from "@x402/core/types";
+import { ExactAvmScheme } from "@x402/avm/exact/facilitator";
 import { toFacilitatorAvmSigner, ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2 } from "@x402/avm";
 
 const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
@@ -720,11 +777,10 @@ const signer = toFacilitatorAvmSigner(process.env.AVM_PRIVATE_KEY!, {
 console.log("Fee payer address:", signer.getAddresses()[0]);
 
 // Setup facilitator
-const facilitator = new x402Facilitator();
-registerExactAvmScheme(facilitator, {
-  signer,
-  networks: [ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2],
-});
+const facilitator = new x402Facilitator().register(
+  [ALGORAND_TESTNET_CAIP2, ALGORAND_MAINNET_CAIP2],
+  new ExactAvmScheme(signer),
+);
 
 // Express app
 const app = express();
@@ -732,7 +788,8 @@ app.use(express.json({ limit: "1mb" }));
 
 app.get("/supported", async (_req, res) => {
   try {
-    res.json(facilitator.getSupportedNetworks());
+    // { kinds: [{ x402Version, scheme, network, extra: { feePayer } }], extensions, signers }
+    res.json(facilitator.getSupported());
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
@@ -740,7 +797,10 @@ app.get("/supported", async (_req, res) => {
 
 app.post("/verify", async (req, res) => {
   try {
-    const { paymentPayload, paymentRequirements } = req.body;
+    const { paymentPayload, paymentRequirements } = req.body as {
+      paymentPayload: PaymentPayload;
+      paymentRequirements: PaymentRequirements;
+    };
     const result = await facilitator.verify(paymentPayload, paymentRequirements);
     res.json(result);
   } catch (err) {
@@ -750,7 +810,11 @@ app.post("/verify", async (req, res) => {
 
 app.post("/settle", async (req, res) => {
   try {
-    const { paymentPayload, paymentRequirements } = req.body;
+    const { paymentPayload, paymentRequirements } = req.body as {
+      paymentPayload: PaymentPayload;
+      paymentRequirements: PaymentRequirements;
+    };
+    // Re-verifies, signs the fee payer txn, submits and waits for confirmation
     const result = await facilitator.settle(paymentPayload, paymentRequirements);
     res.json(result);
   } catch (err) {
@@ -775,11 +839,13 @@ app.listen(PORT, () => {
 | Package | `@x402/avm` |
 | Client Signer | `ClientAvmSigner` interface |
 | Facilitator Signer | `FacilitatorAvmSigner` interface |
-| Network Constants | `ALGORAND_TESTNET_CAIP2` |
-| USDC Config | `USDC_CONFIG[network]` |
+| Network Constants | `ALGORAND_TESTNET_CAIP2`, `ALGORAND_MAINNET_CAIP2` |
+| Legacy id normalization | `normalizeAlgorandNetwork(network)` |
+| USDC Config | `getDefaultAsset(network)` / `USDC_TESTNET_ASA_ID` |
 | Address Validation | `isValidAlgorandAddress(addr)` |
 | Amount Conversion | `convertToTokenAmount("1.5", 6)` |
-| Algod Client | `createAlgodClient(network)` |
+| Algod Client | `facilitatorSigner.getAlgodClient(network)` |
 | Encode Txn | `encodeTransaction(bytes)` |
 | Decode Txn | `decodeTransaction(b64)` |
 | Signer Factory | `toClientAvmSigner(key)` / `toFacilitatorAvmSigner(key)` |
+| Scheme Registration | `new ExactAvmScheme(...)` from `@x402/avm/exact/client`, `/exact/server`, `/exact/facilitator` |

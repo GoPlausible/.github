@@ -148,9 +148,10 @@ Discovery extensions integrate with route configs through the `extensions` field
 from x402.extensions.bazaar import declare_discovery_extension, OutputConfig
 from x402.http import PaymentOption
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.schemas import Network
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2  # Algorand TestNet
 AVM_ADDRESS = "YOUR_ALGORAND_ADDRESS..."
 
 routes = {
@@ -190,6 +191,8 @@ routes = {
 
 The `**declare_discovery_extension(...)` spread merges the `{"bazaar": {...}}` dict into the `extensions` dict of the route config.
 
+> **Network ids**: `ALGORAND_TESTNET_CAIP2` is the CAIP-2 id `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` (MainNet: `ALGORAND_MAINNET_CAIP2`, `algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73k`) in x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition. Use the package constants rather than hardcoded strings.
+
 ### Multi-chain route (Algorand + EVM)
 
 ```python
@@ -200,7 +203,7 @@ routes = {
                 scheme="exact",
                 pay_to=AVM_ADDRESS,
                 price="$0.001",
-                network="algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+                network=AVM_NETWORK,  # ALGORAND_TESTNET_CAIP2
             ),
             PaymentOption(
                 scheme="exact",
@@ -239,13 +242,14 @@ The `bazaar_resource_server_extension` is a server-side extension that enriches 
 from x402.server import x402ResourceServer
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient
 from x402.extensions.bazaar import bazaar_resource_server_extension
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import Network
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 
 facilitator = HTTPFacilitatorClient(
-    FacilitatorConfig(url="https://x402.org/facilitator")
+    FacilitatorConfig(url="https://facilitator.goplausible.xyz")
 )
 server = x402ResourceServer(facilitator)
 server.register(AVM_NETWORK, ExactAvmServerScheme())
@@ -258,18 +262,21 @@ server.register_extension(bazaar_resource_server_extension)
 from x402.server import x402ResourceServerSync
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync
 from x402.extensions.bazaar import bazaar_resource_server_extension
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import Network
 
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2
 
 facilitator = HTTPFacilitatorClientSync(
-    FacilitatorConfig(url="https://x402.org/facilitator")
+    FacilitatorConfig(url="https://facilitator.goplausible.xyz")
 )
 server = x402ResourceServerSync(facilitator)
 server.register(AVM_NETWORK, ExactAvmServerScheme())
 server.register_extension(bazaar_resource_server_extension)
 ```
+
+> **Facilitator**: the examples use the GoPlausible facilitator (`https://facilitator.goplausible.xyz`), which supports Algorand MainNet and TestNet and catalogs `bazaar` resources from settled payments. During the CAIP-2 transition its `/supported` response lists the canonical Algorand ids first and the legacy full-hash ids (used by x402-avm 2.0.2) as well; both are accepted on `/verify` and `/settle`.
 
 What the extension does at runtime:
 
@@ -278,7 +285,7 @@ What the extension does at runtime:
 3. It injects the method into `info.input.method` and updates the schema to require it.
 4. The enriched extension is included in the 402 Payment Required response.
 
-> **Note**: The FastAPI and Flask middlewares (`PaymentMiddlewareASGI` and `payment_middleware`) handle passing the request context to the extension automatically.
+> **Note**: The FastAPI and Flask middlewares (`PaymentMiddlewareASGI` and `payment_middleware`) handle passing the request context to the extension automatically. They also register `bazaar_resource_server_extension` on the server by themselves when any route declares a `"bazaar"` extension, so the explicit `register_extension` call is optional when you use them.
 
 ---
 
@@ -339,7 +346,7 @@ class ValidationResult:
 The main extraction function handles both v2 (extensions in `PaymentPayload`) and v1 (output_schema in `PaymentRequirements`) formats:
 
 ```python
-from x402.extensions.bazaar import extract_discovery_info
+from x402.extensions.bazaar import BodyDiscoveryInfo, extract_discovery_info
 
 # Called by the facilitator when processing a payment
 # payment_payload: PaymentPayload or dict
@@ -359,10 +366,10 @@ if discovered:
 
     # Access the discovery info details
     info = discovered.discovery_info
-    if hasattr(info.input, "query_params"):
-        print(f"Query params: {info.input.query_params}")
-    elif hasattr(info.input, "body"):
+    if isinstance(info, BodyDiscoveryInfo):  # POST/PUT/PATCH
         print(f"Body: {info.input.body}")
+    else:  # QueryDiscoveryInfo: GET/HEAD/DELETE
+        print(f"Query params: {info.input.query_params}")
 
     if info.output:
         print(f"Output example: {info.output.example}")
@@ -416,15 +423,15 @@ else:
 
 ## 8. Querying Discovery Resources (Client Side)
 
-The `with_bazaar` function extends a facilitator client with discovery query capabilities:
+The `with_bazaar` function extends a facilitator client with discovery query capabilities. `list_resources()` is synchronous, so wrap the sync `HTTPFacilitatorClientSync` (in x402-avm 2.0.2, wrapping the async `HTTPFacilitatorClient` fails with `AttributeError: 'HTTPFacilitatorClient' object has no attribute '_get_client'`):
 
 ```python
-from x402.http import HTTPFacilitatorClient, FacilitatorConfig
+from x402.http import HTTPFacilitatorClientSync, FacilitatorConfig
 from x402.extensions.bazaar import with_bazaar, ListDiscoveryResourcesParams
 
 # Create a facilitator client and extend it with bazaar
-facilitator = HTTPFacilitatorClient(
-    FacilitatorConfig(url="https://x402.org/facilitator")
+facilitator = HTTPFacilitatorClientSync(
+    FacilitatorConfig(url="https://facilitator.goplausible.xyz")
 )
 client = with_bazaar(facilitator)
 
@@ -453,6 +460,25 @@ The extended client delegates all original facilitator client methods transparen
 # These still work -- delegated to the wrapped client
 supported = client.get_supported()
 ```
+
+> **Known issue (x402-avm 2.0.2)**: `list_resources()` parses a top-level `resources` array (plus `total`/`limit`/`offset`), but the x402 V2 discovery response (`GET /discovery/resources`, x402 V2 specification section 8.1), which facilitator.goplausible.xyz returns, is `{"x402Version": 2, "items": [...], "pagination": {"limit": ..., "offset": ..., "total": ...}}`. Against such a facilitator `response.resources` comes back empty and `response.total` is `None`. Until the SDK parses `items`, query the endpoint directly:
+>
+> ```python
+> import httpx
+>
+> with httpx.Client(timeout=30.0) as http:
+>     resp = http.get(
+>         "https://facilitator.goplausible.xyz/discovery/resources",
+>         params={"type": "http", "limit": 10, "offset": 0},
+>         headers={"Accept": "application/json"},
+>     )
+>     resp.raise_for_status()
+>     data = resp.json()
+>
+> for item in data["items"]:
+>     print(item["accepts"])  # PaymentRequirements[] for the resource
+> print(f"Total resources: {data['pagination']['total']}")
+> ```
 
 ---
 
@@ -483,6 +509,7 @@ from x402.extensions.bazaar import (
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import Network
 from x402.server import x402ResourceServer
@@ -491,8 +518,8 @@ load_dotenv()
 
 # Configuration
 AVM_ADDRESS = os.environ["AVM_ADDRESS"]
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
-FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://x402.org/facilitator")
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2  # Algorand TestNet
+FACILITATOR_URL = os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")
 
 
 # Response models
@@ -582,28 +609,29 @@ if __name__ == "__main__":
 ```python
 """Client that discovers and calls the Algorand-gated weather API."""
 
-import httpx
-
-from x402.http import FacilitatorConfig, HTTPFacilitatorClient
+from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync
 from x402.extensions.bazaar import with_bazaar, ListDiscoveryResourcesParams
 
-FACILITATOR_URL = "https://x402.org/facilitator"
+FACILITATOR_URL = "https://facilitator.goplausible.xyz"
 
 # Step 1: Discover available resources via the facilitator
-facilitator = HTTPFacilitatorClient(FacilitatorConfig(url=FACILITATOR_URL))
+facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(url=FACILITATOR_URL))
 client = with_bazaar(facilitator)
 
 resources = client.extensions.discovery.list_resources(
     ListDiscoveryResourcesParams(type="http", limit=50)
 )
 
+# Note: with x402-avm 2.0.2 this list is empty against a V2-spec facilitator
+# (see the known issue in section 8 for a direct GET /discovery/resources)
 for resource in resources.resources:
     print(f"Discovered: {resource.url} ({resource.type})")
     if resource.metadata:
         print(f"  Metadata: {resource.metadata}")
 
 # Step 2: Make a paid request to the weather API
-# (Payment handling with x402Client is covered in the core SDK examples)
+# (Payment handling with x402Client and x402HttpxClient is covered in x402-avm-httpx-examples-python.md;
+#  set an httpx timeout of ~30 s, since settlement waits for on-chain confirmation)
 ```
 
 ### Flask variant (synchronous)
@@ -624,6 +652,7 @@ from x402.extensions.bazaar import (
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.schemas import Network
 from x402.server import x402ResourceServerSync
@@ -631,12 +660,12 @@ from x402.server import x402ResourceServerSync
 load_dotenv()
 
 AVM_ADDRESS = os.environ["AVM_ADDRESS"]
-AVM_NETWORK: Network = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+AVM_NETWORK: Network = ALGORAND_TESTNET_CAIP2  # Algorand TestNet
 
 app = Flask(__name__)
 
 facilitator = HTTPFacilitatorClientSync(
-    FacilitatorConfig(url=os.getenv("FACILITATOR_URL", "https://x402.org/facilitator"))
+    FacilitatorConfig(url=os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz"))
 )
 server = x402ResourceServerSync(facilitator)
 server.register(AVM_NETWORK, ExactAvmServerScheme())
@@ -752,7 +781,7 @@ if __name__ == "__main__":
 | `extract_discovery_info(payload, requirements, validate)` | `from x402.extensions.bazaar import extract_discovery_info` | Extract discovery info from payment request (v1 + v2) |
 | `extract_discovery_info_from_extension(extension, validate)` | `from x402.extensions.bazaar import extract_discovery_info_from_extension` | Extract info from an extension object directly |
 | `validate_and_extract(extension)` | `from x402.extensions.bazaar import validate_and_extract` | Validate and extract in one step |
-| `with_bazaar(client)` | `from x402.extensions.bazaar import with_bazaar` | Extend facilitator client with discovery queries |
+| `with_bazaar(client)` | `from x402.extensions.bazaar import with_bazaar` | Extend a facilitator client (`HTTPFacilitatorClientSync`) with discovery queries |
 | `parse_discovery_extension(data)` | `from x402.extensions.bazaar.types import parse_discovery_extension` | Parse raw dict into typed extension |
 | `parse_discovery_info(data)` | `from x402.extensions.bazaar.types import parse_discovery_info` | Parse raw dict into typed info |
 | `is_query_method(method)` | `from x402.extensions.bazaar.types import is_query_method` | Check if method is GET/HEAD/DELETE |
@@ -775,8 +804,8 @@ if __name__ == "__main__":
 | **Extract (facilitator)** | `extract_discovery_info(payload, requirements)` returns `DiscoveredResource` |
 | **Extract (direct)** | `extract_discovery_info_from_extension(extension)` returns `DiscoveryInfo` |
 | **Validate + extract** | `validate_and_extract(extension)` returns `ValidationExtractResult` |
-| **Client discovery** | `with_bazaar(client).extensions.discovery.list_resources()` |
-| **Algorand network ID** | `"algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="` (Testnet) |
+| **Client discovery** | `with_bazaar(HTTPFacilitatorClientSync(...)).extensions.discovery.list_resources()` (see the 2.0.2 known issue in section 8) |
+| **Algorand network ID** | `ALGORAND_TESTNET_CAIP2` from `x402.mechanisms.avm` (TestNet, `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe` in x402-avm >= 2.0.3; 2.0.2 and earlier use the legacy full-hash form, which facilitator.goplausible.xyz still accepts during the transition) |
 
 ---
 
