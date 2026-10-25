@@ -16,10 +16,7 @@
 - [Payment Flow](#payment-flow)
 - [Schema and Types](#schema-and-types)
 - [Environment Setup](#environment-setup)
-- [Algorand x402 Legacy V2 Using AlgoSDK (archived)](../archive/algorand-x402-documentation/V2_Algosdk_legacy/typescript)
-- [x402 Legacy V1 NPM Packages for Algorand (AVM) implementation](#x402-legacy-v1-npm-packages-for-algorand-avm-implementation)
-- [x402 Legacy V1 Package-Specific Examples](#x402-legacy-v1-package-specific-examples)
-- [Algorand x402 Legacy V1 Screencast (archived)](../archive/algorand-x402-documentation/v1/x402-screencast.md)
+
 
 ## Introduction
 
@@ -578,24 +575,4 @@ pip install x402-avm[avm,requests]
 pip install x402-avm[all]
 ```
 
-## x402 Legacy V1 NPM Packages for Algorand (AVM) implementation:
 
-> Legacy and no longer maintained — use the V2 `@x402/*` packages above.
-
-- [x402 Core Package](https://www.npmjs.com/package/x402-avm)
-- [x402-express Package](https://www.npmjs.com/package/x402-avm-express)
-- [x402-hono Package](https://www.npmjs.com/package/x402-avm-hono)
-- [x402-next Package](https://www.npmjs.com/package/x402-avm-next)
-- [x402-fetch Package](https://www.npmjs.com/package/x402-avm-fetch)
-- [x402-axios Package](https://www.npmjs.com/package/x402-avm-axios)
-
-This guide provides comprehensive documentation and examples for using the x402 protocol with Algorand (AVM) across various packages.
-
-## x402 Legacy V1 Package-Specific Examples
-
-- [x402 V1 Core Package Examples](../archive/algorand-x402-documentation/v1/x402-v1-core-examples.md)
-- [x402 V1 Express Examples](../archive/algorand-x402-documentation/v1/x402-v1-express-examples.md)
-- [x402 V1 Hono Examples](../archive/algorand-x402-documentation/v1/x402-v1-hono-examples.md)
-- [x402 V1 Next Examples](../archive/algorand-x402-documentation/v1/x402-v1-next-examples.md)
-- [x402 V1 Fetch Examples](../archive/algorand-x402-documentation/v1/x402-v1-fetch-examples.md)
-- [x402 V1 Axios Examples](../archive/algorand-x402-documentation/v1/x402-v1-axios-examples.md)
