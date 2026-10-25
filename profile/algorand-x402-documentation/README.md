@@ -293,7 +293,7 @@ Use the SDK constants rather than hardcoding the strings (`@x402/avm` >= 2.20.0,
 
 > **Migration note:** earlier releases used the full base64 genesis hash as the reference (`algorand:wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=`, `algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=`), which is not valid CAIP-2. The GoPlausible facilitator still accepts that legacy form during the transition; upcoming upstream SDK releases reject it ([x402 PR #3894](https://github.com/x402-foundation/x402/pull/3894)). Upgrade to the versions above and use the constants.
 
-V1 network names (`algorand-mainnet`, `algorand-testnet`) belong to the legacy V1 protocol. Upstream `@x402/avm` is V2-only; the Python `x402-avm` package and the GoPlausible facilitator still accept the V1 names.
+V1 network names (`algorand-mainnet`, `algorand-testnet`) belong to the legacy V1 protocol. Upstream `@x402/avm` is V2-only; the Python `x402-avm` package and the GoPlausible facilitator still accept the V1 names as a backward compatibility measure.
 
 ### PaymentRequirements
 
