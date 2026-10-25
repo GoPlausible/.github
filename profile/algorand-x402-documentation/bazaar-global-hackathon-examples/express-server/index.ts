@@ -1,11 +1,12 @@
 import "dotenv/config";
 import express from "express";
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 import { ExactAvmScheme } from "@x402/avm/exact/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 
-const ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
+const ALGORAND_TESTNET = ALGORAND_TESTNET_CAIP2; // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
 
 // Keep serving no matter what a single request/settle does — log and carry on.
 process.on("uncaughtException", (err) => console.error("❌ uncaught exception:", err));

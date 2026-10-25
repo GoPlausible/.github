@@ -59,7 +59,8 @@ print("→ requesting", url)
 
 
 async def main() -> None:
-    async with x402HttpxClient(client) as http:
+    # settling waits for on-chain confirmation (~5 s) — allow more than httpx's 5 s default
+    async with x402HttpxClient(client, timeout=30.0) as http:
         res = await http.get(url)
         print("←", res.status_code)
         print("body:", (await res.aread()).decode())  # paid, verified, settled — one call

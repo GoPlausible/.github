@@ -1,10 +1,10 @@
 import "dotenv/config";
 import axios from "axios";
 import { x402Client, x402HTTPClient, wrapAxiosWithPayment } from "@x402/axios";
-import { toClientAvmSigner } from "@x402/avm";
+import { ALGORAND_TESTNET_CAIP2, toClientAvmSigner } from "@x402/avm";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
 
-const ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
+const ALGORAND_TESTNET = ALGORAND_TESTNET_CAIP2; // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
 
 const signer = toClientAvmSigner(process.env.AVM_PRIVATE_KEY!);
 console.log("buyer account:", signer.address);

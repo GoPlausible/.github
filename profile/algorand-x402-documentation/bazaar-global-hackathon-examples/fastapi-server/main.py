@@ -9,10 +9,11 @@ from x402 import AssetAmount
 from x402.http import FacilitatorConfig, HTTPFacilitatorClient, PaymentOption
 from x402.http.middleware.fastapi import PaymentMiddlewareASGI
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.server import x402ResourceServer
 
-ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+ALGORAND_TESTNET = ALGORAND_TESTNET_CAIP2
 
 facilitator = HTTPFacilitatorClient(FacilitatorConfig(
     url=os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")))

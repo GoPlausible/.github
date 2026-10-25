@@ -72,7 +72,7 @@ async def main():
     # ... register schemes ...
 
     # 2. Create the httpx client with payment handling
-    async with x402HttpxClient(x402) as client:
+    async with x402HttpxClient(x402, timeout=30.0) as client:
         response = await client.get("https://api.example.com/paid-resource")
         print(response.status_code)
         print(response.text)
@@ -291,7 +291,7 @@ async def main():
         "RESOURCE_URL", "https://api.example.com/paid-resource"
     )
 
-    async with x402HttpxClient(x402) as client:
+    async with x402HttpxClient(x402, timeout=30.0) as client:
         response = await client.get(resource_url)
         await response.aread()
 
@@ -373,7 +373,7 @@ from x402.http.clients.httpx import (
     MissingRequestConfigError,      # Missing request configuration
 )
 
-async with x402HttpxClient(x402) as client:
+async with x402HttpxClient(x402, timeout=30.0) as client:
     try:
         response = await client.get("https://api.example.com/paid")
     except PaymentAlreadyAttemptedError:

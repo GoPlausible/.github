@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useWallet } from "@txnlab/use-wallet-react";
 import { x402Client, x402HTTPClient, wrapFetchWithPayment } from "@x402/fetch";
 import { ExactAvmScheme } from "@x402/avm/exact/client";
+import { ALGORAND_TESTNET_CAIP2 } from "@x402/avm";
 
-const ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=";
+const ALGORAND_TESTNET = ALGORAND_TESTNET_CAIP2; // "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDe"
 
 // The paid endpoint — /my-api is proxied to the local server example by Vite.
 const URL_TO_PAY = import.meta.env.VITE_RESOURCE_SERVER_URL || "/my-api";

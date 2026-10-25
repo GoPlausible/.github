@@ -9,10 +9,11 @@ from x402 import AssetAmount
 from x402.http import FacilitatorConfig, HTTPFacilitatorClientSync, PaymentOption
 from x402.http.middleware.flask import payment_middleware
 from x402.http.types import RouteConfig
+from x402.mechanisms.avm import ALGORAND_TESTNET_CAIP2
 from x402.mechanisms.avm.exact import ExactAvmServerScheme
 from x402.server import x402ResourceServerSync
 
-ALGORAND_TESTNET = "algorand:SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="
+ALGORAND_TESTNET = ALGORAND_TESTNET_CAIP2
 
 facilitator = HTTPFacilitatorClientSync(FacilitatorConfig(
     url=os.getenv("FACILITATOR_URL", "https://facilitator.goplausible.xyz")))
