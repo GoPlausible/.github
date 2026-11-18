@@ -99,7 +99,7 @@ PLAUSIBLE is a W3C Compliant DIDs, Verifiable Credentials, OpenBadges, and smart
 
 - [PLAUSIBLE protocol dApp](https://goplausible.xyz)
 - [PLAUSIBLE Protocol API Docs guide](./README_API.md)
-- [PLAUSIBLE Protocol OpenAPI Docs](https://api.goplausible.xyz/docs#)
+- [PLAUSIBLE Protocol OpenAPI Docs](https://goplausible.xyz/api/docs)
 - [GoPlausible User Documentation](https://docs.goplausible.xyz)
 - [Universal DID Resolver (ThisDID.com)](https://thisdid.com)
 
@@ -119,17 +119,16 @@ PLAUSIBLE protocol complies to [ARC3](https://github.com/algorandfoundation/ARCs
 ![Plausible Concept Diagram ](https://github.com/user-attachments/assets/8e4c3510-1850-4096-84ef-b90ef7d09c84)
 
 
-## GoPlausible Service integration API
+## GoPlausible API
 [top↑](#plausible-protocol)
 
-***This API spec and schema are just designed for GoPlausible service level integration projects***
-
-- **OpenAPI Version**: 3.1.0  
+- **OpenAPI Version**: 3.1  
 - [PLAUSIBLE Protocol API Docs guide](./README_API.md)
-- **API Base URL**: [https://api.goplausible.xyz](https://api.goplausible.xyz)  
-- **API Docs URL**: [https://api.goplausible.xyz/docs](https://api.goplausible.xyz/docs)  
+- **API Base URL**: [https://goplausible.xyz/api](https://goplausible.xyz/api)  
+- **API Docs URL**: [https://goplausible.xyz/api/docs](https://goplausible.xyz/api/docs)  
+- **OpenAPI document**: [https://goplausible.xyz/api/openapi.json](https://goplausible.xyz/api/openapi.json)  
 
-This API is designed to handle different aspects of W3C Decentralized Identifiers (DIDs), W3C Verifiable Credentials (VCs), Self-Sovereign Identity (SSI), IPFS content management, authentication, revocation, rotation of DIDs, and more.
+The API behind goplausible.xyz: W3C Verifiable Credentials and Presentations, their verification, the `did:algo` DID method, one sign-in for Algorand, Base and Solana wallets, the signed-in account and its media.
 
 ---
 
